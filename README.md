@@ -1,4 +1,4 @@
-# crystal-raytracer
+# raytracer-crystal
 
 ## Examples
 
