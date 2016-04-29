@@ -36,3 +36,15 @@ def schlick(cosine, reflection_index)
   r0 = ((1 - reflection_index) / (1 + reflection_index)) ** 2
   r0 + (1 - r0)*((1 - cosine)**5)
 end
+
+def min(a, b)
+  a < b ? a : b
+end
+
+def max(a, b)
+  a < b ? a : b
+end
+
+def minmax(a, b)
+  a < b ? {a, b} : {b, a}
+end

@@ -11,6 +11,7 @@ class Raytracer
     file.puts "P3"
     file.puts "#{width} #{height}"
     file.puts "255"
+
     (0...@height).reverse_each do |y|
       (0...@width).each do |x|
         col = Vec3.new(0.0)
@@ -27,7 +28,11 @@ class Raytracer
 
         file.puts "#{col.x.to_i} #{col.y.to_i} #{col.z.to_i}"
       end
+
+      puts "Traced line #{@height - y} / #{@height}"
     end
+
+    file.close
   end
 
   RECURSION_LIMIT = 10

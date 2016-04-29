@@ -7,6 +7,11 @@ end
 
 abstract class Hitable
   abstract def hit(ray : Ray, t_min : Float, t_max : Float) : (Intersection | Nil)
+  abstract def bounding_box
+
+  def box_min_on_axis(n)
+    bounding_box.min.xyz[n]
+  end
 end
 
 class Sphere < Hitable
@@ -43,13 +48,24 @@ class Sphere < Hitable
       return nil
     end
   end
+
+  def bounding_box
+    r = Vec3.new(radius)
+    AABB.new(@center - r, @center + r)
+  end
 end
 
-class HitableList < Hitable
-  property objects
+class HitableList
+  property objects, bounding_box
 
-  def initialize
-    @objects = Array(Hitable).new # TODO: use abstract object class
+  def initialize(list)
+    @objects = Array(Hitable).new
+    @bounding_box = list[0].bounding_box
+
+    list.each do |object|
+      @objects << object
+      @bounding_box = @bounding_box.merge(object.bounding_box)
+    end
   end
 
   def hit(ray, t_min, t_max)
@@ -67,7 +83,8 @@ class HitableList < Hitable
     result
   end
 
-  def push(object)
-    objects << object
+  def push(obj)
+    @objects << object
+    @bounding_box = @bounding_box.merge(object.bounding_box)
   end
 end

@@ -12,6 +12,10 @@ struct Vec3
   def initialize(@x, @y, @z)
   end
 
+  def xyz
+    {@x, @y, @z}
+  end
+
   {% for op in %w(+ - * /) %}
     def {{op.id}}(other : Vec3)
       Vec3.new(@x {{op.id}} other.x, @y {{op.id}} other.y, @z {{op.id}} other.z)

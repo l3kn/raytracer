@@ -1,10 +1,17 @@
+# look_from = Vec3.new(0.0, 0.8, 3.0)
+# look_at = Vec3.new(0.0, 0.3, -1.0)
+# up = Vec3.new(0.0, 1.0, 0.0)
+# fov = 20
+
 def random_scene
-  world = HitableList.new
+  world = [] of Hitable
 
   world.push(Sphere.new(Vec3.new(0.0, -1000.0, 0.0), 1000, Lambertian.new(Vec3.new(0.5))))
 
-  (-11..11).each do |a|
-    (-11..11).each do |b|
+  # (-11..11).each do |a|
+    # (-11..11).each do |b|
+  (-50..50).each do |a|
+    (-50..50).each do |b|
       center = Vec3.new(a + 0.9*pos_random, 0.2, b + 0.9*pos_random)
       if (center - Vec3.new(4.0, 0.2, 0.0)).length > 0.9
         choose_mat = pos_random

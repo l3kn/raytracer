@@ -3,22 +3,22 @@ abstract class Material
 end
 
 class Lambertian < Material
-  property albedo
+  property texture
 
-  def initialize(@albedo)
+  def initialize(@texture)
   end
 
   def scatter(ray, hit)
     target = hit.point + hit.normal + random_in_unit_sphere
 
     scattered = Ray.new(hit.point, target - hit.point)
-    {scattered, @albedo}
+    {scattered, @texture.value(hit.point)}
   end
 end
 
 class Metal < Material
-  property albedo, fuzz
-  def initialize(@albedo, @fuzz = 0.0)
+  property texture, fuzz
+  def initialize(@texture, @fuzz = 0.0)
   end
 
   def scatter(ray, hit)
@@ -26,7 +26,7 @@ class Metal < Material
     scattered = Ray.new(hit.point, reflected + random_in_unit_sphere*@fuzz)
 
     if scattered.direction.dot(hit.normal) > 0
-      {scattered, albedo}
+      {scattered, @texture.value(hit.point)}
     else
       nil
     end
@@ -48,7 +48,8 @@ class Dielectric < Material
     if dir_normal > 0
       outward_normal = -hit.normal
       ni_over_nt = @reflection_index
-      cosine = @reflection_index * dir_normal / ray.direction.length
+      cosine = dir_normal / ray.direction.length
+      cosine = Math.sqrt(1 - (reflection_index**2)*(1-cosine**2))
     else
       outward_normal = hit.normal
       ni_over_nt = 1.0 / @reflection_index
