@@ -68,7 +68,6 @@ struct Vec3
     discriminant = 1.0 - (eta**2) * (1-dt**2)
 
     if discriminant > 0
-      # (self - normal*dt)*eta - normal*Math.sqrt(discriminant)
       normalize * eta - normal * (eta * dt + Math.sqrt(discriminant))
     else
       nil

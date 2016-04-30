@@ -1,5 +1,11 @@
-abstract class Material
-  abstract def scatter(ray : Ray, hit : Intersection)
+class Material
+  def scatter(ray : Ray, hit : Intersection)
+    nil
+  end
+
+  def emitted
+    Vec3.new(0.0)
+  end
 end
 
 class Lambertian < Material
@@ -73,5 +79,10 @@ class Dielectric < Material
 
     {scattered, Vec3.new(1.0)}
 
+  end
+end
+
+class DiffuseLight < Material
+  def initialize(@texture)
   end
 end

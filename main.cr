@@ -30,7 +30,8 @@ aspect_ratio = width.to_f / height.to_f
 dist_to_focus = (look_from - look_at).length
 aperture = 0.05
 
-samples = 1000
+samples = 200
+# samples = 10
 
 camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
 filename = "main.ppm"

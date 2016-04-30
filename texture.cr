@@ -1,3 +1,5 @@
+require "./perlin"
+
 abstract class Texture
   abstract def value(point)
 end
@@ -22,5 +24,15 @@ class CheckerTexture < Texture
     else
       @even.value(point)
     end
+  end
+end
+
+class NoiseTexture < Texture
+  def initialize(@scale = 1)
+    @noise = Perlin.new(100)
+  end
+
+  def value(point)
+    Vec3.new(@noise.perlin(point * @scale))
   end
 end
