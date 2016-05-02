@@ -24,9 +24,11 @@ def test_scene
   tex2 = TestTexture.new(10.0)
   tex3 = ConstantTexture.new(Vec3.new(0.8, 0.6, 0.2))
 
-  # world.push(Sphere.new(Vec3.new(0.0, -100.5, -1.0), 100.0, Metal.new(tex1, 0.0)))
+  l1 = ConstantTexture.new(Vec3.new(10.0))
+
   world.push(Sphere.new(Vec3.new(0.0, -100.5, -1.0), 100.0, Lambertian.new(tex1)))
   world.push(Sphere.new(Vec3.new(0.0, 0.0, -1.0), 0.5, Lambertian.new(tex2)))
   world.push(Sphere.new(Vec3.new(1.0, 0.0, -1.0), 0.5, Metal.new(tex3, 0.0)))
   world.push(Sphere.new(Vec3.new(-1.0, 0.0, -1.0), 0.5, Dielectric.new(1.8)))
+  world.push(XYRect.new(-4, -2, 1, 3, -2, DiffuseLight.new(l1)))
 end

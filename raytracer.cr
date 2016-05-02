@@ -26,7 +26,9 @@ class Raytracer
         col /= samples.to_f
         col *= 255.99
 
-        file.puts "#{col.x.to_i} #{col.y.to_i} #{col.z.to_i}"
+        file.print "#{min(col.x.to_i, 255)} "
+        file.print "#{min(col.y.to_i, 255)} "
+        file.print "#{min(col.z.to_i, 255)}\n"
       end
 
       puts "Traced line #{@height - y} / #{@height}"
@@ -41,14 +43,16 @@ class Raytracer
     hit = world.hit(ray, 0.0001, 9999.9)
     if hit
       scatter = hit.material.scatter(ray, hit)
+      emitted = hit.material.emitted(hit.point)
       if scatter && recursion_level < RECURSION_LIMIT
-        scatter[1] * color(scatter[0], world, recursion_level + 1)
+        emitted + scatter[1] * color(scatter[0], world, recursion_level + 1)
       else
-        Vec3.new(0.0)
+        emitted
       end
     else
-      t = 0.5 * (ray.direction.normalize.y + 1.0)
-      Vec3.new(1.0)*(1.0 - t) + Vec3.new(0.5, 0.7, 1.0)*t
+      # t = 0.5 * (ray.direction.normalize.y + 1.0)
+      # Vec3.new(1.0)*(1.0 - t) + Vec3.new(0.5, 0.7, 1.0)*t
+      Vec3.new(0.0)
     end
   end
 end

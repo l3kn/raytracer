@@ -1,12 +1,13 @@
 require "./vec3"
 require "./ray"
 require "./hitable"
+require "./hitable/*"
 require "./camera"
 require "./helper"
 require "./material"
+require "./material/*"
 require "./raytracer"
-require "./scenes/random_scene"
-require "./scenes/test_scene"
+require "./scenes/*"
 require "./texture"
 require "./bvh"
 require "./aabb"
@@ -14,8 +15,8 @@ require "./aabb"
 # world = BVHNode.new(random_scene)
 world = HitableList.new(test_scene)
 
-width = 800
-height = 400
+# width, height = {800, 400}
+width, height = {400, 200}
 
 raytracer = Raytracer.new(width, height)
 
@@ -30,7 +31,7 @@ aspect_ratio = width.to_f / height.to_f
 dist_to_focus = (look_from - look_at).length
 aperture = 0.05
 
-samples = 200
+samples = 1000
 # samples = 10
 
 camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)

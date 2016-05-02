@@ -4,7 +4,7 @@ struct Ray
   def initialize(@origin, @direction)
   end
 
-  def point_at_parameter(t : Float)
+  def point_at_parameter(t)
     @origin + (@direction * t)
   end
 end
