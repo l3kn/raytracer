@@ -16,17 +16,18 @@ green = ConstantTexture.new(Vec3.new(0.0, bri, 0.0))
 blue =  ConstantTexture.new(Vec3.new(0.0, 0.0, bri))
 
 height = 2.0
+size = 0.4
 
-world_.push(XZRect.new(Vec3.new(-1.2, height, -1.2),
-                       Vec3.new(-0.8, height, -0.8),
+world_.push(XZRect.new(Vec3.new(-1.0-size, height, -1.0-size),
+                       Vec3.new(-1.0+size, height, -1.0+size),
                        DiffuseLight.new(red)))
 
-world_.push(XZRect.new(Vec3.new(-0.2, height, -1.2),
-                       Vec3.new( 0.2, height, -0.8),
+world_.push(XZRect.new(Vec3.new( 0.0-size, height, -1.0-size),
+                       Vec3.new( 0.0+size, height, -1.0+size),
                        DiffuseLight.new(green)))
 
-world_.push(XZRect.new(Vec3.new( 0.8, height, -1.2),
-                       Vec3.new( 1.2, height, -0.8),
+world_.push(XZRect.new(Vec3.new( 1.0-size, height, -1.0-size),
+                       Vec3.new( 1.0+size, height, -1.0+size),
                        DiffuseLight.new(blue)))
 
 world = HitableList.new(world_)
