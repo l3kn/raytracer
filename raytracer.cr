@@ -61,8 +61,9 @@ class Raytracer
         emitted
       end
     else
-      # t = 0.5 * (ray.direction.normalize.y + 1.0)
-      # Vec3.new(1.0)*(1.0 - t) + Vec3.new(0.5, 0.7, 1.0)*t
+      # "Sky":
+      #   t = 0.5 * (ray.direction.normalize.y + 1.0)
+      #   Vec3.new(1.0)*(1.0 - t) + Vec3.new(0.5, 0.7, 1.0)*t
       Vec3.new(0.0)
     end
   end
