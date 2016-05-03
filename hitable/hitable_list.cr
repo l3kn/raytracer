@@ -26,8 +26,12 @@ class HitableList
     result
   end
 
-  def push(obj)
-    @objects << object
-    @bounding_box = @bounding_box.merge(object.bounding_box)
-  end
+  # def push(object)
+    # @objects << object
+    # if @bounding_box
+      # @bounding_box = @bounding_box.merge(object.bounding_box)
+    # else
+      # @bounding_box = object.bounding_box
+    # end
+  # end
 end

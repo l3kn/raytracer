@@ -1,3 +1,14 @@
+require "./vec3"
+require "./ray"
+require "./hitable"
+require "./hitable/*"
+require "./camera"
+require "./helper"
+require "./material"
+require "./material/*"
+require "./texture"
+require "./bvh"
+require "./aabb"
 
 class Raytracer
   property width, height
