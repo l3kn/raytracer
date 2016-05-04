@@ -1,4 +1,18 @@
-class XYRect < Hitable
+class Rect < Hitable
+  def flip!
+    @normal = -@normal
+  end
+
+  def hit(ray, t_min, t_max)
+    nil
+  end
+
+  def bounding_box
+    AABB.new(Vec3.new(0.0), Vec3.new(0.0))
+  end
+end
+
+class XYRect < Rect
   property x0, x1, y0, y1, z, material
 
   def initialize(bottom, top, @material)
@@ -11,6 +25,8 @@ class XYRect < Hitable
     @y0 = bottom.y
     @y1 = top.y
     @z = bottom.z
+
+    @normal = Vec3.new(0.0, 0.0, 1.0)
   end
 
   def hit(ray, t_min, t_max)
@@ -23,8 +39,7 @@ class XYRect < Hitable
     return nil if point.x < @x0 || point.x > @x1 ||
                   point.y < @y0 || point.y > @y1
 
-    normal = Vec3.new(0.0, 0.0, 1.0)
-    return Intersection.new(t, point, normal, @material)
+    return Intersection.new(t, point, @normal, @material)
   end
 
   def bounding_box
@@ -34,7 +49,7 @@ class XYRect < Hitable
   end
 end
 
-class XZRect < Hitable
+class XZRect < Rect
   property x0, x1, y, z0, z1, material
 
   def initialize(bottom, top, @material)
@@ -47,6 +62,8 @@ class XZRect < Hitable
     @y = bottom.y
     @z0 = bottom.z
     @z1 = top.z
+
+    @normal = Vec3.new(0.0, 1.0, 0.0)
   end
 
   def hit(ray, t_min, t_max)
@@ -59,8 +76,7 @@ class XZRect < Hitable
     return nil if point.x < @x0 || point.x > @x1 ||
                   point.z < @z0 || point.z > @z1
 
-    normal = Vec3.new(0.0, 1.0, 0.0)
-    return Intersection.new(t, point, normal, @material)
+    return Intersection.new(t, point, @normal, @material)
   end
 
   def bounding_box
@@ -70,7 +86,7 @@ class XZRect < Hitable
   end
 end
 
-class YZRect < Hitable
+class YZRect < Rect
   property x, y0, y1, z0, z1, material
 
   def initialize(bottom, top, @material)
@@ -83,6 +99,8 @@ class YZRect < Hitable
     @y1 = top.y
     @z0 = bottom.z
     @z1 = top.z
+
+    @normal = Vec3.new(1.0, 0.0, 0.0)
   end
 
   def hit(ray, t_min, t_max)
@@ -95,8 +113,7 @@ class YZRect < Hitable
     return nil if point.y < @y0 || point.y > @y1 ||
                   point.z < @z0 || point.z > @z1
 
-    normal = Vec3.new(1.0, 0.0, 0.0)
-    return Intersection.new(t, point, normal, @material)
+    return Intersection.new(t, point, @normal, @material)
   end
 
   def bounding_box

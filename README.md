@@ -17,3 +17,8 @@ _400x200px, 1000 samples / pixel, rendertime: 320s_
 
 ![](images/light2.png)
 _800x400px, 2000 samples / pixel, rendertime: 600s_
+
+### `scenes/cornell_box.cr`
+
+![](images/cornell.png)
+_400x400px, 4000 samples / pixel, rendertime: 770s_
