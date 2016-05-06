@@ -1,18 +1,4 @@
-class Rect < Hitable
-  def flip!
-    @normal = -@normal
-  end
-
-  def hit(ray, t_min, t_max)
-    nil
-  end
-
-  def bounding_box
-    AABB.new(Vec3.new(0.0), Vec3.new(0.0))
-  end
-end
-
-class XYRect < Rect
+class XYRect < Hitable
   property x0 : Float64, x1 : Float64, y0 : Float64, y1 : Float64, z : Float64, material
 
   def initialize(bottom : Vec3, top : Vec3, @material : Material)
@@ -27,6 +13,10 @@ class XYRect < Rect
     @z = bottom.z
 
     @normal = Vec3.new(0.0, 0.0, 1.0)
+  end
+
+  def flip!
+    @normal = -@normal
   end
 
   def hit(ray, t_min, t_max)
@@ -49,7 +39,7 @@ class XYRect < Rect
   end
 end
 
-class XZRect < Rect
+class XZRect < Hitable
   property x0 : Float64, x1 : Float64, y : Float64, z0 : Float64, z1 : Float64, material
 
   def initialize(bottom : Vec3, top : Vec3, @material : Material)
@@ -64,6 +54,10 @@ class XZRect < Rect
     @z1 = top.z
 
     @normal = Vec3.new(0.0, 1.0, 0.0)
+  end
+
+  def flip!
+    @normal = -@normal
   end
 
   def hit(ray, t_min, t_max)
@@ -86,7 +80,7 @@ class XZRect < Rect
   end
 end
 
-class YZRect < Rect
+class YZRect < Hitable
   property x : Float64, y0 : Float64, y1 : Float64, z0 : Float64, z1 : Float64, material
 
   def initialize(bottom : Vec3, top : Vec3, @material : Material)
@@ -101,6 +95,10 @@ class YZRect < Rect
     @z1 = top.z
 
     @normal = Vec3.new(1.0, 0.0, 0.0)
+  end
+
+  def flip!
+    @normal = -@normal
   end
 
   def hit(ray, t_min, t_max)
