@@ -1,7 +1,7 @@
 # Bounding volume hierarchy
 
 class BVHNode < Hitable
-  getter left, right, bounding_box
+  getter left, right, bounding_box : AABB
 
   def initialize(list)
     axis = rand(0.0...3.0).to_i

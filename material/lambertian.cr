@@ -1,7 +1,7 @@
 class Lambertian < Material
   property texture
 
-  def initialize(@texture)
+  def initialize(@texture : Texture)
   end
 
   def scatter(ray, hit)

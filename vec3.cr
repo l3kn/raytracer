@@ -5,11 +5,11 @@ struct Vec3
     @x, @y, @z = 0.0, 0.0, 0.0
   end
 
-  def initialize(value)
+  def initialize(value : Float64)
     @x, @y, @z = value, value, value
   end
 
-  def initialize(@x, @y, @z)
+  def initialize(@x : Float64, @y : Float64, @z : Float64)
   end
 
   def xyz

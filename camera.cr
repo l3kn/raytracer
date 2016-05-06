@@ -22,7 +22,21 @@ class OldCamera
 end
 
 class Camera
-  def initialize(look_from, look_at, up, vertical_fov, aspect_ratio, aperture, focus_distance)
+  getter u : Vec3
+  getter v : Vec3
+  getter w : Vec3
+  getter lower_left_corner : Vec3
+  getter horizontal : Vec3
+  getter vertical : Vec3
+  getter lens_radius : Float64
+
+  def initialize(look_from : Vec3,
+                 look_at : Vec3,
+                 up : Vec3,
+                 vertical_fov : Int32,
+                 aspect_ratio : Float64,
+                 aperture : Float64,
+                 focus_distance : Float64)
     theta = vertical_fov * Math::PI / 180
     half_height = Math.tan(theta / 2.0)
     half_width = aspect_ratio * half_height

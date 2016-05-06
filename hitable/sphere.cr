@@ -1,7 +1,7 @@
 class Sphere < Hitable
   property center, radius, material
 
-  def initialize(@center, @radius, @material)
+  def initialize(@center : Vec3, @radius : Float64, @material : Material)
   end
 
   def hit(ray, t_min, t_max)

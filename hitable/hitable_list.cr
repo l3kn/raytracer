@@ -1,5 +1,5 @@
 class HitableList
-  property objects, bounding_box
+  property objects, bounding_box : AABB
 
   def initialize(list)
     @objects = Array(Hitable).new

@@ -13,9 +13,9 @@ class Rect < Hitable
 end
 
 class XYRect < Rect
-  property x0, x1, y0, y1, z, material
+  property x0 : Float64, x1 : Float64, y0 : Float64, y1 : Float64, z : Float64, material
 
-  def initialize(bottom, top, @material)
+  def initialize(bottom : Vec3, top : Vec3, @material : Material)
     if bottom.z != top.z
       raise "XYRect bottom & top don't have the same z value"
     end
@@ -50,9 +50,9 @@ class XYRect < Rect
 end
 
 class XZRect < Rect
-  property x0, x1, y, z0, z1, material
+  property x0 : Float64, x1 : Float64, y : Float64, z0 : Float64, z1 : Float64, material
 
-  def initialize(bottom, top, @material)
+  def initialize(bottom : Vec3, top : Vec3, @material : Material)
     if bottom.y != top.y
       raise "XZRect bottom & top don't have the same y value"
     end
@@ -87,9 +87,9 @@ class XZRect < Rect
 end
 
 class YZRect < Rect
-  property x, y0, y1, z0, z1, material
+  property x : Float64, y0 : Float64, y1 : Float64, z0 : Float64, z1 : Float64, material
 
-  def initialize(bottom, top, @material)
+  def initialize(bottom : Vec3, top : Vec3, @material : Material)
     if bottom.x != top.x
       raise "YZRect bottom & top don't have the same x value"
     end

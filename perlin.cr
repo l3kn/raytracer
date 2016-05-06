@@ -2,10 +2,9 @@
 
 class Perlin
   def initialize(@repeat = 0)
-    permutation = (0..256).to_a.shuffle
-
     # This way we don't need to "& 255" array indices later
-    @p = permutation * 2
+    @p = [] of Int32
+    @p = (0..256).to_a.shuffle * 2
   end
 
   # TODO: Make this work for negative x,y,z, too

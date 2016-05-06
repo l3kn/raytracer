@@ -1,6 +1,8 @@
+require "../texture"
+
 class Metal < Material
   property texture, fuzz
-  def initialize(@texture, @fuzz = 0.0)
+  def initialize(@texture : Texture, @fuzz = 0.0)
   end
 
   def scatter(ray, hit)

@@ -5,7 +5,7 @@ abstract class Texture
 end
 
 class ConstantTexture < Texture
-  def initialize(@color)
+  def initialize(@color : Vec3)
   end
 
   def value(point)

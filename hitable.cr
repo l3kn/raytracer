@@ -1,5 +1,8 @@
 struct Intersection
-  getter t, point, normal, material
+  getter t : Float64
+  getter point : Vec3
+  getter normal : Vec3
+  getter material : Material
 
   def initialize(@t, @point, @normal, @material)
   end

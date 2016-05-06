@@ -1,7 +1,7 @@
 class Dielectric < Material
   property reflection_index
 
-  def initialize(@reflection_index)
+  def initialize(@reflection_index : Float64)
   end
 
   def scatter(ray, hit)

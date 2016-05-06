@@ -1,7 +1,7 @@
 class AABB
   getter min, max
 
-  def initialize(@min, @max)
+  def initialize(@min : Vec3, @max : Vec3)
   end
 
   def hit(ray, tmin, tmax)

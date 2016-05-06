@@ -13,7 +13,7 @@ require "./aabb"
 class Raytracer
   property width, height
 
-  def initialize(@width, @height)
+  def initialize(@width = 800, @height = 400)
   end
 
   def render(world, camera, samples, filename)
