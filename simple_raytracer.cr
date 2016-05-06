@@ -9,7 +9,7 @@ require "./material/*"
 require "./texture"
 require "./aabb"
 
-class Raytracer
+class SimpleRaytracer
   property width : Int32
   property height : Int32
   property world : Hitable
@@ -68,14 +68,15 @@ class Raytracer
     hit = world.hit(ray, 0.0001, 9999.9)
     if hit
       scatter = hit.material.scatter(ray, hit)
-      emitted = hit.material.emitted(hit.point)
       if scatter && recursion_level < RECURSION_LIMIT
-        emitted + scatter[1] * color(scatter[0], world, recursion_level + 1)
+        scatter[1] * color(scatter[0], world, recursion_level + 1)
       else
-        emitted
+        Vec3.new(0.0)
       end
     else
-      Vec3.new(0.0)
+      # "Sky" color
+      t = 0.5 * (ray.direction.normalize.y + 1.0)
+      Vec3.new(1.0)*(1.0 - t) + Vec3.new(0.5, 0.7, 1.0)*t
     end
   end
 end
