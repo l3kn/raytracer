@@ -7,7 +7,6 @@ require "./helper"
 require "./material"
 require "./material/*"
 require "./texture"
-require "./bvh"
 require "./aabb"
 
 class Raytracer
