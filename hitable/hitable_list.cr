@@ -1,4 +1,4 @@
-class HitableList
+class HitableList < Hitable
   property objects, bounding_box : AABB
 
   def initialize(list)

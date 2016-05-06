@@ -10,12 +10,16 @@ require "./texture"
 require "./aabb"
 
 class Raytracer
-  property width, height
+  property width : Int32
+  property height : Int32
+  property world : Hitable
+  property camera : Camera
+  property samples : Int32
 
-  def initialize(@width = 800, @height = 400)
+  def initialize(@width, @height, @world, @camera, @samples)
   end
 
-  def render(world, camera, samples, filename)
+  def render(filename)
     file = File.open(filename, "w")
 
     file.puts "P3"

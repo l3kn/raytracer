@@ -13,7 +13,7 @@ class TestTexture < Texture
   end
 end
 
-world_ = [] of Hitable
+world = [] of Hitable
 
 ch1 = ConstantTexture.new(Vec3.new(0.8))
 ch2 = ConstantTexture.new(Vec3.new(0.2))
@@ -25,21 +25,17 @@ tex3 = ConstantTexture.new(Vec3.new(0.8, 0.6, 0.2))
 
 l1 = ConstantTexture.new(Vec3.new(10.0))
 
-world_.push(Sphere.new(Vec3.new(0.0, -100.5, -1.0), 100.0, Lambertian.new(tex1)))
+world.push(Sphere.new(Vec3.new(0.0, -100.5, -1.0), 100.0, Lambertian.new(tex1)))
 
-world_.push(Sphere.new(Vec3.new(0.0, 0.0, -1.0), 0.5, Lambertian.new(tex2)))
-world_.push(Sphere.new(Vec3.new(1.0, 0.0, -1.0), 0.5, Metal.new(tex3, 0.0)))
-world_.push(Sphere.new(Vec3.new(-1.0, 0.0, -1.0), 0.5, Dielectric.new(1.8)))
+world.push(Sphere.new(Vec3.new(0.0, 0.0, -1.0), 0.5, Lambertian.new(tex2)))
+world.push(Sphere.new(Vec3.new(1.0, 0.0, -1.0), 0.5, Metal.new(tex3, 0.0)))
+world.push(Sphere.new(Vec3.new(-1.0, 0.0, -1.0), 0.5, Dielectric.new(1.8)))
 
-world_.push(XYRect.new(Vec3.new(-4.0, 1.0, -2.0),
+world.push(XYRect.new(Vec3.new(-4.0, 1.0, -2.0),
                       Vec3.new(-2.0, 3.0, -2.0),
                       DiffuseLight.new(l1)))
 
-world = HitableList.new(world_)
-
-width, height = {400, 200}
-
-raytracer = Raytracer.new(width, height)
+width, height = {800, 400}
 
 # Camera params
 look_from = Vec3.new(-1.5, 1.5, 1.5)
@@ -52,8 +48,12 @@ aspect_ratio = width.to_f / height.to_f
 dist_to_focus = (look_from - look_at).length
 aperture = 0.05
 
-samples = 100
-
 camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
-filename = "light1.ppm"
-raytracer.render(world, camera, samples, filename)
+
+# Raytracer
+raytracer = Raytracer.new(width, height,
+                          world: HitableList.new(world),
+                          camera: camera,
+                          samples: 2000)
+
+raytracer.render("light1.ppm")
