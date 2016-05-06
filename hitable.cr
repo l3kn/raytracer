@@ -1,12 +1,8 @@
-struct Intersection
-  getter t : Float64
-  getter point : Vec3
-  getter normal : Vec3
-  getter material : Material
-
-  def initialize(@t, @point, @normal, @material)
-  end
-end
+record Intersection,
+  t : Float64,
+  point : Vec3,
+  normal : Vec3,
+  material : Material
 
 abstract class Hitable
   abstract def hit(ray : Ray, t_min : Float, t_max : Float) : (Intersection | Nil)
