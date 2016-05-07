@@ -1,4 +1,9 @@
 class OldCamera
+  getter origin : Vec3
+  getter lower_left_corner : Vec3
+  getter horizontal : Vec3
+  getter vertical : Vec3
+
   def initialize(look_from, look_at, up, vertical_fov, aspect_ratio)
     theta = vertical_fov * Math::PI / 180
     half_height = Math.tan(theta/2)
