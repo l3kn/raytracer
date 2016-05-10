@@ -1,14 +1,14 @@
 require "./perlin"
 
 abstract class Texture
-  abstract def value(point)
+  abstract def value(point, u, v)
 end
 
 class ConstantTexture < Texture
   def initialize(@color : Vec3)
   end
 
-  def value(point)
+  def value(point, u, v)
     @color
   end
 end
@@ -17,12 +17,13 @@ class CheckerTexture < Texture
   def initialize(@even : Texture, @odd : Texture)
   end
 
-  def value(point)
+  # TODO: Use uv values instead
+  def value(point, u, v)
     sines = Math.sin(10*point.x)*Math.sin(10*point.y)*Math.sin(10*point.z)
     if sines < 0
-      @odd.value(point)
+      @odd.value(point, u, v)
     else
-      @even.value(point)
+      @even.value(point, u, v)
     end
   end
 end
@@ -32,7 +33,7 @@ class NoiseTexture < Texture
     @noise = Perlin.new(100)
   end
 
-  def value(point)
+  def value(point, u, v)
     Vec3.new(@noise.perlin(point * @scale))
   end
 end

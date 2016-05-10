@@ -60,7 +60,7 @@ class Raytracer
     hit = world.hit(ray, 0.0001, 9999.9)
     if hit
       scatter = hit.material.scatter(ray, hit)
-      emitted = hit.material.emitted(hit.point)
+      emitted = hit.material.emitted(hit)
       if scatter && recursion_level < RECURSION_LIMIT
         emitted + scatter[1] * color(scatter[0], world, recursion_level + 1)
       else

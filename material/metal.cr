@@ -10,7 +10,7 @@ class Metal < Material
     scattered = Ray.new(hit.point, reflected + random_in_unit_sphere*@fuzz)
 
     if scattered.direction.dot(hit.normal) > 0
-      {scattered, @texture.value(hit.point)}
+      {scattered, @texture.value(hit.point, hit.u, hit.v)}
     else
       nil
     end

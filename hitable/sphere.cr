@@ -18,7 +18,13 @@ class Sphere < Hitable
       if (tmp < t_max && tmp > t_min)
         point = ray.point_at_parameter(tmp)
         normal = (point - center) / radius
-        return Intersection.new(tmp, point, normal, @material)
+
+        # u = Math.asin(normal.x) / Math::PI + 0.5
+        # v = Math.asin(normal.y) / Math::PI + 0.5
+        # Might be faster:
+        u = normal.x / 2 + 0.5
+        v = normal.y / 2 + 0.5
+        return Intersection.new(tmp, point, normal, @material, u, v)
       end
 
       tmp = (-b + Math.sqrt(discriminant)) / (2.0*a)
@@ -26,7 +32,13 @@ class Sphere < Hitable
       if (tmp < t_max && tmp > t_min)
         point = ray.point_at_parameter(tmp)
         normal = (point - center) / radius
-        return Intersection.new(tmp, point, normal, @material)
+
+        # u = Math.asin(normal.x) / Math::PI + 0.5
+        # v = Math.asin(normal.y) / Math::PI + 0.5
+        # Might be faster:
+        u = normal.x / 2 + 0.5
+        v = normal.y / 2 + 0.5
+        return Intersection.new(tmp, point, normal, @material, u, v)
       end
 
       return nil

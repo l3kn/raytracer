@@ -1,8 +1,11 @@
 record Intersection,
-  t : Float64,
+  t : Float64, # Ray parameter of the hitpoint
   point : Vec3,
   normal : Vec3,
-  material : Material
+  material : Material,
+  u : Float64, # Vars for texture mapping
+  v : Float64
+
 
 abstract class Hitable
   abstract def hit(ray : Ray, t_min : Float, t_max : Float) : (Intersection | Nil)

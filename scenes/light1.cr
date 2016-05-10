@@ -5,7 +5,7 @@ class TestTexture < Texture
     @noise = Perlin.new(100)
   end
 
-  def value(point)
+  def value(point, u, v)
     # n = @noise.octave_perlin(point, 8, 0.5)
     # v = 0.5*(1 + Math.sin(@scale * point.z + 10*n))
     # Vec3.new(v)
