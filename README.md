@@ -31,3 +31,9 @@ _400x400px, 4000 samples / pixel, rendertime: 770s_
 ![](images/teapot1.png)
 
 _800x400px, 50 samples / pixel, no lights, 2464 triangles, rendertime: 41min_
+
+### `scenes/minecraft.cr`
+
+![](images/minecraft.png)
+
+_800x400px, 100 samples / pixel, no lights, rendertime: 410s_
