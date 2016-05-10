@@ -31,7 +31,6 @@ class BVHNode < Hitable
       hit_right = @right.hit(ray, t_min, t_max)
 
       if (hit_left && hit_right)
-        @double += 1
         if hit_left.t < hit_right.t
           return hit_left
         else
