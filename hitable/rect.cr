@@ -29,8 +29,8 @@ class XYRect < Hitable
     return nil if point.x < @x0 || point.x > @x1 ||
                   point.y < @y0 || point.y > @y1
 
-    u = point.x - @x0 / (@x1 - @x0) 
-    v = point.y - @y0 / (@y1 - @y0) 
+    u = (point.x - @x0) / (@x1 - @x0) 
+    v = (point.y - @y0) / (@y1 - @y0) 
     return Intersection.new(t, point, @normal, @material, u, v)
   end
 
@@ -72,8 +72,8 @@ class XZRect < Hitable
     return nil if point.x < @x0 || point.x > @x1 ||
                   point.z < @z0 || point.z > @z1
 
-    u = point.x - @x0 / (@x1 - @x0) 
-    v = point.z - @z0 / (@z1 - @z0) 
+    u = (point.x - @x0) / (@x1 - @x0) 
+    v = (point.z - @z0) / (@z1 - @z0) 
     return Intersection.new(t, point, @normal, @material, u, v)
   end
 
@@ -115,8 +115,8 @@ class YZRect < Hitable
     return nil if point.y < @y0 || point.y > @y1 ||
                   point.z < @z0 || point.z > @z1
 
-    u = point.y - @y0 / (@y1 - @y0) 
-    v = point.z - @z0 / (@z1 - @z0) 
+    u = (point.y - @y0) / (@y1 - @y0) 
+    v = (point.z - @z0) / (@z1 - @z0) 
     return Intersection.new(t, point, @normal, @material, u, v)
   end
 
