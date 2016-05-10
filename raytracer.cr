@@ -8,6 +8,7 @@ require "./material"
 require "./material/*"
 require "./texture"
 require "./aabb"
+require "./ppm"
 
 class Raytracer
   property width : Int32
@@ -20,11 +21,7 @@ class Raytracer
   end
 
   def render(filename)
-    file = File.open(filename, "w")
-
-    file.puts "P3"
-    file.puts "#{width} #{height}"
-    file.puts "255"
+    ppm = PPM.new(@width, @height, filename)
 
     samples_sqrt = Math.sqrt(samples).ceil
 
@@ -47,19 +44,14 @@ class Raytracer
         end
 
         col /= (samples_sqrt * samples_sqrt)
-        col *= 255.99
 
-        # Cap color values at 255 so that lights (albedo > 1.0)
-        # do not lead to corrupted ppm files
-        file.print "#{min(col.x.to_i, 255)} "
-        file.print "#{min(col.y.to_i, 255)} "
-        file.print "#{min(col.z.to_i, 255)}\n"
+        ppm.add(col)
       end
 
       puts "Traced line #{@height - y} / #{@height}"
     end
 
-    file.close
+    ppm.close
   end
 
   RECURSION_LIMIT = 10
