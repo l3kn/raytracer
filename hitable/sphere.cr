@@ -19,11 +19,11 @@ class Sphere < Hitable
         point = ray.point_at_parameter(tmp)
         normal = (point - center) / radius
 
-        # u = Math.asin(normal.x) / Math::PI + 0.5
-        # v = Math.asin(normal.y) / Math::PI + 0.5
-        # Might be faster:
-        u = normal.x / 2 + 0.5
-        v = normal.y / 2 + 0.5
+        # Naive:
+        #   u = Math.asin(normal.x) / Math::PI + 0.5
+        #   v = Math.asin(normal.y) / Math::PI + 0.5
+        u = 0.5 + Math.atan2(-normal.z, -normal.x) / (2 * Math::PI)
+        v = 0.5 - Math.asin(-normal.y) / Math::PI
         return Intersection.new(tmp, point, normal, @material, u, v)
       end
 
@@ -33,11 +33,8 @@ class Sphere < Hitable
         point = ray.point_at_parameter(tmp)
         normal = (point - center) / radius
 
-        # u = Math.asin(normal.x) / Math::PI + 0.5
-        # v = Math.asin(normal.y) / Math::PI + 0.5
-        # Might be faster:
-        u = normal.x / 2 + 0.5
-        v = normal.y / 2 + 0.5
+        u = Math.atan2(-normal.z, -normal.x) / (2 * Math::PI) + 0.5
+        v = Math.asin(-normal.y) / Math::PI + 0.5
         return Intersection.new(tmp, point, normal, @material, u, v)
       end
 
