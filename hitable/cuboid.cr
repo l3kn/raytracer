@@ -1,7 +1,9 @@
 require "../hitable"
 
 class Cuboid < Hitable
-  def initialize(p1, p2, material)
+  def initialize(p1, p2, top, bottom,
+                         front, back,
+                         left, right)
     # back | front, right | left, top | bottom
     brt = Vec3.new(p2.x, p2.y, p2.z)
     brb = Vec3.new(p2.x, p1.y, p2.z)
@@ -12,20 +14,28 @@ class Cuboid < Hitable
     flt = Vec3.new(p1.x, p2.y, p1.z)
     flb = Vec3.new(p1.x, p1.y, p1.z)
 
-    front  = XYRect.new(flb, frt, material)
-    back   = XYRect.new(blb, brt, material)
+    rect_front  = XYRect.new(flb, frt, front)
+    rect_back   = XYRect.new(blb, brt, back)
 
-    left   = YZRect.new(flb, blt, material)
-    right  = YZRect.new(frb, brt, material)
+    rect_left   = YZRect.new(flb, blt, left)
+    rect_right  = YZRect.new(frb, brt, right)
 
-    bottom = XZRect.new(flb, brb, material)
-    top    = XZRect.new(flt, brt, material)
+    rect_bottom = XZRect.new(flb, brb, bottom)
+    rect_top    = XZRect.new(flt, brt, top)
 
-    front.flip!
-    left.flip!
-    bottom.flip!
+    rect_front.flip!
+    rect_left.flip!
+    rect_bottom.flip!
 
-    @list = HitableList.new([front, back, left, right, bottom, top])
+    @list = HitableList.new([rect_front, rect_back,
+                             rect_left, rect_right,
+                             rect_bottom, rect_top])
+  end
+
+
+  def initialize(p1, p2, mat)
+    # Use the same material for all 6 sides
+    initialize(p1, p2, mat, mat, mat, mat, mat, mat)
   end
 
   def hit(ray, t_min, t_max)
