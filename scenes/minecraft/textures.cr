@@ -9,8 +9,8 @@ class PixelTexture < Texture
   end
 
   def value(point, u, v)
-    x = u * (@width - 1)
-    y = v * (@height - 1)
+    x = u * ((@width - 1) + 0.999)
+    y = v * ((@height - 1) + 0.999)
 
     @pixels[y.to_i][x.to_i]
   end
