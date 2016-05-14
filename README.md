@@ -40,7 +40,9 @@ _800x400px, 100 samples / pixel, no lights, rendertime: 410s_
 
 ### `scenes/cube_map1.cr`
 
-![](images/cube_map1.webm)
+![](images/cube_map1.png)
+
+[Animation on imgur](http://imgur.com/qMTPt9f)
 
 _360 frames a 400x400px, 20 samples / pixel, no lights, rendertime: 725s_  
 
