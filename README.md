@@ -12,31 +12,31 @@
 
 ![](images/light1.png)
 
-_400x200px, 1000 samples / pixel, rendertime: 320s_
+_400x200px, 1000 samples / pixel, time: 320s_
 
 ### `scenes/light2.cr`
 
 ![](images/light2.png)
 
-_800x400px, 2000 samples / pixel, rendertime: 600s_
+_800x400px, 2000 samples / pixel, time: 600s_
 
 ### `scenes/cornell_box.cr`
 
 ![](images/cornell.png)
 
-_400x400px, 4000 samples / pixel, rendertime: 770s_
+_400x400px, 4000 samples / pixel, time: 770s_
 
 ### `scenes/teapot1.cr`
 
 ![](images/teapot1.png)
 
-_800x400px, 50 samples / pixel, no lights, 2464 triangles, rendertime: 41min_
+_800x400px, 50 samples / pixel, no lights, 2464 triangles, time: 41min_
 
 ### `scenes/minecraft.cr`
 
 ![](images/minecraft.png)
 
-_800x400px, 100 samples / pixel, no lights, rendertime: 410s_
+_800x400px, 100 samples / pixel, no lights, time: 410s_
 
 ### `scenes/cube_map1.cr`
 
@@ -44,7 +44,7 @@ _800x400px, 100 samples / pixel, no lights, rendertime: 410s_
 
 [Animation on imgur](http://imgur.com/qMTPt9f)
 
-_360 frames a 400x400px, 20 samples / pixel, no lights, rendertime: 725s_  
+_360 frames a 400x400px, 20 samples / pixel, no lights, time: 725s_  
 
 
 The cube map in this example is
