@@ -1,3 +1,8 @@
+record Scattered,
+  ray : Ray,
+  albedo : Vec3
+
+
 class Material
   def scatter(ray : Ray, hit : Intersection)
     nil

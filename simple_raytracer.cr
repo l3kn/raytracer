@@ -69,7 +69,7 @@ class SimpleRaytracer
     if hit
       scatter = hit.material.scatter(ray, hit)
       if scatter && recursion_level < RECURSION_LIMIT
-        scatter[1] * color(scatter[0], world, recursion_level + 1)
+        scatter.albedo * color(scatter.ray, world, recursion_level + 1)
       else
         Vec3.new(0.0)
       end
