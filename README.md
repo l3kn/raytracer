@@ -37,3 +37,16 @@ _800x400px, 50 samples / pixel, no lights, 2464 triangles, rendertime: 41min_
 ![](images/minecraft.png)
 
 _800x400px, 100 samples / pixel, no lights, rendertime: 410s_
+
+### `scenes/cube_map1.cr`
+
+![](images/cube_map1.webm)
+
+_360 frames a 400x400px, 20 samples / pixel, no lights, rendertime: 725s_  
+
+
+The cube map in this example is
+"[Yokohama](http://www.humus.name/Textures/Yokohama3.zip)" by
+[Emil "Humus" Persson](http://www.humus.name/index.php?page=Textures),
+licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/)
+
