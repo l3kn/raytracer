@@ -1,4 +1,4 @@
-require "../simple_raytracer"
+require "../raytracers/simple_raytracer"
 
 world = [] of Hitable
 
@@ -30,6 +30,6 @@ camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to
 raytracer = SimpleRaytracer.new(width, height,
                                 world: HitableList.new(world),
                                 camera: camera,
-                                samples: 2000)
+                                samples: 50)
 
 raytracer.render("benchmark.ppm")

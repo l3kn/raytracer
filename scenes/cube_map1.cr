@@ -1,4 +1,4 @@
-require "../cube_map_raytracer"
+require "../raytracers/cube_map_raytracer"
 
 # Instructions
 # 

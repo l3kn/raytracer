@@ -1,20 +1,20 @@
 require "./ppm"
 
 class CubeMap
-  getter right    : Array(Array(Vec3))
-  getter left     : Array(Array(Vec3))
-  getter up       : Array(Array(Vec3))
-  getter down     : Array(Array(Vec3))
-  getter forward  : Array(Array(Vec3))
-  getter backward : Array(Array(Vec3))
+  getter right    : PPM
+  getter left     : PPM
+  getter up       : PPM
+  getter down     : PPM
+  getter forward  : PPM
+  getter backward : PPM
 
   def initialize(name)
-    @right    = PPM.read("#{name}/posx.ppm")
-    @left     = PPM.read("#{name}/negx.ppm")
-    @up       = PPM.read("#{name}/posy.ppm")
-    @down     = PPM.read("#{name}/negy.ppm")
-    @forward  = PPM.read("#{name}/posz.ppm")
-    @backward = PPM.read("#{name}/negz.ppm")
+    @right    = PPM.load("#{name}/posx.ppm")
+    @left     = PPM.load("#{name}/negx.ppm")
+    @up       = PPM.load("#{name}/posy.ppm")
+    @down     = PPM.load("#{name}/negy.ppm")
+    @forward  = PPM.load("#{name}/posz.ppm")
+    @backward = PPM.load("#{name}/negz.ppm")
   end
 
   def read(ray)
@@ -54,9 +54,9 @@ class CubeMap
   end
 
   def read_texture(texture, u, v)
-    i = (u * texture.size).to_i
-    j = (v * texture.first.size).to_i
+    i = (u * texture.width).to_i
+    j = (v * texture.height).to_i
 
-    texture[j][i]
+    texture.get(i, j)
   end
 end

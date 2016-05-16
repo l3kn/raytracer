@@ -21,11 +21,10 @@ class Raytracer
   end
 
   def render(filename)
-    ppm = PPM.new(@width, @height, filename)
-
+    ppm = PPM.new(@width, @height)
     samples_sqrt = Math.sqrt(samples).ceil
 
-    (0...@height).reverse_each do |y|
+    (0...@height).each do |y|
       (0...@width).each do |x|
         col = Vec3.new(0.0)
 
@@ -44,14 +43,13 @@ class Raytracer
         end
 
         col /= (samples_sqrt * samples_sqrt)
-
-        ppm.add(col)
+        ppm.set(x, y, col)
       end
 
-      puts "Traced line #{@height - y} / #{@height}"
+      puts "Traced line #{y} / #{@height}"
     end
 
-    ppm.close
+    ppm.save(filename)
   end
 
   RECURSION_LIMIT = 10

@@ -1,4 +1,4 @@
-require "../simple_raytracer"
+require "../raytracers/simple_raytracer"
 require "./minecraft/textures"
 
 textures = MinecraftTextures.load 

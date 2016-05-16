@@ -1,4 +1,4 @@
-require "../simple_raytracer"
+require "../raytracers/simple_raytracer"
 
 ct1 = ConstantTexture.new(Vec3.new(0.8))
 ct2 = ConstantTexture.new(Vec3.new(0.1, 0.2, 0.5))
