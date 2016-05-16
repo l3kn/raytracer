@@ -1,28 +1,49 @@
 require "./vec3"
 
 class PPM
-  def initialize(width, height, filename)
-    @file = File.open(filename, "w")
+  getter width : Int32
+  getter height : Int32
+  getter buffer : Array(Array(Vec3))
+
+  def initialize(@width, @height, @buffer = [] of Array(Vec3))
+    @height.times do |i|
+      row = [] of Vec3
+      @width.times do |j|
+        row << Vec3.new
+      end
+      @buffer << row
+    end
+  end
+
+  def save(filename)
+    file = File.open(filename, "w")
 
     # Write ppm header
-    @file.puts "P3"
-    @file.puts "#{width} #{height}"
-    @file.puts "255"
+    file.puts "P3"
+    file.puts "#{@width} #{@height}"
+    file.puts "255"
+
+    @buffer.reverse_each do |row|
+      row.each do |color|
+        color *= 255
+        # Make sure color values are valid (0..255)
+        rgb = color.xyz.map { |v| min(max(v.to_i, 0), 255) }
+        file.puts rgb.join(" ")
+      end
+    end
+
+    file.close
   end
 
-  def close
-    @file.close
+  def set(x, y, color) 
+    @buffer[y][x] = color
   end
 
-  def add(color) 
-    color *= 255
-
-    # Make sure color values are valid (0..255)
-    rgb = color.xyz.map { |v| min(max(v.to_i, 0), 255) }
-    @file.puts rgb.join(" ")
+  def get(x, y)
+    @buffer[y][x]
   end
 
-  def self.read(filename)
+  def self.load(filename)
     lines = File.read(filename).lines.map(&.chomp)
 
     type = lines[0]
@@ -39,6 +60,6 @@ class PPM
     raw = raw_body.each_slice(3).map { |rgb| Vec3.new(rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0) }
 
     # "Restore" the original width
-    raw.each_slice(dimensions[0]).to_a
+    PPM.new(dimensions[0], dimensions[1], raw.each_slice(dimensions[0]).to_a)
   end
 end
