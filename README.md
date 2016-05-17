@@ -108,6 +108,12 @@ In order to run this example:
 
 4. Copy all six ppm files (`negx.ppm`, `negy.ppm`, `negz.ppm`, `posx.ppm`, `posy.ppm`, `posz.ppm`) to `cube_maps/Yokohama`
 
+### `scenes/fractal1.cr`
+
+![](images/fractal1.png)
+
+_400x400px, 5 samples / pixel, no lights, debug mode (color = normal), time: 160s_
+
 ## Models
 
 * `teapot.obj` (Utah teapot, used by `scenes/teapot1.cr`
