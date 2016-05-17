@@ -1,10 +1,54 @@
 # raytracer-crystal
 
-## Examples
+## Hitables
+
+### Primitives
+
+* `Sphere`
+* `Triangle`
+* `XYRect`, `XZRect`, `YZRect` (axis aligned rectangles)
+
+### Compound
+
+* `Cuboid` (constructs a `HitableList` with a Rect for each side)
+
+### Collections of other `Hitable`s
+
+* `HitableList` (a simple list, optimal for scenes with few objects)
+* `BVHNode` (bounding volume hierarchy -> tree structure, might be faster for scenes with >5k objects)
+
+## Materials
+
+* `Lambertian` (diffuse)
+* `Metal` (reflective)
+* `Dielectric` (transmissive, e.g. glass or water)
+* `DiffuseLight` ([WIP] diffuse emissive)
+
+## Raytracers [WIP]
+
+* `Raytracer` (supports emissive materials -> pretty slow, the background is black)
+* `SimpleRaytracer` (ignores emissive materials, the background is "sky" colored)
+* `CubeMapRaytracer` (ignores emissive materials, the background color gets calculated by a cube map)
+
+## Textures [WIP]
+
+* `ConstantTexture`
+* `CheckerTexture` (creates a checkerboard pattern from two other textures)
+* `NoiseTexture` (perlin noise as a texture)
+
+## Misc
+
+* `Vec3` (3D Vector, used for points, vectors and colors)
+* `Ray`
+* `Camera`
+* `PPM` (read .ppm file to 2d array of `Vec3`s / write array to .ppm file)
+* `CubeMap`
+* `Perlin` (used to generate 3d perlin noise)
+* `AABB` (axis aligned bounding boxes, used by `BVHNode`s)
+
+## Scenes / Images
 
 ### Old
-
-![](images/texture1.png)
 
 ![](images/perlin1.png)
 
@@ -64,3 +108,6 @@ In order to run this example:
 
 4. Copy all six ppm files (`negx.ppm`, `negy.ppm`, `negz.ppm`, `posx.ppm`, `posy.ppm`, `posz.ppm`) to `cube_maps/Yokohama`
 
+## Models
+
+* `teapot.obj` (Utah teapot, used by `scenes/teapot1.cr`
