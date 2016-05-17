@@ -52,3 +52,15 @@ The cube map in this example is
 [Emil "Humus" Persson](http://www.humus.name/index.php?page=Textures),
 licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/)
 
+In order to run this example:
+
+1. Download the [set of cubemaps](http://www.humus.name/Textures/Yokohama3.zip)
+
+2. Unzip the folder
+
+3. Convert each .jpg to .ppm (uncompressed)
+    e.g. using `convert negx.jpg -compress none negx.ppm` etc.
+    (`convert` is part of the imagemagick)
+
+4. Copy all six ppm files (`negx.ppm`, `negy.ppm`, `negz.ppm`, `posx.ppm`, `posy.ppm`, `posz.ppm`) to `cube_maps/Yokohama`
+
