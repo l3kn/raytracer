@@ -114,6 +114,13 @@ In order to run this example:
 
 _400x400px, 5 samples / pixel, no lights, debug mode (color = normal), time: 160s_
 
+## Resources
+
+* [Raytracing: the Next Week](http://in1weekend.blogspot.de/2016/01/ray-tracing-second-weekend.html)
+* [Raytracing in One Weekend](http://in1weekend.blogspot.de/2016/01/ray-tracing-in-one-weekend.html)
+* [Modeling with Distance Functions](http://iquilezles.org/www/articles/distfunctions/distfunctions.htm)
+* [Distance Estimated 3D Fractals (I-V)](http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/)
+
 ## Models
 
 * `teapot.obj` (Utah teapot, used by `scenes/teapot1.cr`)
