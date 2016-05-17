@@ -46,6 +46,35 @@
 * `Perlin` (used to generate 3d perlin noise)
 * `AABB` (axis aligned bounding boxes, used by `BVHNode`s)
 
+## Distance Estimation [WIP]
+
+A way to "trace" objects that have no analytic hit/distance function
+(e.g. fractals).
+
+* `DE::DistanceEstimator` (Wrapper to make a `Hitable` from `DE::DistanceEstimatable` using ray marching to find intersections)
+
+### Primitives
+
+* `DE::Sphere(radius)`
+* `DE::Box(dimensions : Vec3)`
+* `DE::Torus(radius, width)`
+* `DE::Prism(height, length)`
+* `DE::Cylinder(radius, length)`
+
+### Fractals
+
+* `DE::Mandelbulb(iterations, power)`
+
+### Distance Operations
+
+* `DE::Union(de1, de2)`
+* `DE::Intersection(de1, de2)`
+* `DE::Difference(de1, de2)`
+
+### Domain Operations
+
+* `DE::Repeat(de, modules : Vec3)` (repeat every `modules.x` "units" on the x-axis, etc.) 
+
 ## Scenes / Images
 
 ### Old

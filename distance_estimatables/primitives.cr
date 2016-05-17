@@ -67,7 +67,6 @@ module DE
       max_dy = max(dy, 0.0)
 
       min(max(dx, dy), 0.0) + Math.sqrt(max_dx * max_dx + max_dy * max_dy)
-
     end
   end
 end
