@@ -116,4 +116,4 @@ _400x400px, 5 samples / pixel, no lights, debug mode (color = normal), time: 160
 
 ## Models
 
-* `teapot.obj` (Utah teapot, used by `scenes/teapot1.cr`
+* `teapot.obj` (Utah teapot, used by `scenes/teapot1.cr`)
