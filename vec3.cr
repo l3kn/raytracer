@@ -1,3 +1,5 @@
+require "./helper"
+
 struct Vec3
   getter x, y, z
 
@@ -32,6 +34,14 @@ struct Vec3
 
   def -
     Vec3.new(-@x, -@y, -@z)
+  end
+
+  def abs
+    Vec3.new(@x.abs, @y.abs, @z.abs)
+  end
+
+  def max(n)
+    Vec3.new(max(n, @x), max(n, @y), max(n, @z))
   end
 
   def dot(other)

@@ -5,8 +5,8 @@ require "../distance_estimator"
 ct1 = ConstantTexture.new(Vec3.new(0.9))
 mat = Lambertian.new(ct1)
 
-de = FractalDE.new(iterations: 10)
-world = DistanceEstimator.new(mat, de)
+de = DE::Mandelbulb.new(iterations: 10)
+world = DE::DistanceEstimator.new(mat, de)
 
 width, height = {400, 400}
 
