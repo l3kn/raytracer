@@ -77,27 +77,11 @@ A way to "trace" objects that have no analytic hit/distance function
 
 ## Scenes / Images
 
-### Old
-
-![](images/perlin1.png)
-
-### `scenes/light1.cr`
-
-![](images/light1.png)
-
-_400x200px, 1000 samples / pixel, time: 320s_
-
 ### `scenes/light2.cr`
 
 ![](images/light2.png)
 
 _800x400px, 2000 samples / pixel, time: 600s_
-
-### `scenes/cornell_box.cr`
-
-![](images/cornell.png)
-
-_400x400px, 4000 samples / pixel, time: 770s_
 
 ### `scenes/teapot1.cr`
 
@@ -111,6 +95,12 @@ _800x400px, 50 samples / pixel, no lights, 2464 triangles, time: 41min_
 
 _800x400px, 100 samples / pixel, no lights, time: 410s_
 
+### `scenes/fractal1.cr`
+
+![](images/fractal1.png)
+
+_400x400px, 5 samples / pixel, no lights, debug mode (color = normal), time: 160s_
+
 ### `scenes/cube_map1.cr`
 
 ![](images/cube_map1.png)
@@ -118,7 +108,6 @@ _800x400px, 100 samples / pixel, no lights, time: 410s_
 [Animation on imgur](http://imgur.com/qMTPt9f)
 
 _360 frames a 400x400px, 20 samples / pixel, no lights, time: 725s_  
-
 
 The cube map in this example is
 "[Yokohama](http://www.humus.name/Textures/Yokohama3.zip)" by
@@ -137,12 +126,6 @@ In order to run this example:
 
 4. Copy all six ppm files (`negx.ppm`, `negy.ppm`, `negz.ppm`, `posx.ppm`, `posy.ppm`, `posz.ppm`) to `cube_maps/Yokohama`
 
-### `scenes/fractal1.cr`
-
-![](images/fractal1.png)
-
-_400x400px, 5 samples / pixel, no lights, debug mode (color = normal), time: 160s_
-
 ## Resources
 
 * [Raytracing: the Next Week](http://in1weekend.blogspot.de/2016/01/ray-tracing-second-weekend.html)
@@ -153,3 +136,4 @@ _400x400px, 5 samples / pixel, no lights, debug mode (color = normal), time: 160
 ## Models
 
 * `teapot.obj` (Utah teapot, used by `scenes/teapot1.cr`)
+
