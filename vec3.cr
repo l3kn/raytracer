@@ -32,6 +32,10 @@ struct Vec3
     end
   {% end %}
 
+  def **(factor)
+    Vec3.new(@x ** factor, @y ** factor, @z ** factor)
+  end
+
   def -
     Vec3.new(-@x, -@y, -@z)
   end
@@ -40,8 +44,16 @@ struct Vec3
     Vec3.new(@x.abs, @y.abs, @z.abs)
   end
 
+  def mod(n)
+    Vec3.new(@x % n, @y % n, @z % n)
+  end
+
   def max(n)
     Vec3.new(max(n, @x), max(n, @y), max(n, @z))
+  end
+
+  def min(n)
+    Vec3.new(min(n, @x), min(n, @y), min(n, @z))
   end
 
   def dot(other)
