@@ -5,9 +5,9 @@ class Lambertian < Material
   end
 
   def scatter(ray, hit)
-    target = hit.point + hit.normal + random_in_unit_sphere
+    target = hit.normal + random_in_unit_sphere
 
-    ray_new = Ray.new(hit.point, target - hit.point)
+    ray_new = Ray.new(hit.point, target)
     Scattered.new(ray_new, @texture.value(hit.point, hit.u, hit.v))
   end
 end
