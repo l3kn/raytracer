@@ -4,8 +4,9 @@ class PPM
   getter width : Int32
   getter height : Int32
   getter buffer : Array(Array(Vec3))
+  getter gamma_correction : Float64
 
-  def initialize(@width, @height, @buffer = [] of Array(Vec3))
+  def initialize(@width, @height, @buffer = [] of Array(Vec3), @gamma_correction = 1.0)
     @height.times do |i|
       row = [] of Vec3
       @width.times do |j|
@@ -23,11 +24,16 @@ class PPM
     file.puts "#{@width} #{@height}"
     file.puts "255"
 
+    max = @buffer.map { |line| line.map { |pixel| pixel.xyz.max }.max }.max
+
     @buffer.reverse_each do |row|
       row.each do |color|
+        color /= max # Make sure all values are < 1.0
+        color **= @gamma_correction
         color *= 255
+
         # Make sure color values are valid (0..255)
-        rgb = color.xyz.map { |v| min(max(v.to_i, 0), 255) }
+        rgb = color.xyz.map { |v| max(v.to_i, 0) }
         file.puts rgb.join(" ")
       end
     end
