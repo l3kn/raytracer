@@ -21,7 +21,7 @@ module DE
 
   class Subtraction < DistanceOperation
     def distance_estimate(pos)
-      max(-@a.distance_estimate(pos), @b.distance_estimate(pos))
+      max(@a.distance_estimate(pos), -@b.distance_estimate(pos))
     end
   end
 

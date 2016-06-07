@@ -69,4 +69,16 @@ module DE
       min(max(dx, dy), 0.0) + Math.sqrt(max_dx * max_dx + max_dy * max_dy)
     end
   end
+
+  class Plane < DistanceEstimatable
+    property normal : Vec3
+    property w : Float64
+
+    def initialize(@normal, @w)
+    end
+
+    def distance_estimate(pos)
+      pos.dot(@normal) + @w
+    end
+  end
 end
