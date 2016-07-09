@@ -1,20 +1,21 @@
-require "./ppm"
+require "stumpy_png"
+require "./vec3"
 
 class CubeMap
-  getter right    : PPM
-  getter left     : PPM
-  getter up       : PPM
-  getter down     : PPM
-  getter forward  : PPM
-  getter backward : PPM
+  getter right    : StumpyPNG::Canvas
+  getter left     : StumpyPNG::Canvas
+  getter up       : StumpyPNG::Canvas
+  getter down     : StumpyPNG::Canvas
+  getter forward  : StumpyPNG::Canvas
+  getter backward : StumpyPNG::Canvas
 
   def initialize(name)
-    @right    = PPM.load("#{name}/posx.ppm")
-    @left     = PPM.load("#{name}/negx.ppm")
-    @up       = PPM.load("#{name}/posy.ppm")
-    @down     = PPM.load("#{name}/negy.ppm")
-    @forward  = PPM.load("#{name}/posz.ppm")
-    @backward = PPM.load("#{name}/negz.ppm")
+    @right    = StumpyPNG::PNG.read("#{name}/posx.png").to_canvas
+    @left     = StumpyPNG::PNG.read("#{name}/negx.png").to_canvas
+    @up       = StumpyPNG::PNG.read("#{name}/posy.png").to_canvas
+    @down     = StumpyPNG::PNG.read("#{name}/negy.png").to_canvas
+    @forward  = StumpyPNG::PNG.read("#{name}/posz.png").to_canvas
+    @backward = StumpyPNG::PNG.read("#{name}/negz.png").to_canvas
   end
 
   def read(ray)
@@ -57,6 +58,13 @@ class CubeMap
     i = (u * texture.width).to_i
     j = (v * texture.height).to_i
 
-    texture.get(i, j)
+    max = UInt16::MAX
+    pixel = texture.get_pixel(i, j)
+
+    Vec3.new(
+      pixel.r.to_f / max,
+      pixel.g.to_f / max,
+      pixel.b.to_f / max,
+    )
   end
 end

@@ -1,0 +1,15 @@
+name: raytracer
+version: 0.1.0
+
+authors:
+  - Leon Rische <hello@l3kn.de>
+
+description: |
+  CPU Raytracer 
+
+dependencies:
+  stumpy_png:
+    github: l3kn/stumpy_png
+    version: "-> 0.1.0"
+
+license: MIT
