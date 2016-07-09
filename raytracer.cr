@@ -1,3 +1,4 @@
+require "stumpy_png"
 require "./vec3"
 require "./ray"
 require "./hitable"
@@ -8,7 +9,6 @@ require "./material"
 require "./material/*"
 require "./texture"
 require "./aabb"
-require "./ppm"
 
 class Raytracer
   property width : Int32
@@ -21,7 +21,7 @@ class Raytracer
   end
 
   def render(filename)
-    ppm = PPM.new(@width, @height)
+    canvas = StumpyPNG::Canvas.new(@width, @height)
     samples_sqrt = Math.sqrt(samples).ceil
 
     (0...@height).each do |y|
@@ -43,13 +43,21 @@ class Raytracer
         end
 
         col /= (samples_sqrt * samples_sqrt)
-        ppm.set(x, y, col)
+
+        rgba = StumpyPNG::RGBA.new(
+          (UInt16::MAX * col.x).to_u16,
+          (UInt16::MAX * col.y).to_u16,
+          (UInt16::MAX * col.z).to_u16,
+          UInt16::MAX
+        )
+
+        canvas.set_pixel(x, (@height - 1) - y, rgba)
       end
 
       puts "Traced line #{y} / #{@height}"
     end
 
-    ppm.save(filename)
+    StumpyPNG.write(canvas, filename)
   end
 
   RECURSION_LIMIT = 10

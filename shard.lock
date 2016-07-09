@@ -2,5 +2,5 @@ version: 1.0
 shards:
   stumpy_png:
     github: l3kn/stumpy_png
-    commit: 9fe2229605d32726efbbb22b500698ffda1f6fc0
+    commit: 6579bce52b017687e5a9fe9d4789ae1f776d8a8d
 

@@ -10,12 +10,12 @@ class CubeMap
   getter backward : StumpyPNG::Canvas
 
   def initialize(name)
-    @right    = StumpyPNG::PNG.read("#{name}/posx.png").to_canvas
-    @left     = StumpyPNG::PNG.read("#{name}/negx.png").to_canvas
-    @up       = StumpyPNG::PNG.read("#{name}/posy.png").to_canvas
-    @down     = StumpyPNG::PNG.read("#{name}/negy.png").to_canvas
-    @forward  = StumpyPNG::PNG.read("#{name}/posz.png").to_canvas
-    @backward = StumpyPNG::PNG.read("#{name}/negz.png").to_canvas
+    @right    = StumpyPNG.read("#{name}/posx.png")
+    @left     = StumpyPNG.read("#{name}/negx.png")
+    @up       = StumpyPNG.read("#{name}/posy.png")
+    @down     = StumpyPNG.read("#{name}/negy.png")
+    @forward  = StumpyPNG.read("#{name}/posz.png")
+    @backward = StumpyPNG.read("#{name}/negz.png")
   end
 
   def read(ray)

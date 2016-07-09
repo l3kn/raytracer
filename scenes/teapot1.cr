@@ -68,4 +68,4 @@ raytracer = SimpleRaytracer.new(width, height,
                                 camera: camera,
                                 samples: 50)
 
-raytracer.render("teapot1.ppm")
+raytracer.render("teapot1.png")

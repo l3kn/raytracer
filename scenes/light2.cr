@@ -51,4 +51,4 @@ raytracer = Raytracer.new(width, height,
                           camera: camera,
                           samples: 2000)
 
-raytracer.render("light2.ppm")
+raytracer.render("light2.png")

@@ -2,7 +2,7 @@ require "../raytracers/cube_map_raytracer"
 
 # Instructions
 # 
-# The .ppm cubemaps for this example
+# The .png cubemaps for this example
 # are to big to upload them to github (~200MB)
 # 
 # To run this example:
@@ -12,15 +12,15 @@ require "../raytracers/cube_map_raytracer"
 #
 # 2. Unzip it into into some folder
 #
-# 3. Convert each .jpg to .ppm (uncompressed)
-#    e.g. using `convert negx.jpg -compress none negx.ppm` etc.
+# 3. Convert each .jpg to .png (uncompressed)
+#    e.g. using `convert negx.jpg -compress none negx.png` etc.
 #
 # 4. Change the value for `cube_map_filename`
 #    to match the path of the unzipped folder
 #
 # 5. (optional)
 #    Create an animated gif
-#    e.g. using `convert cube*.ppm cube.gif`
+#    e.g. using `convert cube*.png cube.gif`
 
 world = [] of Hitable
 
@@ -65,5 +65,5 @@ raytracer = CubeMapRaytracer.new(width, height,
 
   raytracer.camera = camera
 
-  raytracer.render("cube#{p.to_s.rjust(3, '0')}.ppm")
+  raytracer.render("cube#{p.to_s.rjust(3, '0')}.png")
 end

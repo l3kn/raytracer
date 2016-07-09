@@ -98,4 +98,4 @@ raytracer = SimpleRaytracer.new(width, height,
                                 camera: camera,
                                 samples: 50)
 
-raytracer.render("minecraft.ppm")
+raytracer.render("minecraft.png")

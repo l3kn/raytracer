@@ -62,4 +62,4 @@ raytracer = Raytracer.new(width, height,
                           camera: camera,
                           samples: 1000)
 
-raytracer.render("cornell.ppm")
+raytracer.render("cornell.png")

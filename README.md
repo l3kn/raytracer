@@ -41,7 +41,6 @@
 * `Vec3` (3D Vector, used for points, vectors and colors)
 * `Ray`
 * `Camera`
-* `PPM` (read .ppm file to 2d array of `Vec3`s / write array to .ppm file)
 * `CubeMap`
 * `Perlin` (used to generate 3d perlin noise)
 * `AABB` (axis aligned bounding boxes, used by `BVHNode`s)

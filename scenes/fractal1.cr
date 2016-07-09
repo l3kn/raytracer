@@ -29,4 +29,4 @@ raytracer = SimpleRaytracer.new(width, height,
                                 camera: camera,
                                 samples: 5, debug: true)
 
-raytracer.render("fractal.ppm")
+raytracer.render("fractal.png")

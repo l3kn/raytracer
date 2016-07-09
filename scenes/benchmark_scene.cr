@@ -32,4 +32,4 @@ raytracer = SimpleRaytracer.new(width, height,
                                 camera: camera,
                                 samples: 50)
 
-raytracer.render("benchmark.ppm")
+raytracer.render("benchmark.png")

@@ -16,15 +16,15 @@ class PixelTexture < Texture
   end
 
   def save(filename)
-    ppm = PPM.new(width, height, filename)
+    png = PPM.new(width, height, filename)
 
     @pixels.each do |line|
       line.each do |pixel|
-        ppm.add(pixel)
+        png.add(pixel)
       end
     end
 
-    ppm.close
+    png.close
   end
 end
 
@@ -33,7 +33,7 @@ class MinecraftTextures
     textures = [] of PixelTexture
 
     # Format: 16x16 grid of 24px square textures 
-    raw_lines = File.read("minecraft/minecraft.ppm").lines
+    raw_lines = File.read("minecraft/minecraft.png").lines
 
     # Parse body
     # Result (simplified, 2x2 textures "a" to "f")
