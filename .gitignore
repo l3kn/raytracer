@@ -1,3 +1,4 @@
-.crystal/
-dump/
-cube_maps/
+/.crystal
+/.shards
+/libs
+/tmp
