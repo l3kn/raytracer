@@ -54,7 +54,7 @@ class Raytracer
         canvas.set_pixel(x, (@height - 1) - y, rgba)
       end
 
-      puts "Traced line #{y} / #{@height}"
+      print "\rTraced line #{y} / #{@height}"
     end
 
     StumpyPNG.write(canvas, filename)
