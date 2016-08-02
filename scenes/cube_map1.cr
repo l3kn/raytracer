@@ -1,4 +1,4 @@
-require "../raytracers/cube_map_raytracer"
+require "../src/raytracers/cube_map_src/raytracer"
 
 # Instructions
 # 
@@ -38,13 +38,13 @@ up = Vec3.new(0.0, 1.0, 0.0)
 fov = 60
 
 aspect_ratio = width.to_f / height.to_f
-dist_to_focus = (look_from - look_at).length
+src/dist_to_focus = (look_from - look_at).length
 aperture = 0.05
 
-camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
+camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, src/dist_to_focus)
 
 # Raytracer
-raytracer = CubeMapRaytracer.new(width, height,
+src/raytracer = CubeMapRaytracer.new(width, height,
                                  world: HitableList.new(world),
                                  camera: camera,
                                  samples: 20,
@@ -61,9 +61,9 @@ raytracer = CubeMapRaytracer.new(width, height,
   c = Math.cos(angle)
 
   look_from = Vec3.new(x * c - z * s, 0.5, x * s + z * c)
-  camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
+  camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, src/dist_to_focus)
 
-  raytracer.camera = camera
+  src/raytracer.camera = camera
 
-  raytracer.render("cube#{p.to_s.rjust(3, '0')}.png")
+  src/raytracer.render("cube#{p.to_s.rjust(3, '0')}.png")
 end

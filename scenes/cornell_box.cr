@@ -1,4 +1,4 @@
-require "../raytracer"
+require "../src/raytracer"
 
 tex_white = ConstantTexture.new(Vec3.new(0.73))
 tex_red   = ConstantTexture.new(Vec3.new(0.65, 0.05, 0.05))
@@ -50,16 +50,16 @@ look_at = Vec3.new(278.0, 278.0, 0.0)
 up = Vec3.new(0.0, 1.0, 0.0)
 
 aspect_ratio = width.to_f / height.to_f
-dist_to_focus = 10.0
+src/dist_to_focus = 10.0
 aperture = 0.05
 fov = 40
 
-camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
+camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, src/dist_to_focus)
 
 # Raytracer
-raytracer = Raytracer.new(width, height,
+src/raytracer = Raytracer.new(width, height,
                           world: world,
                           camera: camera,
                           samples: 1000)
 
-raytracer.render("cornell.png")
+src/raytracer.render("cornell.png")

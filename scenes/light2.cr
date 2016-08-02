@@ -1,4 +1,4 @@
-require "../raytracer"
+require "../src/raytracer"
 
 world = [] of Hitable
 
@@ -40,15 +40,15 @@ up = Vec3.new(0.0, 1.0, 0.0)
 fov = 35
 
 aspect_ratio = width.to_f / height.to_f
-dist_to_focus = (look_from - look_at).length
+src/dist_to_focus = (look_from - look_at).length
 aperture = 0.05
 
-camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
+camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, src/dist_to_focus)
 
 # Raytracer
-raytracer = Raytracer.new(width, height,
+src/raytracer = Raytracer.new(width, height,
                           world: HitableList.new(world),
                           camera: camera,
                           samples: 2000)
 
-raytracer.render("light2.png")
+src/raytracer.render("light2.png")
