@@ -1,4 +1,5 @@
 require "./distance_estimatables/*"
+require "./hitable"
 
 module DE
   class DistanceEstimator < Hitable

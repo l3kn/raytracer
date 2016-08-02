@@ -1,4 +1,4 @@
-require "../src/raytracers/simple_src/raytracer"
+require "../src/raytracers/simple_raytracer"
 require "./minecraft/textures"
 
 textures = MinecraftTextures.load 
@@ -87,15 +87,15 @@ up = Vec3.new(0.0, 1.0, 0.0)
 fov = 30
 
 aspect_ratio = width.to_f / height.to_f
-src/dist_to_focus = (look_from - look_at).length
+dist_to_focus = (look_from - look_at).length
 aperture = 0.05
 
-camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, src/dist_to_focus)
+camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
 
 # Raytracer
-src/raytracer = SimpleRaytracer.new(width, height,
+raytracer = SimpleRaytracer.new(width, height,
                                 world: HitableList.new(world),
                                 camera: camera,
                                 samples: 50)
 
-src/raytracer.render("minecraft.png")
+raytracer.render("minecraft.png")

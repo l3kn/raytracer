@@ -95,4 +95,8 @@ struct Vec3
       nil
     end
   end
+
+  def clone
+    Vec3.new(@x, @y, @z)
+  end
 end
