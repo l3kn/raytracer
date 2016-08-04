@@ -120,7 +120,7 @@ In order to run this example:
 2. Unzip the folder
 
 3. Convert each .jpg to .png
-    e.g. using `convert negx.jpg -compress none negx.png` etc.
+    e.g. using `convert negx.jpg negx.png` etc.
     (`convert` is part of the imagemagick)
 
 4. Copy all six png files (`negx.png`, `negy.png`, `negz.png`, `posx.png`, `posy.png`, `posz.png`) to `cube_maps/Yokohama`
