@@ -9,6 +9,8 @@ require "./material"
 require "./materials/*"
 require "./texture"
 require "./aabb"
+require "./background"
+require "./backgrounds/*"
 
 class Raytracer
   property width : Int32
@@ -16,8 +18,14 @@ class Raytracer
   property world : Hitable
   property camera : Camera
   property samples : Int32
+  property background : Background
 
-  def initialize(@width, @height, @world, @camera, @samples)
+  def initialize(@width, @height, @world, @camera, @samples, background = nil)
+    if background.nil?
+      @background = ConstantBackground.new(Vec3.new(1.0))
+    else
+      @background = background
+    end
   end
 
   def render(filename)
@@ -66,14 +74,13 @@ class Raytracer
     hit = world.hit(ray, 0.0001, 9999.9)
     if hit
       scatter = hit.material.scatter(ray, hit)
-      emitted = hit.material.emitted(hit)
       if scatter && recursion_level < RECURSION_LIMIT
-        emitted + scatter.albedo * color(scatter.ray, world, recursion_level + 1)
+        scatter.albedo * color(scatter.ray, world, recursion_level + 1)
       else
-        emitted
+        Vec3.new(0.0)
       end
     else
-      Vec3.new(0.0)
+      @background.get(ray)
     end
   end
 end

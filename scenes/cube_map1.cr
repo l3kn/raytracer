@@ -1,4 +1,5 @@
-require "../src/raytracers/cube_map_raytracer"
+require "../src/raytracer"
+require "../src/backgrounds/*"
 
 # Instructions
 # 
@@ -44,11 +45,11 @@ aperture = 0.05
 camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
 
 # Raytracer
-raytracer = CubeMapRaytracer.new(width, height,
-                                 world: HitableList.new(world),
-                                 camera: camera,
-                                 samples: 20,
-                                 cube_map_filename: "cube_maps/Yokohama")
+raytracer = Raytracer.new(width, height,
+                          world: HitableList.new(world),
+                          camera: camera,
+                          samples: 20,
+                          background: CubeMap.new("cube_maps/Yokohama"))
 
 (0...360).each do |p|
   # Rotate the camera around the y-axis

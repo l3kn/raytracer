@@ -1,5 +1,5 @@
-require "../src/raytracers/simple_raytracer"
-require "../src/raytracers/cube_map_raytracer"
+require "../src/raytracer"
+require "../src/backgrounds/*"
 require "../src/distance_estimator"
 
 ct1 = ConstantTexture.new(Vec3.new(0.9))
@@ -24,9 +24,10 @@ aperture = 0.05
 camera = OldCamera.new(look_from, look_at, up, fov, aspect_ratio)
 
 # Raytracer
-raytracer = SimpleRaytracer.new(width, height,
-                                world: world,
-                                camera: camera,
-                                samples: 5, debug: true)
+raytracer = Raytracer.new(width, height,
+                          world: world,
+                          camera: camera,
+                          samples: 5,
+                          background: ConstantBackground.new(Vec3.new(1.0)))
 
 raytracer.render("fractal.png")
