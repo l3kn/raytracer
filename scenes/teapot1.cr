@@ -1,4 +1,5 @@
-require "../src/raytracers/simple_raytracer"
+require "../src/raytracer"
+require "../src/backgrounds/*"
 
 ct1 = ConstantTexture.new(Vec3.new(0.8))
 ct2 = ConstantTexture.new(Vec3.new(0.1, 0.2, 0.5))
@@ -62,10 +63,10 @@ aperture = 0.001
 camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
 
 # Raytracer
-raytracer = SimpleRaytracer.new(width, height,
-                                # world: HitableList.new(world),
-                                world: HitableList.new(world),
-                                camera: camera,
-                                samples: 50)
+raytracer = Raytracer.new(width, height,
+                          world: HitableList.new(world),
+                          camera: camera,
+                          samples: 50,
+                          background: SkyBackground.new)
 
 raytracer.render("teapot1.png")
