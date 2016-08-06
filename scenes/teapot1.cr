@@ -1,13 +1,10 @@
 require "../src/raytracer"
 require "../src/backgrounds/*"
 
-ct1 = ConstantTexture.new(Vec3.new(0.8))
 ct2 = ConstantTexture.new(Vec3.new(0.1, 0.2, 0.5))
-ct3 = ConstantTexture.new(Vec3.new(0.8, 0.6, 0.2))
 mat = Lambertian.new(ct2)
 
 world = [] of Hitable
-
 
 obj = File.read("models/teapot.obj")
 
@@ -64,7 +61,7 @@ camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to
 
 # Raytracer
 raytracer = Raytracer.new(width, height,
-                          world: HitableList.new(world),
+                          world: BVHNode.new(world),
                           camera: camera,
                           samples: 50,
                           background: SkyBackground.new)

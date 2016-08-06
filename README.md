@@ -86,7 +86,7 @@ _800x400px, 2000 samples / pixel, time: 600s_
 
 ![](images/teapot1.png)
 
-_800x400px, 50 samples / pixel, no lights, 2464 triangles, time: 41min_
+_800x400px, 50 samples / pixel, no lights, 2464 triangles, time: 62s_
 
 ### `scenes/minecraft.cr`
 
