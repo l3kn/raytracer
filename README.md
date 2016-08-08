@@ -82,11 +82,16 @@ A way to "trace" objects that have no analytic hit/distance function
 
 _800x400px, 2000 samples / pixel, time: 600s_
 
-### `scenes/teapot1.cr`
+### `scenes/teapot.cr`
 
-![](images/teapot1.png)
+![](images/teapot_lambertian.png)
+![](images/teapot_metal.png)
+![](images/teapot_dielectric.png)
 
-_800x400px, 50 samples / pixel, no lights, 2464 triangles, time: 62s_
+Note: The glass teapot looks a little bit buggy,
+maybe there are some float errors
+
+_400x400px, 100 samples / pixel, no lights, 2464 triangles with interpolated normals, time: 120s, 100s, 240s_
 
 ### `scenes/minecraft.cr`
 

@@ -1,9 +1,10 @@
 require "../src/raytracer"
 require "../src/backgrounds/*"
 
-ct2 = ConstantTexture.new(Vec3.new(0.9))
+ct2 = ConstantTexture.new(Vec3.from_hex("#FFD700"))
 mat = Lambertian.new(ct2)
 # mat = Metal.new(ct2, 0.0)
+# mat = Dielectric.new(1.8)
 
 world = [] of Hitable
 
@@ -53,8 +54,8 @@ raytracer = Raytracer.new(width, height,
                           world: BVHNode.new(world),
                           camera: camera,
                           samples: 100,
-                          # background: CubeMap.new("cube_maps/Yokohama"))
-                          background: SkyBackground.new)
+                          background: CubeMap.new("cube_maps/Yokohama"))
+                          # background: SkyBackground.new)
                           # background: ConstantBackground.new(Vec3.new(1.0, 0.0, 0.0)))
 
 raytracer.render("teapot1.png")
