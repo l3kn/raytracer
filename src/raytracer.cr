@@ -19,8 +19,9 @@ class Raytracer
   property camera : Camera
   property samples : Int32
   property background : Background
+  property debug : Bool
 
-  def initialize(@width, @height, @world, @camera, @samples, background = nil)
+  def initialize(@width, @height, @world, @camera, @samples, background = nil, @debug = false)
     if background.nil?
       @background = ConstantBackground.new(Vec3.new(1.0))
     else
@@ -73,6 +74,8 @@ class Raytracer
   def color(ray, world, recursion_level = 0)
     hit = world.hit(ray, 0.0001, 9999.9)
     if hit
+      return Vec3.new(1.0) + hit.normal * 0.5 if @debug
+
       scatter = hit.material.scatter(ray, hit)
       if scatter && recursion_level < RECURSION_LIMIT
         scatter.albedo * color(scatter.ray, world, recursion_level + 1)
