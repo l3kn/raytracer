@@ -12,10 +12,9 @@ class BVHNode < Hitable
 
     if n == 1
       @left = @right = sorted[0]
-    elsif n <= 64
-      half = n / 2
-      @left = HitableList.new(sorted[0...half])
-      @right = HitableList.new(sorted[half..-1])
+    elsif n == 2
+      @left = sorted[0]
+      @right = sorted[1]
     else
       half = n / 2
       @left = BVHNode.new(sorted[0...half], (axis + 1) % 3)

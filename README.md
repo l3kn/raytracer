@@ -91,7 +91,7 @@ _800x400px, 2000 samples / pixel, time: 600s_
 Note: The glass teapot looks a little bit buggy,
 maybe there are some float errors
 
-_400x400px, 100 samples / pixel, no lights, 2464 triangles with interpolated normals, time: 120s, 100s, 240s_
+_400x400px, 100 samples / pixel, no lights, 2464 triangles with interpolated normals, time: 64s, 60s, 120s_
 
 ### `scenes/minecraft.cr`
 
