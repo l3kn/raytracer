@@ -36,4 +36,8 @@ class AABB
 
     AABB.new(new_min, new_max)
   end
+
+  def centroid
+    @min * 0.5 + @max * 0.5
+  end
 end
