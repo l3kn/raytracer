@@ -24,8 +24,10 @@ module DE
         theta = theta*@power
         phi = phi*@power
 
-        z = Vec3.new(Math.sin(theta) * Math.cos(phi),
-                     Math.sin(theta) * Math.sin(phi),
+        sin_theta = Math.sin(theta)
+
+        z = Vec3.new(sin_theta * Math.cos(phi),
+                     sin_theta * Math.sin(phi),
                      Math.cos(theta)) * zr
         z += pos
       end
