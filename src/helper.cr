@@ -1,7 +1,12 @@
 require "./vec3"
 
 def clamp(x, x_min, x_max)
-  max(min(x, x_min), x_max)
+  min(max(x, x_min), x_max)
+end
+
+def smoothstep(x)
+  x = clamp(x, 0.0, 1.0)
+  x * x * (3.0 - 2.0 * x)
 end
 
 def random_vec
