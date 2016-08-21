@@ -1,3 +1,5 @@
+require "json"
+
 class Sphere < Hitable
   property center, radius, material
 

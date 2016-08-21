@@ -1,7 +1,13 @@
 require "./helper"
+require "json"
 
 struct Vec3
   getter x, y, z
+  JSON.mapping(
+    x: Float64,
+    y: Float64,
+    z: Float64,
+  )
 
   def initialize
     @x, @y, @z = 0.0, 0.0, 0.0

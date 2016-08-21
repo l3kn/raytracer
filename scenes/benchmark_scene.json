@@ -1,0 +1,63 @@
+{
+  "width": 800,
+  "height": 400,
+  "samples": 10,
+  "camera": {
+    "look_from": { "x": -1.5, "y": 1.5, "z": 1.5 },
+    "look_at": { "x": 0.0, "y": 0.0, "z": -1.0 },
+    "up": { "x": 0.0, "y": 1.0, "z": 0.0 },
+    "vertical_fov": 30,
+    "aspect_ratio": 2.0,
+    "aperture": 0.05
+  },
+  "background": { "type": "sky" },
+  "objects": [
+    {
+      "type": "sphere",
+      "center": { "x": 0.0, "y": -100.5, "z": -1.0},
+      "radius": 100.0,
+      "material": {
+        "type": "metal",
+        "fuzz": 0.0,
+        "texture": {
+          "type": "constant",
+          "color": { "x": 0.8, "y": 0.8, "z": 0.8 }
+        }
+      }
+    },
+    {
+      "type": "sphere",
+      "center": { "x": 0.0, "y": 0.0, "z": -1.0},
+      "radius": 0.5,
+      "material": {
+        "type": "lambertian",
+        "texture": {
+          "type": "constant",
+          "color": { "x": 0.1, "y": 0.2, "z": 0.5 }
+        }
+      }
+    },
+    {
+      "type": "sphere",
+      "center": { "x": 1.0, "y": 0.0, "z": -1.0},
+      "radius": 0.5,
+      "material": {
+        "type": "metal",
+        "fuzz": 0.0,
+        "texture": {
+          "type": "constant",
+          "color": { "x": 0.8, "y": 0.6, "z": 0.2 }
+        }
+      }
+    },
+    {
+      "type": "sphere",
+      "center": { "x": -1.0, "y": 0.0, "z": -1.0},
+      "radius": 0.5,
+      "material": {
+        "type": "dielectric",
+        "reflection_index": 1.8
+      }
+    }
+  ]
+}

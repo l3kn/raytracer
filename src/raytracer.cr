@@ -29,31 +29,35 @@ class Raytracer
     end
   end
 
+  def render_pixel(x, y)
+    samples_sqrt = Math.sqrt(samples).ceil
+    col = Vec3.new(0.0)
+
+		(0...samples_sqrt).each do |i|
+			(0...samples_sqrt).each do |j|
+				off_x = (i + rand) / samples_sqrt
+				off_y = (j + rand) / samples_sqrt
+
+				u = (x + off_x).to_f / @width
+				v = (y + off_y).to_f / @height
+
+				ray = camera.get_ray(u, v)
+
+				col += color(ray, world)
+			end
+		end
+
+		col /= (samples_sqrt * samples_sqrt)
+	end
+
   def render(filename)
     canvas = StumpyPNG::Canvas.new(@width, @height)
-    samples_sqrt = Math.sqrt(samples).ceil
 
     (0...@height).each do |y|
       (0...@width).each do |x|
-        col = Vec3.new(0.0)
+        col = render_pixel(x, y)
 
-        (0...samples_sqrt).each do |i|
-          (0...samples_sqrt).each do |j|
-            off_x = (i + rand) / samples_sqrt
-            off_y = (j + rand) / samples_sqrt
-
-            u = (x + off_x).to_f / @width
-            v = (y + off_y).to_f / @height
-
-            ray = camera.get_ray(u, v)
-
-            col += color(ray, world)
-          end
-        end
-
-        col /= (samples_sqrt * samples_sqrt)
-
-        rgba = StumpyPNG::RGBA.new(
+				rgba = StumpyPNG::RGBA.new(
           (UInt16::MAX * col.x).to_u16,
           (UInt16::MAX * col.y).to_u16,
           (UInt16::MAX * col.z).to_u16,

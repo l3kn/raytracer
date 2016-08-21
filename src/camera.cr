@@ -1,3 +1,5 @@
+require "./vec3"
+
 class Camera
   getter u : Vec3
   getter v : Vec3
@@ -7,13 +9,23 @@ class Camera
   getter vertical : Vec3
   getter lens_radius : Float64
 
-  def initialize(look_from : Vec3,
-                 look_at : Vec3,
-                 up : Vec3,
-                 vertical_fov : Int32,
-                 aspect_ratio : Float64,
-                 aperture : Float64,
-                 focus_distance : Float64)
+  def initialize(
+    look_from : Vec3, look_at : Vec3, up : Vec3,
+    vertical_fov : Int32, aspect_ratio : Float64, aperture : Float64
+  )
+    initialize(
+      look_from, look_at, up,
+      vertical_fov, aspect_ratio, aperture,
+      (look_from - look_at).length
+    )
+  end
+
+
+  def initialize(
+    look_from : Vec3, look_at : Vec3, up : Vec3,
+    vertical_fov : Int32, aspect_ratio : Float64, aperture : Float64,
+    focus_distance : Float64
+  )
     theta = vertical_fov * Math::PI / 180
     half_height = Math.tan(theta / 2.0)
     half_width = aspect_ratio * half_height
@@ -37,6 +49,7 @@ class Camera
 
     Ray.new(@origin + offset, direction.normalize)
   end
+
 end
 
 class OldCamera < Camera
@@ -67,6 +80,27 @@ class OldCamera < Camera
   def get_ray(s, t)
     direction = @lower_left_corner + @horizontal*s + @vertical*t - @origin
     Ray.new(@origin, direction)
+  end
+end
+
+class CameraConverter
+  JSON.mapping(
+    look_from: Vec3,
+    look_at: Vec3,
+    up: Vec3,
+    vertical_fov: Int32,
+    aspect_ratio: Float64,
+    aperture: Float64,
+  )
+
+  def self.from_json(json)
+    json_camera = self.new(json)
+    Camera.new(look_from: json_camera.look_from,
+               look_at: json_camera.look_at,
+               up: json_camera.up,
+               vertical_fov: json_camera.vertical_fov,
+               aspect_ratio: json_camera.aspect_ratio,
+               aperture: json_camera.aperture)
   end
 end
 
