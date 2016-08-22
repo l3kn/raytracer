@@ -53,6 +53,21 @@ def random_on_hemisphere(normal)
   normal.dot(point) > 0 ? point : -point
 end
 
+def random_cosine_direction
+  r1 = pos_random
+  r2 = pos_random
+
+  z = Math.sqrt(1-r2)
+  phi = 2*Math::PI*r1
+
+  sqrt = Math.sqrt(r2)
+
+  x = Math.cos(phi) * 2 * sqrt
+  y = Math.sin(phi) * 2 * sqrt
+
+  Vec3.new(x, y, z)
+end
+
 def schlick(cosine, reflection_index)
   r0 = ((1 - reflection_index) / (1 + reflection_index)) ** 2
   r0 + (1 - r0)*((1 - cosine)**5)
