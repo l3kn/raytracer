@@ -12,7 +12,6 @@ require "./aabb"
 require "./background"
 require "./backgrounds/*"
 require "./pdf"
-require "./pdfs/*"
 
 class NormalRaytracer
   property width : Int32
