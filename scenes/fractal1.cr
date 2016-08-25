@@ -4,7 +4,7 @@ require "../src/distance_estimator"
 
 mat = Lambertian.new(Vec3.new(0.9))
 de = DE::Mandelbulb.new(iterations: 10)
-world = DE::DistanceEstimator.new(mat, de)
+hitables = DE::DistanceEstimator.new(mat, de)
 
 width, height = {200, 200}
 
@@ -19,7 +19,7 @@ camera = Camera.new(
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
-                                world: world,
+                                hitables: hitables,
                                 camera: camera,
                                 samples: 1,
                                 background: ConstantBackground.new(Vec3.new(1.0)))

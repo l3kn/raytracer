@@ -42,8 +42,8 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-                          world: HitableList.new([light1, light2, light3, sphere1, sphere2, sphere3, floor]),
-                          light_shape: HitableList.new([light1, light2, light3, sphere1, sphere2, sphere3]),
+                          hitables: HitableList.new([light1, light2, light3, sphere1, sphere2, sphere3, floor]),
+                          focus_hitables: HitableList.new([light1, light2, light3, sphere1, sphere2, sphere3]),
                           camera: camera,
                           samples: 20,
                           background: ConstantBackground.new(Vec3.new(0.0)))

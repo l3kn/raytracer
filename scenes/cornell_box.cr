@@ -56,8 +56,8 @@ sphere = Sphere.new(
   Dielectric.new(1.5)
 )
 
-# world = [left, right, bottom, top, back, light_, cube1, cube2]
-world = [left, right, bottom, top, back, light_, sphere, cube2]
+# hitables = [left, right, bottom, top, back, light_, cube1, cube2]
+hitables = [left, right, bottom, top, back, light_, sphere, cube2]
 
 width, height = {400, 400}
 
@@ -71,10 +71,10 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-                          world: HitableList.new(world),
+                          hitables: HitableList.new(hitables),
+                          focus_hitables: HitableList.new([light_, sphere]),
                           camera: camera,
-                          samples: 10,
-                          light_shape: HitableList.new([light_, sphere]),
+                          samples: 50,
                           background: ConstantBackground.new(Vec3.new(0.0)))
 
 raytracer.render("cornell.png")

@@ -3,7 +3,7 @@ require "../src/backgrounds/*"
 
 mat = Lambertian.new(Vec3.from_hex("#FFD700"))
 
-world = [] of Hitable
+hitables = [] of Hitable
 
 obj = File.read("models/teapot.obj")
 
@@ -23,13 +23,13 @@ obj.lines.each do |line|
   when "f"
     a, b, c = tokens[1, 3].map { |i| vertices[i.split("//")[0].to_i - 1] }
     na, nb, nc = tokens[1, 3].map { |i| normals[i.split("//")[1].to_i - 1] }
-    world << InterpolatedTriangle.new(a, b, c, na, nb, nc, mat)
+    hitables << InterpolatedTriangle.new(a, b, c, na, nb, nc, mat)
   end
 end
 
 puts "Parsed #{vertices.size} vertices"
 puts "Parsed #{vertices.size} normals"
-puts "Parsed #{world.size} faces"
+puts "Parsed #{hitables.size} faces"
 
 width, height = {400, 400}
 
@@ -43,7 +43,7 @@ camera = Camera.new(
 )
 
 raytracer = SimpleRaytracer.new(width, height,
-                                world: BVHNode.new(world),
+                                hitables: BVHNode.new(hitables),
                                 camera: camera,
                                 samples: 100,
                                 background: CubeMap.new("cube_maps/Yokohama"))

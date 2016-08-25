@@ -46,7 +46,7 @@ camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture)
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
-                                world: sphere,
+                                hitables: sphere,
                                 camera: camera,
                                 samples: 20,
                                 background: CubeMap.new("cube_maps/Yokohama"))

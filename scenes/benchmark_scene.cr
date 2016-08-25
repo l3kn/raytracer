@@ -1,27 +1,27 @@
 require "../src/raytracer"
 require "../src/backgrounds/*"
 
-world = [] of Hitable
+hitables = [] of Hitable
 
-world.push(Sphere.new(
+hitables.push(Sphere.new(
   Vec3.new(0.0, -100.5, -1.0),
   100.0,
   Metal.new(Vec3.new(0.8), 0.0)
 ))
 
-world.push(Sphere.new(
+hitables.push(Sphere.new(
   Vec3.new(0.0, 0.0, -1.0),
   0.5,
   Lambertian.new(Vec3.new(0.1, 0.2, 0.5))
 ))
 
-world.push(Sphere.new(
+hitables.push(Sphere.new(
   Vec3.new(1.0, 0.0, -1.0),
   0.5,
   Metal.new(Vec3.new(0.8, 0.6, 0.2), 0.0)
 ))
 
-world.push(Sphere.new(
+hitables.push(Sphere.new(
   Vec3.new(-1.0, 0.0, -1.0),
   0.5,
   Dielectric.new(1.8)
@@ -39,7 +39,7 @@ camera = Camera.new(
 )
 
 raytracer = SimpleRaytracer.new(width, height,
-                                world: HitableList.new(world),
+                                hitables: HitableList.new(hitables),
                                 camera: camera,
                                 samples: 50,
                                 background: SkyBackground.new)

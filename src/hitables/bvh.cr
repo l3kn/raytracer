@@ -1,4 +1,5 @@
-# Bounding volume hierarchy
+require "../aabb"
+require "../hitable"
 
 class BVHNode < Hitable
   getter left : Hitable
