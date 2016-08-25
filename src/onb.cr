@@ -1,6 +1,6 @@
 require "./vec3"
 
-class ONB
+struct ONB
   getter u : Vec3
   getter v : Vec3
   getter w : Vec3
