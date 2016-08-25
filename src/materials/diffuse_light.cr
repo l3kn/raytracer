@@ -4,7 +4,12 @@ class DiffuseLight < Material
   def initialize(@texture : Texture)
   end
 
-  def emitted(hit)
-    @texture.value(hit.point, hit.u, hit.v)
+  def emitted(ray, hit)
+    # Only emit light on one side
+    if hit.normal.dot(ray.direction) < 0.0
+      @texture.value(hit.point, hit.u, hit.v)
+    else
+      Vec3.new(0.0, 0.0, 0.0)
+    end
   end
 end

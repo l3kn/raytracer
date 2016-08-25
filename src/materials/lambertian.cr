@@ -1,3 +1,6 @@
+require "../onb"
+require "../material"
+
 class Lambertian < Material
   property texture
 
@@ -5,9 +8,21 @@ class Lambertian < Material
   end
 
   def scatter(ray, hit)
-    target = hit.normal + random_in_unit_sphere
+    Scattered.new(
+      @texture.value(hit.point, hit.u, hit.v),
+      CosinePDF.new(hit.normal),
+      false,
+      nil
+    )
+  end
 
-    ray_new = Ray.new(hit.point, target)
-    Scattered.new(ray_new, @texture.value(hit.point, hit.u, hit.v))
+  def scattering_pdf(ray_in, hit, scattered)
+    cosine = hit.normal.dot(scattered.direction.normalize)
+
+    if cosine < 0
+      0.0
+    else
+      cosine / Math::PI
+    end
   end
 end

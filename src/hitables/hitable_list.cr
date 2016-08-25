@@ -26,12 +26,19 @@ class HitableList < Hitable
     result
   end
 
-  # def push(object)
-    # @objects << object
-    # if @bounding_box
-      # @bounding_box = @bounding_box.merge(object.bounding_box)
-    # else
-      # @bounding_box = object.bounding_box
-    # end
-  # end
+  def pdf_value(origin, direction)
+    weight = 1.0 / @objects.size
+    sum = 0.0
+
+    @objects.each do |obj|
+      sum += weight * obj.pdf_value(origin, direction)
+    end
+
+    sum
+  end
+
+  def random(origin)
+    index = (@objects.size * pos_random).to_i
+    @objects[index].random(origin)
+  end
 end

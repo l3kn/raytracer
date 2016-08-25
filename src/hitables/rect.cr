@@ -82,6 +82,29 @@ class XZRect < Hitable
     top = Vec3.new(@x1, @y+0.0001, @z1)
     AABB.new(bottom, top)
   end
+
+  def pdf_value(origin, direction)
+    hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
+    if hit
+      area = (@x1 - @x0) * (@z1 - @z0)
+      distance_squared = hit.t * hit.t * direction.squared_length
+      cosine = (direction.dot(hit.normal) / direction.length).abs
+
+      distance_squared / (cosine * area)
+    else
+      0.0
+    end
+  end
+
+  def random(origin)
+    random_point = Vec3.new(
+      @x0 + pos_random * (@x1 - @x0),
+      @y,
+      @z0 + pos_random * (@z1 - @z0)
+    )
+
+    random_point - origin
+  end
 end
 
 class YZRect < Hitable

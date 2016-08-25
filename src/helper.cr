@@ -14,7 +14,7 @@ def random_vec
 end
 
 def pos_random
-  rand(0.0..1.0)
+  rand(0.0...1.0)
 end
 
 def random
@@ -61,9 +61,22 @@ def random_cosine_direction
   phi = 2*Math::PI*r1
 
   sqrt = Math.sqrt(r2)
-
   x = Math.cos(phi) * 2 * sqrt
   y = Math.sin(phi) * 2 * sqrt
+
+  Vec3.new(x, y, z)
+end
+
+def random_to_sphere(radius, distance_squared)
+  r1 = pos_random
+  r2 = pos_random
+
+  z = 1.0 + r2 * (Math.sqrt(1 - radius*radius / distance_squared) - 1.0)
+  phi = 2 * Math::PI * r1
+
+  sqrt = Math.sqrt(1 - z*z)
+  x = Math.cos(phi) * sqrt
+  y = Math.sin(phi) * sqrt
 
   Vec3.new(x, y, z)
 end

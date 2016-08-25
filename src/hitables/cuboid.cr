@@ -1,6 +1,7 @@
 require "../hitable"
 
 class Cuboid < Hitable
+  getter list : HitableList
   def initialize(p1, p2, top, bottom,
                          front, back,
                          left, right)

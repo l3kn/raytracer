@@ -11,17 +11,20 @@ require "./texture"
 require "./aabb"
 require "./background"
 require "./backgrounds/*"
+require "./pdf"
+require "./pdfs/*"
 
 class Raytracer
   property width : Int32
   property height : Int32
   property world : Hitable
+  property light_shape : Hitable
   property camera : Camera
   property samples : Int32
   property background : Background
   property debug : Bool
 
-  def initialize(@width, @height, @world, @camera, @samples, background = nil, @debug = false)
+  def initialize(@width, @height, @world, @camera, @samples, @light_shape, background = nil, @debug = false)
     if background.nil?
       @background = ConstantBackground.new(Vec3.new(1.0))
     else
@@ -47,11 +50,16 @@ class Raytracer
 
             ray = camera.get_ray(u, v)
 
-            col += color(ray, world)
+            # Cap each sample at 1.0,
+            # so that one bright sample
+            # does not mess up the whole pixel
+            col += color(ray, world)#.min(1.0)
           end
         end
 
         col /= (samples_sqrt * samples_sqrt)
+        col = col.min(1.0)
+        col **= 0.45 # Gamma Correction
 
         rgba = StumpyPNG::RGBA.new(
           (UInt16::MAX * col.x).to_u16,
@@ -72,15 +80,31 @@ class Raytracer
   RECURSION_LIMIT = 10
 
   def color(ray, world, recursion_level = 0)
-    hit = world.hit(ray, 0.0001, 9999.9)
+    hit = world.hit(ray, 0.0001, Float64::MAX)
     if hit
       return Vec3.new(1.0) + hit.normal * 0.5 if @debug
 
       scatter = hit.material.scatter(ray, hit)
+      emitted = hit.material.emitted(ray, hit)
       if scatter && recursion_level < RECURSION_LIMIT
-        scatter.albedo * color(scatter.ray, world, recursion_level + 1)
+        if scatter.is_specular
+          spc = scatter.specular_ray
+          if spc.nil?
+            Vec3.new(0.0)
+          else
+            scatter.albedo * color(spc, world, recursion_level + 1)
+          end
+        else
+          p1 = HitablePDF.new(@light_shape, hit.point)
+          p = MixturePDF.new(p1, scatter.pdf)
+          scattered = Ray.new(hit.point, p.generate)
+          pdf_val = p.value(scattered.direction)
+
+          pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
+          emitted + scatter.albedo * color(scattered, world, recursion_level+1) * pdf
+        end
       else
-        Vec3.new(0.0)
+        emitted
       end
     else
       @background.get(ray)

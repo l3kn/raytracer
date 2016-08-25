@@ -46,5 +46,25 @@ class Sphere < Hitable
     r = Vec3.new(radius)
     AABB.new(@center - r, @center + r)
   end
+
+  def pdf_value(origin, direction)
+    hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
+
+    if hit
+      cos_theta_max = Math.sqrt(1.0 - @radius*@radius / (@center - origin).squared_length)
+      solid_angle = 2.0*Math::PI*(1.0 - cos_theta_max)
+      1.0 / solid_angle
+    else
+      0.0
+    end
+  end
+
+  def random(origin)
+    direction = @center - origin
+    distance_squared = direction.squared_length
+
+    uvw = ONB.from_w(direction)
+    uvw.local(random_to_sphere(@radius, distance_squared))
+  end
 end
 

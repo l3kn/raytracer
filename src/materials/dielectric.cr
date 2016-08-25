@@ -1,3 +1,5 @@
+require "../material"
+
 class Dielectric < Material
   property reflection_index
 
@@ -26,8 +28,12 @@ class Dielectric < Material
     if refracted
       reflect_prob = schlick(cosine, @reflection_index)
     else
-      ray_new = Ray.new(hit.point, reflected)
-      return Scattered.new(ray_new, Vec3.new(1.0))
+      return Scattered.new(
+        Vec3.new(1.0),
+        PDF.new, #TODO: make this nilable
+        true,
+        Ray.new(hit.point, reflected)
+      )
     end
 
     if rand < reflect_prob
@@ -36,6 +42,11 @@ class Dielectric < Material
       ray_new = Ray.new(hit.point, refracted)
     end
 
-    Scattered.new(ray_new, Vec3.new(1.0))
+    Scattered.new(
+      Vec3.new(1.0),
+      PDF.new, #TODO: make this nilable
+      true,
+      ray_new
+    )
   end
 end

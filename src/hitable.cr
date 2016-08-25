@@ -14,5 +14,13 @@ abstract class Hitable
   def box_min_on_axis(n)
     bounding_box.min.xyz[n]
   end
+
+  def pdf_value(origin, direction)
+    0.0
+  end
+
+  def random(origin)
+    Vec3.new(1.0, 0.0, 0.0)
+  end
 end
 
