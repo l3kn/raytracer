@@ -1,14 +1,10 @@
 require "../src/raytracer"
 
-light_color = Vec3.new(15.0)
-
 white = Lambertian.new(Vec3.new(0.73))
 red   = Lambertian.new(Vec3.new(0.65, 0.05, 0.05))
 green = Lambertian.new(Vec3.new(0.12, 0.45, 0.15))
 light = DiffuseLight.new(Vec3.new(15.0))
-
 aluminum = Metal.new(Vec3.new(0.8, 0.85, 0.88), 0.0)
-
 
 left   = YZRect.new(Vec3.new(555.0, 0.0, 0.0),
                     Vec3.new(555.0, 555.0, 555.0),
@@ -65,20 +61,15 @@ world = [left, right, bottom, top, back, light_, sphere, cube2]
 
 width, height = {400, 400}
 
-# Camera params
-look_from = Vec3.new(278.0, 278.0, -800.0)
-look_at = Vec3.new(278.0, 278.0, 0.0)
+camera = Camera.new(
+  look_from: Vec3.new(278.0, 278.0, -800.0),
+  look_at: Vec3.new(278.0, 278.0, 0.0),
+  up: Vec3::Y,
+  vertical_fov: 40,
+  aspect_ratio: width.to_f / height.to_f,
+  aperture: 0.00
+)
 
-up = Vec3.new(0.0, 1.0, 0.0)
-
-aspect_ratio = width.to_f / height.to_f
-dist_to_focus = 10.0
-aperture = 0.05
-fov = 40
-
-camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
-
-# Raytracer
 raytracer = Raytracer.new(width, height,
                           world: HitableList.new(world),
                           camera: camera,

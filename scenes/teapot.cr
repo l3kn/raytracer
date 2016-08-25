@@ -33,20 +33,15 @@ puts "Parsed #{world.size} faces"
 
 width, height = {400, 400}
 
-# Camera params
-look_from = Vec3.new(-1.5, 1.5, -2.0)
-look_at = Vec3.new(0.0, 0.5, 0.0)
+camera = Camera.new(
+  look_from: Vec3.new(-1.5, 1.5, -2.0),
+  look_at: Vec3.new(0.0, 0.5, 0.0),
+  up: Vec3::Y,
+  vertical_fov: 40,
+  aspect_ratio: width.to_f / height.to_f,
+  aperture: 0.0
+)
 
-up = Vec3.new(0.0, 1.0, 0.0)
-fov = 40
-
-aspect_ratio = width.to_f / height.to_f
-dist_to_focus = (look_from - look_at).length
-aperture = 0.001
-
-camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
-
-# Raytracer
 raytracer = SimpleRaytracer.new(width, height,
                                 world: BVHNode.new(world),
                                 camera: camera,

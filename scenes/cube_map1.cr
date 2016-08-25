@@ -35,14 +35,14 @@ width, height = {400, 400}
 look_from = Vec3.new(0.0, 0.0, 2.5)
 look_at = Vec3.new(0.0)
 
-up = Vec3.new(0.0, 1.0, 0.0)
+up = Vec3::Y
 fov = 60
 
 aspect_ratio = width.to_f / height.to_f
 dist_to_focus = (look_from - look_at).length
 aperture = 0.05
 
-camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
+camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture)
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
@@ -62,7 +62,7 @@ raytracer = SimpleRaytracer.new(width, height,
   c = Math.cos(angle)
 
   look_from = Vec3.new(x * c - z * s, 0.5, x * s + z * c)
-  camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
+  camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture)
 
   raytracer.camera = camera
 
