@@ -51,9 +51,9 @@ camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to
 raytracer = Raytracer.new(width, height,
                           world: HitableList.new([light1, light2, light3, sphere1, sphere2, sphere3, floor]),
                           # light_shape: HitableList.new([light1, light2, light3, sphere1, sphere2, sphere3]),
-                          light_shape: HitableList.new([light1, light2, light3]),
+                          light_shape: HitableList.new([light1, light2, light3, sphere1, sphere2, sphere3]),
                           camera: camera,
-                          samples: 2000,
+                          samples: 20,
                           background: ConstantBackground.new(Vec3.new(0.0)))
 
 raytracer.render("light2.png")
