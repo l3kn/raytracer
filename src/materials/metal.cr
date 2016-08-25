@@ -16,8 +16,7 @@ class Metal < Material
 
     Scattered.new(
       @texture.value(hit.point, hit.u, hit.v),
-      PDF.new, #TODO: make this nilable
-      true,
+      nil,
       Ray.new(hit.point, reflected + random_in_unit_sphere*@fuzz)
     )
   end

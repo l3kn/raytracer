@@ -15,7 +15,6 @@ class Lambertian < Material
     Scattered.new(
       @texture.value(hit.point, hit.u, hit.v),
       CosinePDF.new(hit.normal),
-      false,
       nil
     )
   end
