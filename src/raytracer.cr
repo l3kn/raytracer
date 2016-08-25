@@ -17,8 +17,15 @@ class NormalRaytracer
   property height : Int32
   property samples : Int32
   property camera : Camera
+  property hitables : Hitable
+  property background : Background
 
-  def initialize(@width, @height, @samples, @camera)
+  def initialize(@width, @height, @hitables, @samples, @camera, background = nil)
+    if background.nil?
+      @background = ConstantBackground.new(Vec3::ONE)
+    else
+      @background = background
+    end
   end
 
   def render(filename)
@@ -63,7 +70,12 @@ class NormalRaytracer
   end
 
   def color(ray, hitables, recursion_level = 10)
-    Vec3::ONE + hit.normal * 0.5
+    hit = hitables.hit(ray, 0.0001, Float64::MAX)
+    if hit
+      Vec3::ONE * 0.5 + hit.normal
+    else
+      @background.get(ray)
+    end
   end
 end
 
