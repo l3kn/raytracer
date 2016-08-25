@@ -4,6 +4,10 @@ require "../material"
 class Lambertian < Material
   property texture
 
+  def initialize(color : Vec3)
+    @texture = ConstantTexture.new(color)
+  end
+
   def initialize(@texture : Texture)
   end
 
