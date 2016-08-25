@@ -3,10 +3,9 @@ require "./vec3"
 require "./pdf"
 
 # Either there result contains a pdf or a specular ray
-record Scattered,
+record ScatterRecord,
   albedo : Vec3,
-  pdf : PDF?,
-  specular_ray : Ray?
+  pdf_or_ray : (PDF | Ray)
 
 class Material
   def scatter(ray : Ray, hit : Intersection)

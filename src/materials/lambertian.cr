@@ -12,10 +12,9 @@ class Lambertian < Material
   end
 
   def scatter(ray, hit)
-    Scattered.new(
+    ScatterRecord.new(
       @texture.value(hit.point, hit.u, hit.v),
-      CosinePDF.new(hit.normal),
-      nil
+      CosinePDF.new(hit.normal)
     )
   end
 

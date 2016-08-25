@@ -87,21 +87,18 @@ class Raytracer < NormalRaytracer
       scatter = hit.material.scatter(ray, hit)
       emitted = hit.material.emitted(ray, hit)
       if scatter && recursion_level > 0
-        specular_ray = scatter.specular_ray
-        scatter_pdf = scatter.pdf
+        pdf_or_ray = scatter.pdf_or_ray
 
-        if !specular_ray.nil?
-          scatter.albedo * color(specular_ray, world, recursion_level - 1)
-        elsif !scatter_pdf.nil?
+        if pdf_or_ray.is_a? Ray
+          scatter.albedo * color(pdf_or_ray, world, recursion_level - 1)
+        else
           p1 = HitablePDF.new(@light_shape, hit.point)
-          p = MixturePDF.new(p1, scatter_pdf)
+          p = MixturePDF.new(p1, pdf_or_ray)
           scattered = Ray.new(hit.point, p.generate)
           pdf_val = p.value(scattered.direction)
 
           pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
           emitted + scatter.albedo * color(scattered, world, recursion_level - 1) * pdf
-        else
-          raise "Error, the material must have a specular ray or a scattering pdf"
         end
       else
         emitted
@@ -129,19 +126,16 @@ class SimpleRaytracer < NormalRaytracer
     if hit
       scatter = hit.material.scatter(ray, hit)
       if scatter && recursion_level > 0
-        specular_ray = scatter.specular_ray
-        scatter_pdf = scatter.pdf
+        pdf_or_ray = scatter.pdf_or_ray
 
-        if !specular_ray.nil?
-          scatter.albedo * color(specular_ray, world, recursion_level - 1)
-        elsif !scatter_pdf.nil?
+        if pdf_or_ray.is_a? Ray
+          scatter.albedo * color(pdf_or_ray, world, recursion_level - 1)
+        else
           scattered = Ray.new(hit.point, scatter.pdf.generate)
           pdf_val = scatter.pdf.value(scattered.direction)
 
           pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
           scatter.albedo * color(scattered, world, recursion_level - 1) * pdf
-        else
-          raise "Error, the material must have a specular ray or a scattering pdf"
         end
       else
         Vec3::ZERO
