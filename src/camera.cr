@@ -44,35 +44,3 @@ class Camera
     Ray.new(@origin + offset, direction.normalize)
   end
 end
-
-class OldCamera < Camera
-  getter origin : Vec3
-  getter lower_left_corner : Vec3
-  getter horizontal : Vec3
-  getter vertical : Vec3
-
-  def initialize(look_from, look_at, up, vertical_fov, aspect_ratio)
-    @u = @v = @w = Vec3::ZERO
-    @lens_radius = 0.0
-
-    theta = vertical_fov * Math::PI / 180
-    half_height = Math.tan(theta/2)
-    half_width = aspect_ratio * half_height
-
-    @origin = look_from
-
-    w = (look_from - look_at).normalize
-    u = up.cross(w).normalize
-    v = w.cross(u)
-
-    @lower_left_corner = @origin - u*half_width - v*half_height - w
-    @horizontal = u*half_width*2
-    @vertical = v*half_height*2
-  end
-
-  def get_ray(s, t)
-    direction = @lower_left_corner + @horizontal*s + @vertical*t - @origin
-    Ray.new(@origin, direction)
-  end
-end
-
