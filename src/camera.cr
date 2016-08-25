@@ -1,3 +1,5 @@
+require "./vec3"
+
 class Camera
   getter u : Vec3
   getter v : Vec3
@@ -6,6 +8,10 @@ class Camera
   getter horizontal : Vec3
   getter vertical : Vec3
   getter lens_radius : Float64
+
+  def initialize(look_from, look_at, up, vertical_fov, aspect_ratio, aperture)
+    initialize(look_from, look_at, up, vertical_fov, aspect_ratio, aperture, (look_from - look_at).length)
+  end
 
   def initialize(look_from : Vec3,
                  look_at : Vec3,
@@ -46,7 +52,7 @@ class OldCamera < Camera
   getter vertical : Vec3
 
   def initialize(look_from, look_at, up, vertical_fov, aspect_ratio)
-    @u = @v = @w = Vec3.new(0.0)
+    @u = @v = @w = Vec3::ZERO
     @lens_radius = 0.0
 
     theta = vertical_fov * Math::PI / 180

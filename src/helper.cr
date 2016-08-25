@@ -9,10 +9,6 @@ def smoothstep(x)
   x * x * (3.0 - 2.0 * x)
 end
 
-def random_vec
-  Vec3.new(pos_random, pos_random, pos_random)
-end
-
 def pos_random
   rand(0.0...1.0)
 end
@@ -21,9 +17,12 @@ def random
   rand(-1.0..1.0)
 end
 
-def random_in_unit_sphere
-  point = Vec3.new(1.0)
+def random_vec
+  Vec3.new(pos_random, pos_random, pos_random)
+end
 
+def random_in_unit_sphere
+  point = Vec3::ONE
   while point.squared_length >= 1.0
     point = Vec3.new(random, random, random)
   end
@@ -36,8 +35,7 @@ def random_on_unit_sphere
 end
 
 def random_in_unit_circle
-  point = Vec3.new(1.0)
-
+  point = Vec3::ONE
   while point.squared_length >= 1.0
     point = Vec3.new(random, random, 0.0)
   end

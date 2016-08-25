@@ -1,3 +1,5 @@
+require "./material"
+
 record Intersection,
   t : Float64, # Ray parameter of the hitpoint
   point : Vec3,
@@ -16,11 +18,11 @@ abstract class Hitable
   end
 
   def pdf_value(origin, direction)
-    0.0
+    raise "Error, this feature is not supported yet"
   end
 
   def random(origin)
-    Vec3.new(1.0, 0.0, 0.0)
+    raise "Error, this feature is not supported yet"
   end
 end
 

@@ -48,7 +48,7 @@ module DE
 
     def bounding_box
       # TODO: Clean up, maybe add Hitable.infinite?
-      AABB.new(Vec3.new(0.0), Vec3.new(0.0))
+      raise "Error, this feature is not supported yet"
     end
   end
 end

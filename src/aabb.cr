@@ -5,7 +5,7 @@ class AABB
   end
 
   def hit(ray)
-    dirfrac = Vec3.new(1.0) / ray.direction
+    dirfrac = Vec3::ONE / ray.direction
 
     t1 = (@min.x - ray.origin.x) * dirfrac.x
     t2 = (@max.x - ray.origin.x) * dirfrac.x
@@ -17,9 +17,7 @@ class AABB
     tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6))
     tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6))
 
-    return false if tmax < 0
-    return false if tmin > tmax
-    return true
+    tmax > 0 && tmin < tmax
   end
 
   def merge(other)

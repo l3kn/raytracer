@@ -18,6 +18,6 @@ class Material
   end
 
   def emitted(ray, hit)
-    Vec3.new(0.0)
+    Vec3::ZERO
   end
 end

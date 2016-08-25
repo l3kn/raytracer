@@ -29,7 +29,7 @@ class Dielectric < Material
       reflect_prob = schlick(cosine, @reflection_index)
     else
       return Scattered.new(
-        Vec3.new(1.0),
+        Vec3::ONE,
         PDF.new, #TODO: make this nilable
         true,
         Ray.new(hit.point, reflected)
@@ -43,7 +43,7 @@ class Dielectric < Material
     end
 
     Scattered.new(
-      Vec3.new(1.0),
+      Vec3::ONE,
       PDF.new, #TODO: make this nilable
       true,
       ray_new

@@ -14,7 +14,7 @@ require "./backgrounds/*"
 require "./pdf"
 require "./pdfs/*"
 
-class RaytracerInterface
+class NormalRaytracer
   property width : Int32
   property height : Int32
   property samples : Int32
@@ -29,7 +29,7 @@ class RaytracerInterface
 
     (0...@height).each do |y|
       (0...@width).each do |x|
-        col = Vec3.new(0.0)
+        col = Vec3::ZERO
 
         (0...samples_sqrt).each do |i|
           (0...samples_sqrt).each do |j|
@@ -65,19 +65,18 @@ class RaytracerInterface
   end
 
   def color(ray, world, recursion_level = 10)
-    Vec3.new(0.0)
+    Vec3::ONE + hit.normal * 0.5
   end
 end
 
-class Raytracer < RaytracerInterface
+class Raytracer < NormalRaytracer
   property world : Hitable
   property light_shape : Hitable
   property background : Background
-  property debug : Bool
 
-  def initialize(@width, @height, @world, @camera, @samples, @light_shape, background = nil, @debug = false)
+  def initialize(@width, @height, @world, @camera, @samples, @light_shape, background = nil)
     if background.nil?
-      @background = ConstantBackground.new(Vec3.new(1.0))
+      @background = ConstantBackground.new(Vec3::ONE)
     else
       @background = background
     end
@@ -86,15 +85,13 @@ class Raytracer < RaytracerInterface
   def color(ray, world, recursion_level = 10)
     hit = world.hit(ray, 0.0001, Float64::MAX)
     if hit
-      return Vec3.new(1.0) + hit.normal * 0.5 if @debug
-
       scatter = hit.material.scatter(ray, hit)
       emitted = hit.material.emitted(ray, hit)
       if scatter && recursion_level > 0
         if scatter.is_specular
           spc = scatter.specular_ray
           if spc.nil?
-            Vec3.new(0.0)
+            Vec3::ZERO
           else
             scatter.albedo * color(spc, world, recursion_level - 1)
           end
@@ -116,14 +113,13 @@ class Raytracer < RaytracerInterface
   end
 end
 
-class SimpleRaytracer < RaytracerInterface
+class SimpleRaytracer < NormalRaytracer
   property world : Hitable
   property background : Background
-  property debug : Bool
 
-  def initialize(@width, @height, @world, @camera, @samples, background = nil, @debug = false)
+  def initialize(@width, @height, @world, @camera, @samples, background = nil)
     if background.nil?
-      @background = ConstantBackground.new(Vec3.new(1.0))
+      @background = ConstantBackground.new(Vec3::ONE)
     else
       @background = background
     end
@@ -132,14 +128,12 @@ class SimpleRaytracer < RaytracerInterface
   def color(ray, world, recursion_level = 10)
     hit = world.hit(ray, 0.0001, Float64::MAX)
     if hit
-      return Vec3.new(1.0) + hit.normal * 0.5 if @debug
-
       scatter = hit.material.scatter(ray, hit)
       if scatter && recursion_level > 0
         if scatter.is_specular
           spc = scatter.specular_ray
           if spc.nil?
-            Vec3.new(0.0)
+            Vec3::ZERO
           else
             scatter.albedo * color(spc, world, recursion_level - 1)
           end
@@ -151,7 +145,7 @@ class SimpleRaytracer < RaytracerInterface
           scatter.albedo * color(scattered, world, recursion_level - 1) * pdf
         end
       else
-        Vec3.new(0.0)
+        Vec3::ZERO
       end
     else
       @background.get(ray)

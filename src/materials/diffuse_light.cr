@@ -16,7 +16,7 @@ class DiffuseLight < Material
     if hit.normal.dot(ray.direction) < 0.0
       @texture.value(hit.point, hit.u, hit.v)
     else
-      Vec3.new(0.0, 0.0, 0.0)
+      Vec3::ZERO
     end
   end
 end

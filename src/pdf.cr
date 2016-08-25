@@ -5,6 +5,6 @@ class PDF
   end
 
   def generate
-    Vec3.new(0.0)
+    Vec3::ZERO
   end
 end

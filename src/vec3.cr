@@ -3,6 +3,13 @@ require "./helper"
 struct Vec3
   getter x, y, z
 
+  X = Vec3.new(1.0, 0.0, 0.0)
+  Y = Vec3.new(0.0, 1.0, 0.0)
+  Z = Vec3.new(0.0, 0.0, 1.0)
+
+  ONE = Vec3.new(1.0)
+  ZERO = Vec3.new(0.0)
+
   def initialize
     @x, @y, @z = 0.0, 0.0, 0.0
   end

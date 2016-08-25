@@ -14,7 +14,7 @@ class ONB
 
   def self.from_w(n)
     w = n.normalize
-    a = w.x.abs > 0.9 ? Vec3.new(0.0, 1.0, 0.0) : Vec3.new(1.0, 0.0, 0.0)
+    a = w.x.abs > 0.9 ? Vec3::Y : Vec3::X
 
     v = w.cross(a).normalize
     u = w.cross(v)

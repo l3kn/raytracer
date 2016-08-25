@@ -80,7 +80,7 @@ class Mandelbulb < Hitable
     a4 = Vec3.new(-1.0, 1.0,-1.0)
     scale = 2.0
 
-    c = Vec3.new(0.0)
+    c = Vec3::ZERO
     n = 0
     dist = 0.0
     d = 0.0
@@ -143,7 +143,7 @@ class Mandelbulb < Hitable
   end
 
   def bounding_box
-    AABB.new(Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0))
+    raise "Error, this feature is not supported yet"
   end
 end
 

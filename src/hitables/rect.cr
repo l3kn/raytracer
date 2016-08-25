@@ -1,3 +1,5 @@
+require "../hitable"
+
 class XYRect < Hitable
   property x0 : Float64, x1 : Float64, y0 : Float64, y1 : Float64, z : Float64, material
 
@@ -12,7 +14,7 @@ class XYRect < Hitable
     @y1 = top.y
     @z = bottom.z
 
-    @normal = Vec3.new(0.0, 0.0, 1.0)
+    @normal = Vec3::Z
   end
 
   def flip!
@@ -55,7 +57,7 @@ class XZRect < Hitable
     @z0 = bottom.z
     @z1 = top.z
 
-    @normal = Vec3.new(0.0, 1.0, 0.0)
+    @normal = Vec3::Y
   end
 
   def flip!
@@ -121,7 +123,7 @@ class YZRect < Hitable
     @z0 = bottom.z
     @z1 = top.z
 
-    @normal = Vec3.new(1.0, 0.0, 0.0)
+    @normal = Vec3::X
   end
 
   def flip!
