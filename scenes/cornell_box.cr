@@ -1,18 +1,14 @@
 require "../src/raytracer"
 
-tex_white = ConstantTexture.new(Vec3.new(0.73))
-tex_red   = ConstantTexture.new(Vec3.new(0.65, 0.05, 0.05))
-tex_green = ConstantTexture.new(Vec3.new(0.12, 0.45, 0.15))
+light_color = Vec3.new(15.0)
 
-tex_light = ConstantTexture.new(Vec3.new(15.0))
+white = Lambertian.new(Vec3.new(0.73))
+red   = Lambertian.new(Vec3.new(0.65, 0.05, 0.05))
+green = Lambertian.new(Vec3.new(0.12, 0.45, 0.15))
+light = DiffuseLight.new(Vec3.new(15.0))
 
-white = Lambertian.new(tex_white)
-red   = Lambertian.new(tex_red)
-green = Lambertian.new(tex_green)
+aluminum = Metal.new(Vec3.new(0.8, 0.85, 0.88), 0.0)
 
-aluminum = Metal.new(ConstantTexture.new(Vec3.new(0.8, 0.85, 0.88)), 0.0)
-
-light = DiffuseLight.new(tex_light)
 
 left   = YZRect.new(Vec3.new(555.0, 0.0, 0.0),
                     Vec3.new(555.0, 555.0, 555.0),
@@ -86,7 +82,7 @@ camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to
 raytracer = Raytracer.new(width, height,
                           world: HitableList.new(world),
                           camera: camera,
-                          samples: 100,
+                          samples: 10,
                           light_shape: HitableList.new([light_, sphere]),
                           background: ConstantBackground.new(Vec3.new(0.0)))
 
