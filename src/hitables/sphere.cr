@@ -24,7 +24,7 @@ class Sphere < Hitable
         #   v = Math.asin(normal.y) / Math::PI + 0.5
         u = 0.5 + Math.atan2(-normal.z, -normal.x) / (2 * Math::PI)
         v = 0.5 - Math.asin(-normal.y) / Math::PI
-        return Intersection.new(tmp, point, normal, @material, u, v)
+        return HitRecord.new(tmp, point, normal, @material, u, v)
       end
 
       tmp = (-b + Math.sqrt(discriminant)) / (2.0*a)
@@ -35,7 +35,7 @@ class Sphere < Hitable
 
         u = Math.atan2(-normal.z, -normal.x) / (2 * Math::PI) + 0.5
         v = Math.asin(-normal.y) / Math::PI + 0.5
-        return Intersection.new(tmp, point, normal, @material, u, v)
+        return HitRecord.new(tmp, point, normal, @material, u, v)
       end
 
       return nil

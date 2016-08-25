@@ -62,7 +62,7 @@ class InterpolatedTriangle < Hitable
       point = ray.point_at_parameter(t)
       bc = barycentricCoordinates(point)
       normal = @na * bc.x + @nb * bc.y + @nc * bc.z
-      return Intersection.new(t, point, normal, @material, u, v)
+      return HitRecord.new(t, point, normal, @material, u, v)
     else
       return nil
     end

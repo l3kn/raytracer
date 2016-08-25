@@ -33,7 +33,7 @@ class Mandelbulb < Hitable
                       distance_estimate(point + z_dir) - distance_estimate(point - z_dir)).normalize
 
     point += normal * 0.01 # TODO: find a better fix, without this reflected rays would hit the sphere again
-    return Intersection.new(total_distance, point, normal, @material, u: 0.0, v: 0.0)
+    return HitRecord.new(total_distance, point, normal, @material, u: 0.0, v: 0.0)
   end
 
   # http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/

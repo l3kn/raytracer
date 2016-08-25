@@ -15,7 +15,7 @@ class Translate < Hitable
 
     hit = @object.hit(moved_ray, t_min, t_max)
     if hit
-      Intersection.new(
+      HitRecord.new(
         hit.t,
         hit.point + @offset,
         hit.normal,

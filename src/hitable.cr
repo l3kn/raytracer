@@ -1,6 +1,6 @@
 require "./material"
 
-record Intersection,
+record HitRecord,
   t : Float64, # Ray parameter of the hitpoint
   point : Vec3,
   normal : Vec3,
@@ -10,7 +10,7 @@ record Intersection,
 
 
 abstract class Hitable
-  abstract def hit(ray : Ray, t_min : Float, t_max : Float) : (Intersection | Nil)
+  abstract def hit(ray : Ray, t_min : Float, t_max : Float) : (HitRecord | Nil)
   abstract def bounding_box
 
   def box_min_on_axis(n)

@@ -81,7 +81,7 @@ class RotateY < Hitable
         -@sin_theta*hit.normal.x + @cos_theta*hit.normal.z,
       )
 
-      Intersection.new(
+      HitRecord.new(
         hit.t,
         rotated_point,
         rotated_normal,

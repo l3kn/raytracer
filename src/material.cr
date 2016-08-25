@@ -8,11 +8,11 @@ record ScatterRecord,
   pdf_or_ray : (PDF | Ray)
 
 class Material
-  def scatter(ray : Ray, hit : Intersection)
+  def scatter(ray : Ray, hit : HitRecord)
     nil
   end
 
-  def scattering_pdf(ray_in : Ray, hit : Intersection, scattered : Ray)
+  def scattering_pdf(ray_in : Ray, hit : HitRecord, scattered : Ray)
     0.0
   end
 

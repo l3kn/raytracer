@@ -58,7 +58,7 @@ class Triangle < Hitable
 
     if (t < t_max && t > t_min)
       point = ray.point_at_parameter(t)
-      return Intersection.new(t, point, @normal, @material, u, v)
+      return HitRecord.new(t, point, @normal, @material, u, v)
     else
       return nil
     end

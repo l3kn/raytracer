@@ -33,7 +33,7 @@ class XYRect < Hitable
 
     u = (point.x - @x0) / (@x1 - @x0) 
     v = (point.y - @y0) / (@y1 - @y0) 
-    return Intersection.new(t, point, @normal, @material, u, v)
+    return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
   def bounding_box
@@ -76,7 +76,7 @@ class XZRect < Hitable
 
     u = (point.x - @x0) / (@x1 - @x0) 
     v = (point.z - @z0) / (@z1 - @z0) 
-    return Intersection.new(t, point, @normal, @material, u, v)
+    return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
   def bounding_box
@@ -142,7 +142,7 @@ class YZRect < Hitable
 
     u = (point.z - @z0) / (@z1 - @z0) 
     v = (point.y - @y0) / (@y1 - @y0) 
-    return Intersection.new(t, point, @normal, @material, u, v)
+    return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
   def bounding_box
