@@ -2,8 +2,7 @@ require "../src/raytracer"
 require "../src/backgrounds/*"
 require "../src/distance_estimator"
 
-ct1 = ConstantTexture.new(Vec3.new(0.9))
-mat = Lambertian.new(ct1)
+mat = Lambertian.new(Vec3.new(0.9))
 
 de = DE::Mandelbulb.new(iterations: 10)
 world = DE::DistanceEstimator.new(mat, de)
@@ -24,10 +23,10 @@ aperture = 0.05
 camera = OldCamera.new(look_from, look_at, up, fov, aspect_ratio)
 
 # Raytracer
-raytracer = Raytracer.new(width, height,
-                          world: world,
-                          camera: camera,
-                          samples: 5,
-                          background: ConstantBackground.new(Vec3.new(1.0)))
+raytracer = SimpleRaytracer.new(width, height,
+                                world: world,
+                                camera: camera,
+                                samples: 5,
+                                background: ConstantBackground.new(Vec3.new(1.0)))
 
 raytracer.render("fractal.png")

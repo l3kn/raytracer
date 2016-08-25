@@ -23,17 +23,17 @@ require "../src/backgrounds/*"
 #    Create an animated gif
 #    e.g. using `convert cube*.png cube.gif`
 
-world = [] of Hitable
-
-ct1 = ConstantTexture.new(Vec3.new(0.8))
-
-world.push(Sphere.new(Vec3.new(0.0, 0.0, 0.0), 1.0, Metal.new(ct1, 0.0)))
+sphere = Sphere.new(
+  Vec3.new(0.0),
+  1.0,
+  Metal.new(Vec3.new(0.8), 0.0)
+)
 
 width, height = {400, 400}
 
 # Camera params
 look_from = Vec3.new(0.0, 0.0, 2.5)
-look_at = Vec3.new(0.0, 0.0, 0.0)
+look_at = Vec3.new(0.0)
 
 up = Vec3.new(0.0, 1.0, 0.0)
 fov = 60
@@ -45,11 +45,11 @@ aperture = 0.05
 camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture, dist_to_focus)
 
 # Raytracer
-raytracer = Raytracer.new(width, height,
-                          world: HitableList.new(world),
-                          camera: camera,
-                          samples: 20,
-                          background: CubeMap.new("cube_maps/Yokohama"))
+raytracer = SimpleRaytracer.new(width, height,
+                                world: sphere,
+                                camera: camera,
+                                samples: 20,
+                                background: CubeMap.new("cube_maps/Yokohama"))
 
 (0...360).each do |p|
   # Rotate the camera around the y-axis
