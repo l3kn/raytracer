@@ -20,19 +20,11 @@ class NormalRaytracer
   property hitables : Hitable
   property background : Background
 
-  def initialize(@width, @height, @hitables, @samples, @camera, background = nil)
+  def initialize(@width, @height, @hitables, @samples, @camera, background = nil, @recursion_depth = 10)
     if background.nil?
       @background = ConstantBackground.new(Vec3::ONE)
     else
       @background = background
-    end
-  end
-
-  def denan(vec)
-    if vec.x.nan? || vec.y.nan? || vec.z.nan?
-      Vec3::ZERO
-    else
-      vec
     end
   end
 
@@ -53,7 +45,7 @@ class NormalRaytracer
             v = (y + off_y).to_f / @height
 
             ray = @camera.get_ray(u, v)
-            col += denan(color(ray, hitables))
+            col += de_nan(color(ray, hitables))
           end
         end
 
@@ -92,7 +84,7 @@ class Raytracer < NormalRaytracer
   property focus_hitables : Hitable
   property background : Background
 
-  def initialize(@width, @height, @hitables, @camera, @samples, @focus_hitables, background = nil)
+  def initialize(@width, @height, @hitables, @camera, @samples, @focus_hitables, background = nil, @recursion_depth = 10)
     if background.nil?
       @background = ConstantBackground.new(Vec3::ONE)
     else
