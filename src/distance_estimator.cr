@@ -39,7 +39,13 @@ module DE
                         distance_estimate(point + y_dir) - distance_estimate(point - y_dir),
                         distance_estimate(point + z_dir) - distance_estimate(point - z_dir)).normalize
 
-      return ::HitRecord.new(total_distance, point + normal * 2 * t_min, normal, @material, u: 0.0, v: 0.0)
+      return ::HitRecord.new(
+        t: total_distance,
+        point: point + normal * 2 * t_min,
+        normal: normal,
+        material: @material,
+        u: 0.0, v: 0.0
+      )
     end
 
     def distance_estimate(pos)
@@ -47,7 +53,6 @@ module DE
     end
 
     def bounding_box
-      # TODO: Clean up, maybe add Hitable.infinite?
       raise "Error, this feature is not supported yet"
     end
   end

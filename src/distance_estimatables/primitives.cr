@@ -1,4 +1,5 @@
 require "../distance_estimatable"
+require "../vec3"
 
 module DE
   class Sphere < DistanceEstimatable
@@ -8,7 +9,6 @@ module DE
     end
 
     def distance_estimate(pos)
-      # max(pos.length - @radius, 0.0)
       pos.length - @radius
     end
   end

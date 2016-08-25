@@ -13,17 +13,7 @@ class BVHNode < Hitable
       @left = list[0]
       @right = list[1]
     else
-      # Split on the axis where the range of centroids is the highest
-      #
-      # y
-      # ^
-      # |    |-- next split
-      # | *  |
-      # |*   *
-      # |  * |   *
-      # |_________> x
-      #
-      # => the range the x-axis is larger, so we split there
+      # Split on the axis where the range of centroids is the largest
       centroids = list.map { |obj| obj.bounding_box.centroid }
 
       min_x, max_x = centroids.minmax_by(&.x)
@@ -69,20 +59,16 @@ class BVHNode < Hitable
       hit_right = @right.hit(ray, t_min, t_max)
 
       if (hit_left && hit_right)
-        if hit_left.t < hit_right.t
-          return hit_left
-        else
-          return hit_right
-        end
+        (hit_left.t < hit_right.t) ? hit_left : hit_right
       elsif hit_left
-        return hit_left
+        hit_left
       elsif hit_right
-        return hit_right
+        hit_right
       else
-        return nil
+        nil
       end
     else
-      return nil
+      nil
     end
   end
 end
