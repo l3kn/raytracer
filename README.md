@@ -86,7 +86,7 @@ _400x400px, 2000 samples / pixel, time: 25m_
 
 ![](images/light2.png)
 
-_800x400px, 2000 samples / pixel, time: 600s_
+_800x400px, 10000 samples / pixel, time: 2h15m_
 
 ### `scenes/teapot.cr`
 
