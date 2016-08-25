@@ -2,26 +2,38 @@ require "../src/raytracer"
 require "../src/backgrounds/*"
 require "../src/distance_estimator"
 
-mat = Lambertian.new(Vec3.new(0.9))
-de = DE::Mandelbulb.new(iterations: 10)
-hitables = DE::DistanceEstimator.new(mat, de)
+class UTexture < Texture
+  def initialize
+  end
 
-width, height = {200, 200}
+  def value(point, u, v)
+    col = Vec3::ONE * (1 - u)
+    col **= 10.0
+  end
+end
+
+mat = Lambertian.new(UTexture.new)
+
+de = DE::Mandelbulb.new(iterations: 20)
+hitables = DE::DistanceEstimator.new(mat, de, maximum_steps: 500)
+
+width, height = {400, 400}
 
 camera = Camera.new(
-  look_from: Vec3.new(2.0, 0.5, 4.5),
+  look_from: Vec3.new(2.0, 0.5, 4.5) * 0.8,
   look_at: Vec3.new(0.0, 0.0, 0.0),
   up: Vec3::Y,
-  vertical_fov: 30,
+  vertical_fov: 40,
   aspect_ratio: width.to_f / height.to_f,
-  aperture: 0.05
+  aperture: 0.0
 )
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
                                 hitables: hitables,
                                 camera: camera,
-                                samples: 1,
-                                background: ConstantBackground.new(Vec3.new(1.0)))
+                                samples: 5,
+                                background: ConstantBackground.new(Vec3.new(1.0)),
+                                recursion_depth: 1)
 
 raytracer.render("fractal.png")

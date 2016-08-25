@@ -109,7 +109,7 @@ _800x400px, 100 samples / pixel, no lights, time: 410s_
 
 ![](images/fractal1.png)
 
-_400x400px, 5 samples / pixel, no lights, debug mode (color = normal), time: 160s_
+_400x400px, 5 samples / pixel, no lights, time: 3m10s_
 
 ### `scenes/cube_map1.cr`
 
