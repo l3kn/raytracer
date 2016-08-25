@@ -22,15 +22,15 @@
 * `Lambertian` (diffuse)
 * `Metal` (reflective)
 * `Dielectric` (transmissive, e.g. glass or water)
-* `DiffuseLight` ([WIP] diffuse emissive)
+* `DiffuseLight` (diffuse emissive)
 
-## Raytracers [WIP]
+## Raytracers
 
-* `Raytracer` (supports emissive materials -> pretty slow, the background is black)
-* `SimpleRaytracer` (ignores emissive materials, the background is "sky" colored)
-* `CubeMapRaytracer` (ignores emissive materials, the background color gets calculated by a cube map)
+* `Raytracer` (supports emissive materials and works with a list of hitables to send more rays to, e.g. lights)
+* `SimpleRaytracer` (ignores emissive materials)
+* `NormalRaytracer` (displays only the normal of the hit point, useful for debugging)
 
-## Textures [WIP]
+## Textures
 
 * `ConstantTexture`
 * `CheckerTexture` (creates a checkerboard pattern from two other textures)
