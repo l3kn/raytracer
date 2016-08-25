@@ -1,5 +1,13 @@
 require "./vec3"
 
+def de_nan(vec)
+  if vec.x.nan? || vec.y.nan? || vec.z.nan?
+    Vec3::ZERO
+  else
+    vec
+  end
+end
+
 def clamp(x, x_min, x_max)
   min(max(x, x_min), x_max)
 end
