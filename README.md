@@ -76,6 +76,12 @@ A way to "trace" objects that have no analytic hit/distance function
 
 ## Scenes / Images
 
+### `scenes/cornell_box.cr`
+
+![](images/cornell.png)
+
+_400x400px, 2000 samples / pixel, time: 25m_
+
 ### `scenes/light2.cr`
 
 ![](images/light2.png)
