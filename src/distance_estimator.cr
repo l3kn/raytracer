@@ -6,10 +6,9 @@ module DE
     property material : Material
     property object : DistanceEstimatable
     property step : Float64
+    property maximum_steps : Int32
 
-    MAXIMUM_RAY_STEPS = 1000
-
-    def initialize(@material, @object, @step = 0.1)
+    def initialize(@material, @object, @step = 0.1, @maximum_steps = 1000)
     end
 
     def hit(ray, t_min, t_max)
@@ -20,7 +19,7 @@ module DE
 
       return nil if distance_estimate(point) <= t_min
 
-      (0...MAXIMUM_RAY_STEPS).each do |step|
+      maximum_steps.times do
         point = ray.point_at_parameter(total_distance)
         distance = distance_estimate(point)
         total_distance += distance
@@ -28,7 +27,7 @@ module DE
         return nil if total_distance >= t_max
 
         steps += 1
-        break if distance < 0.0001
+        break if distance < 0.00001
       end
 
       x_dir = Vec3.new(@step, 0.0,   0.0)
@@ -41,10 +40,10 @@ module DE
 
       return ::HitRecord.new(
         t: total_distance,
-        point: point + normal * 2 * t_min,
+        point: point,
         normal: normal,
         material: @material,
-        u: 0.0, v: 0.0
+        u: steps.to_f / @maximum_steps, v: 0.0
       )
     end
 

@@ -28,6 +28,14 @@ class NormalRaytracer
     end
   end
 
+  def denan(vec)
+    if vec.x.nan? || vec.y.nan? || vec.z.nan?
+      Vec3::ZERO
+    else
+      vec
+    end
+  end
+
   def render(filename)
     canvas = StumpyPNG::Canvas.new(@width, @height)
     samples_sqrt = Math.sqrt(samples).ceil
@@ -45,7 +53,7 @@ class NormalRaytracer
             v = (y + off_y).to_f / @height
 
             ray = @camera.get_ray(u, v)
-            col += color(ray, hitables)
+            col += denan(color(ray, hitables))
           end
         end
 
@@ -69,7 +77,7 @@ class NormalRaytracer
     StumpyPNG.write(canvas, filename)
   end
 
-  def color(ray, hitables, recursion_level = 10)
+  def color(ray, hitables, recursion_depth = 10)
     hit = hitables.hit(ray, 0.0001, Float64::MAX)
     if hit
       Vec3::ONE * 0.5 + hit.normal
@@ -92,16 +100,16 @@ class Raytracer < NormalRaytracer
     end
   end
 
-  def color(ray, hitables, recursion_level = 10)
+  def color(ray, hitables, recursion_depth = 10)
     hit = hitables.hit(ray, 0.0001, Float64::MAX)
     if hit
       scatter = hit.material.scatter(ray, hit)
       emitted = hit.material.emitted(ray, hit)
-      if scatter && recursion_level > 0
+      if scatter && recursion_depth > 0
         pdf_or_ray = scatter.pdf_or_ray
 
         if pdf_or_ray.is_a? Ray
-          scatter.albedo * color(pdf_or_ray, hitables, recursion_level - 1)
+          scatter.albedo * color(pdf_or_ray, hitables, recursion_depth - 1)
         else
           p1 = HitablePDF.new(@focus_hitables, hit.point)
           p = MixturePDF.new(p1, pdf_or_ray)
@@ -109,7 +117,7 @@ class Raytracer < NormalRaytracer
           pdf_val = p.value(scattered.direction)
 
           pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
-          emitted + scatter.albedo * color(scattered, hitables, recursion_level - 1) * pdf
+          emitted + scatter.albedo * color(scattered, hitables, recursion_depth - 1) * pdf
         end
       else
         emitted
@@ -124,7 +132,7 @@ class SimpleRaytracer < NormalRaytracer
   property hitables : Hitable
   property background : Background
 
-  def initialize(@width, @height, @hitables, @camera, @samples, background = nil)
+  def initialize(@width, @height, @hitables, @camera, @samples, background = nil, @recursion_depth = 10)
     if background.nil?
       @background = ConstantBackground.new(Vec3::ONE)
     else
@@ -132,21 +140,21 @@ class SimpleRaytracer < NormalRaytracer
     end
   end
 
-  def color(ray, hitables, recursion_level = 10)
+  def color(ray, hitables, recursion_depth = @recursion_depth)
     hit = hitables.hit(ray, 0.0001, Float64::MAX)
     if hit
       scatter = hit.material.scatter(ray, hit)
-      if scatter && recursion_level > 0
+      if scatter && recursion_depth > 0
         pdf_or_ray = scatter.pdf_or_ray
 
         if pdf_or_ray.is_a? Ray
-          scatter.albedo * color(pdf_or_ray, hitables, recursion_level - 1)
+          scatter.albedo * color(pdf_or_ray, hitables, recursion_depth - 1)
         else
           scattered = Ray.new(hit.point, pdf_or_ray.generate)
           pdf_val = pdf_or_ray.value(scattered.direction)
 
           pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
-          scatter.albedo * color(scattered, hitables, recursion_level - 1) * pdf
+          scatter.albedo * color(scattered, hitables, recursion_depth - 1) * pdf
         end
       else
         Vec3::ZERO
