@@ -80,7 +80,7 @@ A way to "trace" objects that have no analytic hit/distance function
 
 ![](images/cornell.png)
 
-_400x400px, 2000 samples / pixel, time: 25m_
+_400x400px, 20000 samples / pixel, time: ~4h_
 
 ### `scenes/light2.cr`
 
