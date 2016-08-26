@@ -111,6 +111,12 @@ _800x400px, 100 samples / pixel, no lights, time: 410s_
 
 _400x400px, 5 samples / pixel, no lights, time: 3m10s_
 
+### `scenes/fractal1.cr`
+
+![](images/fractal2.png)
+
+_800x400px, 3 samples / pixel, no lights, time: 18s_
+
 ### `scenes/cube_map1.cr`
 
 ![](images/cube_map1.png)
