@@ -14,32 +14,8 @@ class UTexture < Texture
   end
 end
 
-
-class MengerSponge < DE::DistanceEstimatable
-  def initialize(@iterations = 4)
-  end
-
-  def distance_estimate(pos)
-    t = 0.0
-
-    @iterations.times do
-      pos = pos.abs
-
-      pos = pos.yxz if pos.x < pos.y
-      pos = pos.xzy if pos.y < pos.z
-      pos = pos.yxz if pos.x < pos.y
-
-      pos = pos * 3.0 - 2.0
-      pos = Vec3.new(pos.xy, pos.z + 2.0) if pos.z < -1.0
-    end
-
-    (pos.length - 1.5) * (3.0 ** (-@iterations))
-  end
-end
-
 mat = Lambertian.new(UTexture.new)
-
-de = MengerSponge.new(15)
+de = DE::MengerSponge.new(15)
 hitables = DE::DistanceEstimator.new(mat, de, maximum_steps: 1000)
 
 # width, height = {1920, 1080}

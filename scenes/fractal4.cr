@@ -16,10 +16,11 @@ end
 
 
 class MengerSponge < DE::DistanceEstimatable
-  def initialize(@iterations = 4)
+  def initialize(@iterations = 4, @scale = 3.0)
   end
 
   def distance_estimate(pos)
+    dist = Float64.max
     t = 0.0
 
     @iterations.times do
@@ -29,17 +30,18 @@ class MengerSponge < DE::DistanceEstimatable
       pos = pos.xzy if pos.y < pos.z
       pos = pos.yxz if pos.x < pos.y
 
-      pos = pos * 3.0 - 2.0
-      pos = Vec3.new(pos.xy, pos.z + 2.0) if pos.z < -1.0
+      pos = pos * @scale - (@scale - 1.0)
+      pos = Vec3.new(pos.xy, pos.z + (@scale - 1.0)) if pos.z < -0.5 * (@scale - 1.0)
     end
 
-    (pos.length - 1.5) * (3.0 ** (-@iterations))
+    # (pos.length - 1.5) * (@scale ** (-@iterations))
+    pos.length * (@scale ** (-@iterations))
   end
 end
 
 mat = Lambertian.new(UTexture.new)
 
-de = MengerSponge.new(15)
+de = MengerSponge.new(15, 3.1)
 hitables = DE::DistanceEstimator.new(mat, de, maximum_steps: 1000)
 
 # width, height = {1920, 1080}

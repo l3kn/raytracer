@@ -36,51 +36,23 @@ module DE
     end
   end
 
-  class MengerSponge < DistanceEstimatable
-    def initialize(@iterations = 10)
-      @box = DE::Box.new(Vec3.new(1.0))
+  class MengerSponge < DE::DistanceEstimatable
+    def initialize(@iterations = 4, @scale = 3.0)
     end
 
     def distance_estimate(pos)
-      pos *= 0.5
-      pos += Vec3.new(0.5)
-
-      x = pos.x
-      y = pos.y
-      z = pos.z
-
-      xx = (x - 0.5).abs - 0.5
-      yy = (y - 0.5).abs - 0.5
-      zz = (z - 0.5).abs - 0.5
-
-      d1 = max(xx, max(yy, zz))
-      d = d1
-      p = 1.0
-
       @iterations.times do
-        xa = (3.0 * x * p) % 3.0
-        ya = (3.0 * y * p) % 3.0
-        za = (3.0 * z * p) % 3.0
+        pos = pos.abs
 
-        p *= 3.0
+        pos = pos.yxz if pos.x < pos.y
+        pos = pos.xzy if pos.y < pos.z
+        pos = pos.yxz if pos.x < pos.y
 
-        xx = 0.5 - (xa - 1.5).abs
-        yy = 0.5 - (ya - 1.5).abs
-        zz = 0.5 - (za - 1.5).abs
-
-        d1 = min(max(xx, zz), min(max(xx, yy), max(yy, zz))) / p
-        d = max(d, d1)
+        pos = pos * @scale - (@scale - 1.0)
+        pos = Vec3.new(pos.xy, pos.z + (@scale - 1.0)) if pos.z < -0.5 * (@scale - 1.0)
       end
 
-      return d
-    end
-
-    def cross(pos)
-      da = max(pos.x.abs, pos.y.abs)
-      db = max(pos.y.abs, pos.z.abs)
-      dc = max(pos.z.abs, pos.x.abs)
-
-      min(da, min(db, dc)) - 1.0
+      pos.length * (@scale ** (-@iterations))
     end
   end
 end

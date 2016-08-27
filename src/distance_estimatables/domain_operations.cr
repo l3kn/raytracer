@@ -1,4 +1,5 @@
 require "../distance_estimatable"
+require "../vec3"
 
 module DE
   class Repeat < DistanceEstimatable

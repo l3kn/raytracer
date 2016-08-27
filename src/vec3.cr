@@ -49,11 +49,33 @@ struct Vec3
   end
 
   # Swizzling, generate functions like vec.zzz, vec.xyz, etc
+  # prefixing "x", "y" or "z" with "_" means negating the value
   {% for first in %w(x y z) %}
     {% for second in %w(x y z) %}
       {% for third in %w(x y z) %}
         def {{first.id}}{{second.id}}{{third.id}}
           Vec3.new(@{{first.id}}, @{{second.id}}, @{{third.id}})
+        end
+        def _{{first.id}}{{second.id}}{{third.id}}
+          Vec3.new(-@{{first.id}}, @{{second.id}}, @{{third.id}})
+        end
+        def {{first.id}}_{{second.id}}{{third.id}}
+          Vec3.new(@{{first.id}}, -@{{second.id}}, @{{third.id}})
+        end
+        def _{{first.id}}_{{second.id}}{{third.id}}
+          Vec3.new(-@{{first.id}}, -@{{second.id}}, @{{third.id}})
+        end
+        def {{first.id}}{{second.id}}_{{third.id}}
+          Vec3.new(@{{first.id}}, @{{second.id}}, -@{{third.id}})
+        end
+        def _{{first.id}}{{second.id}}_{{third.id}}
+          Vec3.new(-@{{first.id}}, @{{second.id}}, -@{{third.id}})
+        end
+        def {{first.id}}_{{second.id}}_{{third.id}}
+          Vec3.new(@{{first.id}}, -@{{second.id}}, -@{{third.id}})
+        end
+        def _{{first.id}}_{{second.id}}_{{third.id}}
+          Vec3.new(-@{{first.id}}, -@{{second.id}}, -@{{third.id}})
         end
       {% end %}
     {% end %}
