@@ -21,8 +21,13 @@ struct Vec3
   def initialize(@x : Float64, @y : Float64, @z : Float64)
   end
 
-  def xyz
-    {@x, @y, @z}
+  # Allow construction like this: foo = Vec3.new(bar.xy, 1.0)
+  def initialize(xy : Tuple(Float64, Float64), @z)
+    @x, @y = xy
+  end
+
+  def initialize(@x, ys : Tuple(Float64, Float64))
+    @y, @z = yz
   end
 
   {% for op in %w(+ - * /) %}
@@ -38,6 +43,33 @@ struct Vec3
       Vec3.new(@x {{op.id}} other, @y {{op.id}} other, @z {{op.id}} other)
     end
   {% end %}
+
+  def abs
+    Vec3.new(@x.abs, @y.abs, @z.abs)
+  end
+
+  # Swizzling, generate functions like vec.zzz, vec.xyz, etc
+  {% for first in %w(x y z) %}
+    {% for second in %w(x y z) %}
+      {% for third in %w(x y z) %}
+        def {{first.id}}{{second.id}}{{third.id}}
+          Vec3.new(@{{first.id}}, @{{second.id}}, @{{third.id}})
+        end
+      {% end %}
+    {% end %}
+  {% end %}
+
+  {% for first in %w(x y z) %}
+    {% for second in %w(x y z) %}
+      def {{first.id}}{{second.id}}
+        { @{{first.id}}, @{{second.id}} }
+      end
+    {% end %}
+  {% end %}
+
+  def tuple
+    {@x, @y, @z}
+  end
 
   def **(factor)
     Vec3.new(@x ** factor, @y ** factor, @z ** factor)

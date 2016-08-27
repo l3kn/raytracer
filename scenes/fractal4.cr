@@ -62,4 +62,4 @@ raytracer = SimpleRaytracer.new(width, height,
                                 background: SkyBackground.new,
                                 recursion_depth: 1)
 
-raytracer.render("fractal2.png")
+raytracer.render("fractal4.png")

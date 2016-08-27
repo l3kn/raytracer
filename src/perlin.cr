@@ -9,7 +9,7 @@ class Perlin
 
   # TODO: Make this work for negative x,y,z, too
   def perlin(point)
-    x, y, z = point.xyz
+    x, y, z = point.tuple
 
     if @repeat > 0
       x %= @repeat

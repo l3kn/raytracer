@@ -23,16 +23,16 @@ camera = Camera.new(
   look_from: Vec3.new(2.0, 0.5, 4.5) * 0.8,
   look_at: Vec3.new(0.0, 0.0, 0.0),
   up: Vec3::Y,
-  vertical_fov: 40,
+  vertical_fov: 32,
   aspect_ratio: width.to_f / height.to_f,
-  aperture: 0.0
+  aperture: 0.01
 )
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
                                 hitables: hitables,
                                 camera: camera,
-                                samples: 5,
+                                samples: 1,
                                 background: ConstantBackground.new(Vec3.new(1.0)),
                                 recursion_depth: 1)
 
