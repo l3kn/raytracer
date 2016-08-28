@@ -41,7 +41,7 @@ module DE
 
       return ::HitRecord.new(
         t: total_distance,
-        point: point,
+        point: point + normal * @minimum_distance * 2.0,
         normal: normal,
         material: @material,
         u: steps.to_f / @maximum_steps, v: 0.0
