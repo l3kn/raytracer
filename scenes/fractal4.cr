@@ -15,40 +15,34 @@ class UTexture < Texture
 end
 
 
-class MengerSponge < DE::DistanceEstimatable
-  def initialize(@iterations = 4, @scale = 3.0)
+class Octahedron < DE::DistanceEstimatable
+  def initialize(@iterations = 4, @scale = 4.0)
   end
 
   def distance_estimate(pos)
-    dist = Float64.max
-    t = 0.0
-
     @iterations.times do
-      pos = pos.abs
-
-      pos = pos.yxz if pos.x < pos.y
-      pos = pos.xzy if pos.y < pos.z
-      pos = pos.yxz if pos.x < pos.y
+      pos = pos._y_xz if pos.x + pos.y < 0.0
+      pos = pos._zy_x if pos.x + pos.z < 0.0
+      pos = pos.yxz if pos.x - pos.y < 0.0
+      pos = pos.zyx if pos.x - pos.z < 0.0
 
       pos = pos * @scale - (@scale - 1.0)
-      pos = Vec3.new(pos.xy, pos.z + (@scale - 1.0)) if pos.z < -0.5 * (@scale - 1.0)
     end
 
-    # (pos.length - 1.5) * (@scale ** (-@iterations))
     pos.length * (@scale ** (-@iterations))
   end
 end
 
 mat = Lambertian.new(UTexture.new)
 
-de = MengerSponge.new(15, 3.1)
+de = Octahedron.new(1, 2.0)
 hitables = DE::DistanceEstimator.new(mat, de, maximum_steps: 1000)
 
 # width, height = {1920, 1080}
 width, height = {800, 400}
 
 camera = Camera.new(
-  look_from: Vec3.new(2.0, 1.0, 1.0),
+  look_from: Vec3.new(10.0),
   look_at: Vec3.new(0.0, 0.0, 0.0),
   up: Vec3::Y,
   vertical_fov: 22,
@@ -60,8 +54,8 @@ camera = Camera.new(
 raytracer = SimpleRaytracer.new(width, height,
                                 hitables: hitables,
                                 camera: camera,
-                                samples: 4,
-                                background: SkyBackground.new,
-                                recursion_depth: 1)
+                                samples: 1,
+                                background: SkyBackground.new)
+raytracer.recursion_depth = 1
 
 raytracer.render("fractal4.png")

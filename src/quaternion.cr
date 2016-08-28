@@ -61,10 +61,6 @@ struct Quaternion
   {% end %}
 
   {% for op in %w(+ - * /) %}
-    def {{op.id}}(other : Quaternion)
-      Quaternion.new(@x {{op.id}} other.x, @y {{op.id}} other.y, @z {{op.id}} other.z, @w {{op.id}} other.w)
-    end
-
     def {{op.id}}(other : Float)
       Quaternion.new(@x {{op.id}} other, @y {{op.id}} other, @z {{op.id}} other, @w {{op.id}} other)
     end
@@ -73,4 +69,17 @@ struct Quaternion
       Quaternion.new(@x {{op.id}} other, @y {{op.id}} other, @z {{op.id}} other, @w {{op.id}} other)
     end
   {% end %}
+
+  def +(other : Quaternion)
+    Quaternion.new(@x + other.x, @y + other.y, @z + other.z, @w + other.w)
+  end
+
+  def *(other : Quaternion)
+    Quaternion.new(
+      @x*other.x - @y*other.y - @z*other.z - @w*other.w,
+      @x*other.y + @y*other.x + @z*other.w - @w*other.z,
+      @x*other.z + @z*other.x + @w*other.y - @y*other.w,
+      @x*other.w + @w*other.x + @y*other.z - @z*other.y,
+    )
+  end
 end

@@ -7,8 +7,9 @@ module DE
     property object : DistanceEstimatable
     property step : Float64
     property maximum_steps : Int32
+    property minimum_distance : Float64
 
-    def initialize(@material, @object, @step = 0.1, @maximum_steps = 1000)
+    def initialize(@material, @object, @step = 0.1, @maximum_steps = 1000, @minimum_distance = 0.0001)
     end
 
     def hit(ray, t_min, t_max)
@@ -27,7 +28,7 @@ module DE
         return nil if total_distance >= t_max
 
         steps += 1
-        break if distance < 0.00001
+        break if distance < @minimum_distance
       end
 
       x_dir = Vec3.new(@step, 0.0,   0.0)

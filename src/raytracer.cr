@@ -19,13 +19,19 @@ class NormalRaytracer
   property camera : Camera
   property hitables : Hitable
   property background : Background
+  property t_min : Float64
+  property t_max : Float64
 
-  def initialize(@width, @height, @hitables, @samples, @camera, background = nil, @recursion_depth = 10)
+  def initialize(@width, @height, @hitables, @camera, @samples, background = nil)
     if background.nil?
       @background = ConstantBackground.new(Vec3::ONE)
     else
       @background = background
     end
+
+    @t_min = 0.0001
+    @t_max = Float64::MAX
+    @recursion_depth = 10
   end
 
   def render(filename)
@@ -69,8 +75,8 @@ class NormalRaytracer
     StumpyPNG.write(canvas, filename)
   end
 
-  def color(ray, hitables, recursion_depth = 10)
-    hit = hitables.hit(ray, 0.0001, Float64::MAX)
+  def color(ray, hitables)
+    hit = hitables.hit(ray, @t_min, @t_max)
     if hit
       Vec3::ONE * 0.5 + hit.normal
     else
@@ -80,20 +86,15 @@ class NormalRaytracer
 end
 
 class Raytracer < NormalRaytracer
-  property hitables : Hitable
   property focus_hitables : Hitable
-  property background : Background
+  property recursion_depth : Int32
 
-  def initialize(@width, @height, @hitables, @camera, @samples, @focus_hitables, background = nil, @recursion_depth = 10)
-    if background.nil?
-      @background = ConstantBackground.new(Vec3::ONE)
-    else
-      @background = background
-    end
+  def initialize(width, height, hitables, camera, samples, @focus_hitables, background = nil)
+    super(width, height, hitables, camera, samples, background)
   end
 
-  def color(ray, hitables, recursion_depth = 10)
-    hit = hitables.hit(ray, 0.0001, Float64::MAX)
+  def color(ray, hitables, recursion_depth = @recursion_depth)
+    hit = hitables.hit(ray, @t_min, @t_max)
     if hit
       scatter = hit.material.scatter(ray, hit)
       emitted = hit.material.emitted(ray, hit)
@@ -121,19 +122,14 @@ class Raytracer < NormalRaytracer
 end
 
 class SimpleRaytracer < NormalRaytracer
-  property hitables : Hitable
-  property background : Background
+  property recursion_depth : Int32
 
-  def initialize(@width, @height, @hitables, @camera, @samples, background = nil, @recursion_depth = 10)
-    if background.nil?
-      @background = ConstantBackground.new(Vec3::ONE)
-    else
-      @background = background
-    end
+  def initialize(width, height, hitables, camera, samples, background = nil)
+    super(width, height, hitables, camera, samples)
   end
 
   def color(ray, hitables, recursion_depth = @recursion_depth)
-    hit = hitables.hit(ray, 0.0001, Float64::MAX)
+    hit = hitables.hit(ray, @t_min, @t_max)
     if hit
       scatter = hit.material.scatter(ray, hit)
       if scatter && recursion_depth > 0
