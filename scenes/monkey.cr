@@ -50,11 +50,11 @@ camera = Camera.new(
   aperture: 0.0
 )
 
-# hitables << XYRect.new(
-  # Vec3.new(-10.0, -10.0, -1.0),
-  # Vec3.new(10.0, 10.0, -1.0),
-  # Lambertian.new(Vec3.from_hex("#334D5C"))
-# )
+hitables << XYRect.new(
+  Vec3.new(-10.0, -10.0, -1.0),
+  Vec3.new(10.0, 10.0, -1.0),
+  Lambertian.new(Vec3.from_hex("#334D5C"))
+)
 
 light1 = Sphere.new(
   Vec3.new(0.5, 1.0, 3.0),
@@ -71,15 +71,15 @@ light2 = Sphere.new(
 hitables << light1
 hitables << light2
 
-raytracer = NormalRaytracer.new(width, height,
+raytracer = Raytracer.new(width, height,
                           hitables: BVHNode.new(hitables),
-                          # focus_hitables: HitableList.new([light1, light2]),
+                          focus_hitables: HitableList.new([light1, light2]),
                           camera: camera,
-                          samples: 10)
+                          samples: 20,
                           # background: CubeMap.new("cube_maps/Yokohama"))
                           # background: SkyBackground.new)l
-                          # background: ConstantBackground.new(Vec3.new(0.0, 0.0, 0.0)))
-# raytracer.recursion_depth = 2
+                          background: ConstantBackground.new(Vec3.new(0.0, 0.0, 0.0)))
+raytracer.recursion_depth = 2
 raytracer.gamma_correction = 1.0/1.4
 
 raytracer.render("monkey.png")
