@@ -1,45 +1,12 @@
 require "../src/raytracer"
 require "../src/backgrounds/*"
+require "../src/obj"
 
 mat = Lambertian.new(Vec3.from_hex("#EFC94C"))
+hitables = OBJ.parse("models/monkey.obj", mat)
 
-hitables = [] of Hitable
-
-obj = File.read("models/monkey.obj")
-
-vertices = [] of Vec3
-
-obj.lines.each do |line|
-  tokens = line.split
-  next if tokens.empty?
-
-  case tokens[0]
-  when "v"
-    cords = tokens[1, 3].map(&.to_f)
-    vertices << Vec3.new(cords[0], cords[1], cords[2])
-  when "f"
-    if tokens.size == 4
-      a, b, c = tokens[1, 3].map { |i| vertices[i.split("//")[0].to_i - 1] }
-      hitables << Triangle.new(a, b, c, mat)
-    elsif tokens.size == 5
-      a, b, c, d = tokens[1, 4].map { |i| vertices[i.split("//")[0].to_i - 1] }
-      hitables << Triangle.new(a, b, c, mat)
-      hitables << Triangle.new(a, c, d, mat)
-    else
-      raise "To many points in polygon"
-    end
-
-    # na, nb, nc = tokens[1, 3].map { |i| normals[i.split("//")[1].to_i - 1] }
-    # hitables << InterpolatedTriangle.new(a, b, c, na, nb, nc, mat)
-  end
-end
-
-puts "Parsed #{vertices.size} vertices"
-puts "Parsed #{vertices.size} normals"
-puts "Parsed #{hitables.size} faces"
-
+# width, height = {1920, 1080}
 width, height = {400, 400}
-# width, height = {200, 200}
 
 camera = Camera.new(
   look_from: Vec3.new(1.0, -0.45, 4.0),
@@ -50,7 +17,7 @@ camera = Camera.new(
   aperture: 0.0
 )
 
-hitables << XYRect.new(
+wall = XYRect.new(
   Vec3.new(-10.0, -10.0, -1.0),
   Vec3.new(10.0, 10.0, -1.0),
   Lambertian.new(Vec3.from_hex("#334D5C"))
@@ -68,14 +35,14 @@ light2 = Sphere.new(
   DiffuseLight.new(Vec3.new(4.0))
 )
 
-hitables << light1
-hitables << light2
+# hitables << light1
+# hitables << light2
 
 raytracer = Raytracer.new(width, height,
-                          hitables: BVHNode.new(hitables),
+                          hitables: HitableList.new([BVHNode.new(hitables), wall, light1, light2]),
                           focus_hitables: HitableList.new([light1, light2]),
                           camera: camera,
-                          samples: 20,
+                          samples: 300,
                           # background: CubeMap.new("cube_maps/Yokohama"))
                           # background: SkyBackground.new)l
                           background: ConstantBackground.new(Vec3.new(0.0, 0.0, 0.0)))
