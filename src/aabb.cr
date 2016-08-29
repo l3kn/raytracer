@@ -2,22 +2,26 @@ class AABB
   getter min, max
 
   def initialize(@min : Vec3, @max : Vec3)
+    # if @min.z == @max.z
+      # @min = Vec3.new(@min.xy, @min.z - 0.01)
+      # @max = Vec3.new(@max.xy, @max.z + 0.01)
+    # end
   end
 
   def hit(ray)
     dirfrac = Vec3::ONE / ray.direction
 
-    t1 = (@min.x - ray.origin.x) * dirfrac.x
-    t2 = (@max.x - ray.origin.x) * dirfrac.x
-    t3 = (@min.y - ray.origin.y) * dirfrac.y
-    t4 = (@max.y - ray.origin.y) * dirfrac.y
-    t5 = (@min.z - ray.origin.z) * dirfrac.z
-    t6 = (@max.z - ray.origin.z) * dirfrac.z
+    x1 = (@min.x - ray.origin.x) * dirfrac.x
+    x2 = (@max.x - ray.origin.x) * dirfrac.x
+    y1 = (@min.y - ray.origin.y) * dirfrac.y
+    y2 = (@max.y - ray.origin.y) * dirfrac.y
+    z1 = (@min.z - ray.origin.z) * dirfrac.z
+    z2 = (@max.z - ray.origin.z) * dirfrac.z
 
-    tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6))
-    tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6))
+    tmin = max(max(min(x1, x2), min(y1, y2)), min(z1, z2))
+    tmax = min(min(max(x1, x2), max(y1, y2)), max(z1, z2))
 
-    tmax > 0 && tmin < tmax
+    tmax > 0 && tmin <= tmax
   end
 
   def merge(other)
