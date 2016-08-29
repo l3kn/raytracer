@@ -38,7 +38,7 @@ class BVHNode < Hitable
         end
       end
 
-      sorted = list.sort_by { |h| h.bounding_box.centroid.xyz[axis] }
+      sorted = list.sort_by { |h| h.bounding_box.centroid.tuple[axis] }
       half = n / 2
 
       # Handle the case where n = 3
