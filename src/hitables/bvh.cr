@@ -9,7 +9,11 @@ class BVHNode < Hitable
   def initialize(list)
     n = list.size
 
-    if n == 2
+    if n == 1
+      # This should never happen
+      @left = list[0]
+      @right = list[0]
+    elsif n == 2
       @left = list[0]
       @right = list[1]
     else
