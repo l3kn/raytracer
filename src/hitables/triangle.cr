@@ -10,17 +10,8 @@ class Triangle < Hitable
   getter normal : Vec3
 
   def initialize(@a, @b, @c, @material)
-    min = Vec3.new(
-      [@a.x, @b.x, @c.x].min,
-      [@a.y, @b.y, @c.y].min,
-      [@a.z, @b.z, @c.z].min
-    )
-
-    max = Vec3.new(
-      [@a.x, @b.x, @c.x].max,
-      [@a.y, @b.y, @c.y].max,
-      [@a.z, @b.z, @c.z].max
-    )
+    min = @a.min(@b).min(@c)
+    max = @a.max(@b).max(@c)
 
     @bounding_box = AABB.new(min, max)
 

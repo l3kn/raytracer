@@ -109,12 +109,20 @@ struct Vec3
     Vec3.new(@x % n, @y % n, @z % n)
   end
 
-  def max(n)
+  def max(n : Float64)
     Vec3.new(max(n, @x), max(n, @y), max(n, @z))
   end
 
-  def min(n)
+  def max(other : Vec3)
+    Vec3.new(max(@x, other.x), max(@y, other.y), max(@z, other.z))
+  end
+
+  def min(n : Float64)
     Vec3.new(min(n, @x), min(n, @y), min(n, @z))
+  end
+
+  def min(other : Vec3)
+    Vec3.new(min(@x, other.x), min(@y, other.y), min(@z, other.z))
   end
 
   def dot(other)
