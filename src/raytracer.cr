@@ -21,6 +21,7 @@ class NormalRaytracer
   property background : Background
   property t_min : Float64
   property t_max : Float64
+  property gamma_correction : Float64
 
   def initialize(@width, @height, @hitables, @camera, @samples, background = nil)
     if background.nil?
@@ -31,7 +32,7 @@ class NormalRaytracer
 
     @t_min = 0.0001
     @t_max = Float64::MAX
-    @recursion_depth = 10
+    @gamma_correction = 1.0/2.2
   end
 
   def render(filename)
@@ -57,7 +58,7 @@ class NormalRaytracer
 
         col /= (samples_sqrt * samples_sqrt)
         col = col.min(1.0)
-        col **= 0.45 # Gamma Correction
+        col **= @gamma_correction # Gamma Correction
 
         rgba = StumpyPNG::RGBA.new(
           (UInt16::MAX * col.x).to_u16,
@@ -91,6 +92,7 @@ class Raytracer < NormalRaytracer
 
   def initialize(width, height, hitables, camera, samples, @focus_hitables, background = nil)
     super(width, height, hitables, camera, samples, background)
+    @recursion_depth = 10
   end
 
   def color(ray, hitables, recursion_depth = @recursion_depth)
@@ -126,6 +128,7 @@ class SimpleRaytracer < NormalRaytracer
 
   def initialize(width, height, hitables, camera, samples, background = nil)
     super(width, height, hitables, camera, samples)
+    @recursion_depth = 10
   end
 
   def color(ray, hitables, recursion_depth = @recursion_depth)

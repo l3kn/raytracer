@@ -80,5 +80,6 @@ raytracer = NormalRaytracer.new(width, height,
                           # background: SkyBackground.new)l
                           # background: ConstantBackground.new(Vec3.new(0.0, 0.0, 0.0)))
 # raytracer.recursion_depth = 2
+raytracer.gamma_correction = 1.0/1.4
 
 raytracer.render("monkey.png")
