@@ -22,6 +22,7 @@ class NormalRaytracer
   property t_min : Float64
   property t_max : Float64
   property gamma_correction : Float64
+  property recursion_depth : Int32
 
   def initialize(@width, @height, @hitables, @camera, @samples, background = nil)
     if background.nil?
@@ -33,6 +34,7 @@ class NormalRaytracer
     @t_min = 0.0001
     @t_max = Float64::MAX
     @gamma_correction = 1.0/2.2
+    @recursion_depth = 10
   end
 
   def render(filename)
@@ -88,11 +90,9 @@ end
 
 class Raytracer < NormalRaytracer
   property focus_hitables : Hitable
-  property recursion_depth : Int32
 
   def initialize(width, height, hitables, camera, samples, @focus_hitables, background = nil)
     super(width, height, hitables, camera, samples, background)
-    @recursion_depth = 10
   end
 
   def color(ray, hit, recursion_depth)
@@ -119,14 +119,11 @@ class Raytracer < NormalRaytracer
 end
 
 class SimpleRaytracer < NormalRaytracer
-  property recursion_depth : Int32
-
   def initialize(width, height, hitables, camera, samples, background = nil)
     super(width, height, hitables, camera, samples)
-    @recursion_depth = 10
   end
 
-  def color(ray, hit)
+  def color(ray, hit, recursion_depth)
     scatter = hit.material.scatter(ray, hit)
     if scatter && recursion_depth > 0
       pdf_or_ray = scatter.pdf_or_ray
