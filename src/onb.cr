@@ -1,9 +1,7 @@
 require "./vec3"
 
 struct ONB
-  getter u : Vec3
-  getter v : Vec3
-  getter w : Vec3
+  getter u : Vec3, v : Vec3, w : Vec3
 
   def initialize(@u, @v, @w)
   end

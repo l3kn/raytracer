@@ -38,10 +38,6 @@ def random_in_unit_sphere
   point
 end
 
-def random_on_unit_sphere
-  random_in_unit_sphere.normalize
-end
-
 def random_in_unit_circle
   point = Vec3::ONE
   while point.squared_length >= 1.0
@@ -49,14 +45,6 @@ def random_in_unit_circle
   end
 
   point
-end
-
-def random_on_hemisphere(normal)
-  point = random_on_unit_sphere
-
-  # Check if the point lies on the correct hemisphere,
-  # if not, invert it
-  normal.dot(point) > 0 ? point : -point
 end
 
 def random_cosine_direction
