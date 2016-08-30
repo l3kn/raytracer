@@ -1,8 +1,6 @@
 require "../src/raytracer"
 require "../src/backgrounds/*"
-require "../src/distance_estimator"
 require "../src/distance_estimatable"
-require "../src/distance_estimatables/*"
 require "../src/quaternion"
 
 class UTexture < Texture
@@ -42,7 +40,7 @@ end
 mat = Lambertian.new(UTexture.new)
 
 de = Julia.new(100)
-hitables = DE::DistanceEstimator.new(
+hitables = DistanceEstimator.new(
   mat,
   de,
   maximum_steps: 1000,

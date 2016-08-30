@@ -1,8 +1,6 @@
 require "../src/raytracer"
 require "../src/backgrounds/*"
-require "../src/distance_estimator"
 require "../src/distance_estimatable"
-require "../src/distance_estimatables/*"
 
 class UTexture < Texture
   def initialize
@@ -36,7 +34,7 @@ end
 mat = Lambertian.new(UTexture.new)
 
 de = SierpinskyTetrahedron.new(11, 2.0)
-hitables = DE::DistanceEstimator.new(mat, de, maximum_steps: 600)
+hitables = DistanceEstimator.new(mat, de, maximum_steps: 600)
 
 # width, height = {1920, 1080}
 width, height = {400, 400}

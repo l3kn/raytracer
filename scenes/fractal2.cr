@@ -1,7 +1,5 @@
 require "../src/raytracer"
 require "../src/backgrounds/*"
-require "../src/distance_estimator"
-require "../src/distance_estimatable"
 require "../src/distance_estimatables/*"
 
 class UTexture < Texture
@@ -16,7 +14,7 @@ end
 
 mat = Lambertian.new(UTexture.new)
 de = DE::MengerSponge.new(15)
-hitables = DE::DistanceEstimator.new(mat, de, maximum_steps: 1000)
+hitables = DistanceEstimator.new(mat, de, maximum_steps: 1000)
 
 # width, height = {1920, 1080}
 width, height = {800, 400}
