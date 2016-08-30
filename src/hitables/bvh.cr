@@ -11,8 +11,7 @@ class BVHNode < Hitable
 
     if n == 1
       # This should never happen
-      @left = list[0]
-      @right = list[0]
+      @left = @right = list[0]
     elsif n == 2
       @left = list[0]
       @right = list[1]
@@ -20,26 +19,16 @@ class BVHNode < Hitable
       # Split on the axis where the range of centroids is the largest
       centroids = list.map { |obj| obj.bounding_box.centroid }
 
-      min_x, max_x = centroids.minmax_by(&.x)
-      min_y, max_y = centroids.minmax_by(&.y)
-      min_z, max_z = centroids.minmax_by(&.z)
+      min = centroids.reduce(Vec3.new(-Float64::MAX)) { |centroid, min| centroid.min(min) }
+      max = centroids.reduce(Vec3.new( Float64::MAX)) { |centroid, max| centroid.max(max) }
+      delta = max - min
 
-      delta_x = max_x.x - min_x.x
-      delta_y = max_y.y - min_y.y
-      delta_z = max_z.z - min_z.z
-
-      if delta_y > delta_x 
-        if delta_z > delta_y
-          axis = 2
-        else
-          axis = 1
-        end
+      if delta.x >= delta.y && delta.x >= delta.z
+        axis = 0
+      elsif delta.y >= delta.x && delta.y >= delta.z
+        axis = 1
       else
-        if delta_z > delta_x
-          axis = 2
-        else
-          axis = 0
-        end
+        axis = 2
       end
 
       sorted = list.sort_by { |h| h.bounding_box.centroid.tuple[axis] }
@@ -62,14 +51,10 @@ class BVHNode < Hitable
       hit_left = @left.hit(ray, t_min, t_max)
       hit_right = @right.hit(ray, t_min, t_max)
 
-      if (hit_left && hit_right)
-        (hit_left.t < hit_right.t) ? hit_left : hit_right
-      elsif hit_left
-        hit_left
-      elsif hit_right
-        hit_right
+      if hit_left && hit_right
+        hit_left.t < hit_right.t ? hit_left : hit_right
       else
-        nil
+        hit_left || hit_right
       end
     else
       nil
