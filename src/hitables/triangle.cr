@@ -1,5 +1,7 @@
+require "../hitable"
+
 class Triangle < Hitable
-  getter bounding_box
+  getter bounding_box : AABB
   getter a : Vec3
   getter b : Vec3
   getter c : Vec3
@@ -49,14 +51,53 @@ class Triangle < Hitable
 
     if (t < t_max && t > t_min)
       point = ray.point_at_parameter(t)
-      if @normal.dot(ray.direction) < 0.0
-        return HitRecord.new(t, point, @normal, @material, u, v)
-      else
-        return HitRecord.new(t, point, -@normal, @material, u, v)
-      end
+      return HitRecord.new(t, point, get_normal(ray, point), @material, u, v)
     else
       return nil
     end
   end
+
+  def get_normal(ray, point)
+    if @normal.dot(ray.direction) < 0.0
+      @normal
+    else
+      -@normal
+    end
+  end
 end
 
+class InterpolatedTriangle < Triangle
+  # Vertex normals
+  getter na : Vec3
+  getter nb : Vec3
+  getter nc : Vec3
+
+  def initialize(@a, @b, @c, @na, @nb, @nc, @material)
+    super(@a, @b, @c, @material)
+  end
+
+  def barycentricCoordinates(p)
+    v0 = @b - @a
+    v1 = @c - @a
+    v2 = p - @a
+
+    d00 = v0.dot(v0)
+    d01 = v0.dot(v1)
+    d11 = v1.dot(v1)
+    d20 = v2.dot(v0)
+    d21 = v2.dot(v1)
+
+    denom = d00 * d11 - d01 * d01
+
+    v = (d11 * d20 - d01 * d21) / denom
+    w = (d00 * d21 - d01 * d20) / denom
+    u = 1.0 - v - w
+
+    Vec3.new(u, v, w)
+  end
+
+  def get_normal(ray, point)
+    bc = barycentricCoordinates(point)
+    normal = @na * bc.x + @nb * bc.y + @nc * bc.z
+  end
+end
