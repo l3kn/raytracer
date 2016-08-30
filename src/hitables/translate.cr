@@ -1,3 +1,6 @@
+require "../hitable"
+require "../aabb"
+
 class Translate < Hitable
   getter offset : Vec3
   getter object : Hitable
@@ -20,8 +23,7 @@ class Translate < Hitable
         hit.point + @offset,
         hit.normal,
         hit.material,
-        hit.u,
-        hit.v
+        hit.u, hit.v
       )
     else
       nil
