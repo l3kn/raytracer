@@ -1,10 +1,9 @@
 require "../hitable"
+require "./hitable_list"
 
 class Cuboid < Hitable
   getter list : HitableList
-  def initialize(p1, p2, top, bottom,
-                         front, back,
-                         left, right)
+  def initialize(p1, p2, top, bottom, front, back, left, right)
     # back | front, right | left, top | bottom
     brt = Vec3.new(p2.x, p2.y, p2.z)
     brb = Vec3.new(p2.x, p1.y, p2.z)
