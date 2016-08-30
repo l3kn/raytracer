@@ -1,94 +1,71 @@
 require "../hitable"
 
-class XYRect < Hitable
-  property x0 : Float64, x1 : Float64, y0 : Float64, y1 : Float64, z : Float64, material
+abstract class Rect < Hitable
+  property material
+  getter bot, top
 
-  def initialize(bottom : Vec3, top : Vec3, @material : Material)
-    if bottom.z != top.z
-      raise "XYRect bottom & top don't have the same z value"
-    end
-
-    @x0 = bottom.x
-    @x1 = top.x
-    @y0 = bottom.y
-    @y1 = top.y
-    @z = bottom.z
-
-    @normal = Vec3::Z
+  def initialize(@bot : Vec3, @top : Vec3)
   end
 
   def flip!
     @normal = -@normal
   end
 
-  def hit(ray, t_min, t_max)
-    t = (@z - ray.origin.z) / ray.direction.z
-    return nil if t < t_min || t > t_max
-
-    point = ray.point_at_parameter(t)
-
-    # Hitpoint is outside of the rect
-    return nil if point.x < @x0 || point.x > @x1 ||
-                  point.y < @y0 || point.y > @y1
-
-    u = (point.x - @x0) / (@x1 - @x0) 
-    v = (point.y - @y0) / (@y1 - @y0) 
-    return HitRecord.new(t, point, @normal, @material, u, v)
-  end
-
   def bounding_box
-    bottom = Vec3.new(@x0, @y0, @z-0.0001)
-    top = Vec3.new(@x1, @y1, @z+0.0001)
-    AABB.new(bottom, top)
+    AABB.new(bot, top)
   end
 end
 
-class XZRect < Hitable
-  property x0 : Float64, x1 : Float64, y : Float64, z0 : Float64, z1 : Float64, material
+class XYRect < Rect
 
-  def initialize(bottom : Vec3, top : Vec3, @material : Material)
-    if bottom.y != top.y
-      raise "XZRect bottom & top don't have the same y value"
-    end
-
-    @x0 = bottom.x
-    @x1 = top.x
-    @y = bottom.y
-    @z0 = bottom.z
-    @z1 = top.z
-
-    @normal = Vec3::Y
-  end
-
-  def flip!
-    @normal = -@normal
+  def initialize(bot : Vec3, top : Vec3, @material : Material)
+    raise "XYRect bot & top don't have the same z value" if bot.z != top.z
+    super(bot, top)
+    @normal = Vec3::Z
   end
 
   def hit(ray, t_min, t_max)
-    t = (@y - ray.origin.y) / ray.direction.y
+    t = (@bot.z - ray.origin.z) / ray.direction.z
     return nil if t < t_min || t > t_max
 
     point = ray.point_at_parameter(t)
 
     # Hitpoint is outside of the rect
-    return nil if point.x < @x0 || point.x > @x1 ||
-                  point.z < @z0 || point.z > @z1
+    return nil if point.x < @bot.x || point.x > @top.x ||
+                  point.y < @bot.y || point.y > @top.y
 
-    u = (point.x - @x0) / (@x1 - @x0) 
-    v = (point.z - @z0) / (@z1 - @z0) 
+    u = (point.x - @bot.x) / (@top.x - @bot.x) 
+    v = (point.y - @bot.y) / (@top.y - @bot.y) 
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
+end
 
-  def bounding_box
-    bottom = Vec3.new(@x0, @y-0.0001, @z0)
-    top = Vec3.new(@x1, @y+0.0001, @z1)
-    AABB.new(bottom, top)
+class XZRect < Rect
+  def initialize(bot : Vec3, top : Vec3, @material : Material)
+    raise "XZRect bot & top don't have the same y value" if bot.y != top.y
+    super(bot, top)
+    @normal = Vec3::Y
+  end
+
+  def hit(ray, t_min, t_max)
+    t = (@bot.y - ray.origin.y) / ray.direction.y
+    return nil if t < t_min || t > t_max
+
+    point = ray.point_at_parameter(t)
+
+    # Hitpoint is outside of the rect
+    return nil if point.x < @bot.x || point.x > @top.x ||
+                  point.z < @bot.z || point.z > @top.z
+
+    u = (point.x - @bot.x) / (@top.x - @bot.x) 
+    v = (point.z - @bot.z) / (@top.z - @bot.z) 
+    return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
   def pdf_value(origin, direction)
     hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
     if hit
-      area = (@x1 - @x0) * (@z1 - @z0)
+      area = (@top.x - @bot.x) * (@top.z - @bot.z)
       distance_squared = hit.t * hit.t * direction.squared_length
       cosine = (direction.dot(hit.normal) / direction.length).abs
 
@@ -100,54 +77,34 @@ class XZRect < Hitable
 
   def random(origin)
     random_point = Vec3.new(
-      @x0 + pos_random * (@x1 - @x0),
-      @y,
-      @z0 + pos_random * (@z1 - @z0)
+      @bot.x + pos_random * (@top.x - @bot.x),
+      @bot.y,
+      @bot.z + pos_random * (@top.z - @bot.z)
     )
 
     random_point - origin
   end
 end
 
-class YZRect < Hitable
-  property x : Float64, y0 : Float64, y1 : Float64, z0 : Float64, z1 : Float64, material
-
-  def initialize(bottom : Vec3, top : Vec3, @material : Material)
-    if bottom.x != top.x
-      raise "YZRect bottom & top don't have the same x value"
-    end
-
-    @x = bottom.x
-    @y0 = bottom.y
-    @y1 = top.y
-    @z0 = bottom.z
-    @z1 = top.z
-
+class YZRect < Rect
+  def initialize(bot : Vec3, top : Vec3, @material : Material)
+    raise "YZRect bot & top don't have the same x value" if bot.x != top.x
+    super(bot, top)
     @normal = Vec3::X
   end
 
-  def flip!
-    @normal = -@normal
-  end
-
   def hit(ray, t_min, t_max)
-    t = (@x - ray.origin.x) / ray.direction.x
+    t = (@bot.x - ray.origin.x) / ray.direction.x
     return nil if t < t_min || t > t_max
 
     point = ray.point_at_parameter(t)
 
     # Hitpoint is outside of the rect
-    return nil if point.y < @y0 || point.y > @y1 ||
-                  point.z < @z0 || point.z > @z1
+    return nil if point.y < @bot.y || point.y > @top.y ||
+                  point.z < @bot.z || point.z > @top.z
 
-    u = (point.z - @z0) / (@z1 - @z0) 
-    v = (point.y - @y0) / (@y1 - @y0) 
+    u = (point.z - @bot.z) / (@top.z - @bot.z) 
+    v = (point.y - @bot.y) / (@top.y - @bot.y) 
     return HitRecord.new(t, point, @normal, @material, u, v)
-  end
-
-  def bounding_box
-    bottom = Vec3.new(@x-0.0001, @y0, @z0)
-    top = Vec3.new(@x+0.0001, @y1, @z1)
-    AABB.new(bottom, top)
   end
 end
