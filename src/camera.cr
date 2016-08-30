@@ -1,9 +1,7 @@
 require "./vec3"
 
 class Camera
-  getter u : Vec3
-  getter v : Vec3
-  getter w : Vec3
+  getter u : Vec3, v : Vec3, w : Vec3
   getter lower_left_corner : Vec3
   getter horizontal : Vec3
   getter vertical : Vec3
