@@ -30,7 +30,7 @@ struct Vec3
     @y, @z = yz
   end
 
-  {% for op in %w(+ - * /) %}
+  {% for op in %w(+ - * / **) %}
     def {{op.id}}(other : Vec3)
       Vec3.new(@x {{op.id}} other.x, @y {{op.id}} other.y, @z {{op.id}} other.z)
     end
@@ -93,16 +93,8 @@ struct Vec3
     {@x, @y, @z}
   end
 
-  def **(factor)
-    Vec3.new(@x ** factor, @y ** factor, @z ** factor)
-  end
-
   def -
     Vec3.new(-@x, -@y, -@z)
-  end
-
-  def abs
-    Vec3.new(@x.abs, @y.abs, @z.abs)
   end
 
   def mod(n)
