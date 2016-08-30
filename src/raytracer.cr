@@ -52,7 +52,7 @@ class NormalRaytracer
             v = (y + off_y).to_f / @height
 
             ray = @camera.get_ray(u, v)
-            col += de_nan(color(ray, hitables))
+            col += de_nan(cast_ray(ray))
           end
         end
 
@@ -76,13 +76,13 @@ class NormalRaytracer
     StumpyPNG.write(canvas, filename)
   end
 
-  def color(ray, hitables)
-    hit = hitables.hit(ray, @t_min, @t_max)
-    if hit
-      Vec3::ONE * 0.5 + hit.normal
-    else
-      @background.get(ray)
-    end
+  def cast_ray(ray, recursion_depth = @recursion_depth)
+    hit = @hitables.hit(ray, @t_min, @t_max)
+    hit ? color(ray, hit, recursion_depth) : @background.get(ray)
+  end
+
+  def color(ray, hit, recursion_depth)
+    Vec3::ONE * 0.5 + hit.normal
   end
 end
 
@@ -95,30 +95,25 @@ class Raytracer < NormalRaytracer
     @recursion_depth = 10
   end
 
-  def color(ray, hitables, recursion_depth = @recursion_depth)
-    hit = hitables.hit(ray, @t_min, @t_max)
-    if hit
-      scatter = hit.material.scatter(ray, hit)
-      emitted = hit.material.emitted(ray, hit)
-      if scatter && recursion_depth > 0
-        pdf_or_ray = scatter.pdf_or_ray
+  def color(ray, hit, recursion_depth)
+    scatter = hit.material.scatter(ray, hit)
+    emitted = hit.material.emitted(ray, hit)
+    if scatter && recursion_depth > 0
+      pdf_or_ray = scatter.pdf_or_ray
 
-        if pdf_or_ray.is_a? Ray
-          scatter.albedo * color(pdf_or_ray, hitables, recursion_depth - 1)
-        else
-          p1 = HitablePDF.new(@focus_hitables, hit.point)
-          p = MixturePDF.new(p1, pdf_or_ray)
-          scattered = Ray.new(hit.point, p.generate)
-          pdf_val = p.value(scattered.direction)
-
-          pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
-          emitted + scatter.albedo * color(scattered, hitables, recursion_depth - 1) * pdf
-        end
+      if pdf_or_ray.is_a? Ray
+        scatter.albedo * cast_ray(pdf_or_ray, recursion_depth - 1)
       else
-        emitted
+        p1 = HitablePDF.new(@focus_hitables, hit.point)
+        p = MixturePDF.new(p1, pdf_or_ray)
+        scattered = Ray.new(hit.point, p.generate)
+        pdf_val = p.value(scattered.direction)
+
+        pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
+        emitted + scatter.albedo * cast_ray(scattered, recursion_depth - 1) * pdf
       end
     else
-      @background.get(ray)
+      emitted
     end
   end
 end
@@ -131,27 +126,22 @@ class SimpleRaytracer < NormalRaytracer
     @recursion_depth = 10
   end
 
-  def color(ray, hitables, recursion_depth = @recursion_depth)
-    hit = hitables.hit(ray, @t_min, @t_max)
-    if hit
-      scatter = hit.material.scatter(ray, hit)
-      if scatter && recursion_depth > 0
-        pdf_or_ray = scatter.pdf_or_ray
+  def color(ray, hit)
+    scatter = hit.material.scatter(ray, hit)
+    if scatter && recursion_depth > 0
+      pdf_or_ray = scatter.pdf_or_ray
 
-        if pdf_or_ray.is_a? Ray
-          scatter.albedo * color(pdf_or_ray, hitables, recursion_depth - 1)
-        else
-          scattered = Ray.new(hit.point, pdf_or_ray.generate)
-          pdf_val = pdf_or_ray.value(scattered.direction)
-
-          pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
-          scatter.albedo * color(scattered, hitables, recursion_depth - 1) * pdf
-        end
+      if pdf_or_ray.is_a? Ray
+        scatter.albedo * cast_ray(pdf_or_ray, recursion_depth - 1)
       else
-        Vec3::ZERO
+        scattered = Ray.new(hit.point, pdf_or_ray.generate)
+        pdf_val = pdf_or_ray.value(scattered.direction)
+
+        pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
+        scatter.albedo * cast_ray(scattered, recursion_depth - 1) * pdf
       end
     else
-      @background.get(ray)
+      Vec3::ZERO
     end
   end
 end
