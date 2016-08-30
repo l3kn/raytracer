@@ -157,10 +157,6 @@ struct Vec3
     end
   end
 
-  def clone
-    Vec3.new(@x, @y, @z)
-  end
-
   def self.from_hex(hex)
     r = hex[1,2].to_i(16).to_f / 255
     g = hex[3,2].to_i(16).to_f / 255

@@ -6,7 +6,7 @@ module DE
     end
 
     def distance_estimate(pos)
-      z = pos.clone
+      z = pos
       dr = 1.0
       r = 0.0
 
