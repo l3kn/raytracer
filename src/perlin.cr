@@ -1,3 +1,5 @@
+require "./helper"
+
 # Source: http://flafla2.github.io/2014/08/09/perlinnoise.html
 
 class Perlin
@@ -38,27 +40,27 @@ class Perlin
     bba = @p[@p[@p[inc(xi)] + inc(yi)] +     zi ]
     bbb = @p[@p[@p[inc(xi)] + inc(yi)] + inc(zi)]
 
-    x1 = lerp(grad(aaa, xf,   yf, zf),
-              grad(baa, xf-1, yf, zf),
-              u)
+    x1 = mix(grad(baa, xf-1, yf, zf),
+             grad(aaa, xf,   yf, zf),
+             u)
 
-    x2 = lerp(grad(aba, xf,   yf-1, zf),
-              grad(bba, xf-1, yf-1, zf),
-              u)
+    x2 = mix(grad(bba, xf-1, yf-1, zf),
+             grad(aba, xf,   yf-1, zf),
+             u)
 
-    y1 = lerp(x1, x2, v)
+    y1 = mix(x2, x1, v)
 
-    x1 = lerp(grad(aab, xf,   yf, zf-1),
-              grad(bab, xf-1, yf, zf-1),
-              u)
+    x1 = mix(grad(bab, xf-1, yf, zf-1),
+             grad(aab, xf,   yf, zf-1),
+             u)
 
-    x2 = lerp(grad(abb, xf,   yf-1, zf-1),
-              grad(bbb, xf-1, yf-1, zf-1),
-              u)
+    x2 = mix(grad(bbb, xf-1, yf-1, zf-1),
+             grad(abb, xf,   yf-1, zf-1),
+             u)
 
-    y2 = lerp(x1, x2, v)
+    y2 = mix(x2, x1, v)
 
-    res = (lerp(y1, y2, w) + 1) / 2
+    res = (mix(y2, y1, w) + 1) / 2
     res
   end
 
@@ -83,14 +85,7 @@ class Perlin
   end
 
   def inc(n)
-    n += 1
-    n %= @repeat if @repeat > 0
-    n
-  end
-
-  # Linear Interpolation
-  def lerp(a, b, x)
-    a + x * (b - a)
+    @repeat > 0 ? ((n + 1) % @repeat) : (n + 1)
   end
 
   # Generate random vector

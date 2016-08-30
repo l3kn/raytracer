@@ -67,4 +67,3 @@ class Sphere < Hitable
     uvw.local(random_to_sphere(@radius, distance_squared))
   end
 end
-
