@@ -8,6 +8,7 @@ module OBJ
 
     obj.lines.each do |line|
       tokens = line.split
+      next if tokens.empty?
 
       case tokens[0]
       when "v"
