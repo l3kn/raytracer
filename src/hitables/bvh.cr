@@ -20,7 +20,7 @@ class BVHNode < Hitable
       centroids = list.map { |obj| obj.bounding_box.centroid }
 
       min = centroids.reduce(Vec3.new(-Float64::MAX)) { |centroid, min| centroid.min(min) }
-      max = centroids.reduce(Vec3.new( Float64::MAX)) { |centroid, max| centroid.max(max) }
+      max = centroids.reduce(Vec3.new(Float64::MAX)) { |centroid, max| centroid.max(max) }
       delta = max - min
 
       if delta.x >= delta.y && delta.x >= delta.z

@@ -17,7 +17,6 @@ abstract class Rect < Hitable
 end
 
 class XYRect < Rect
-
   def initialize(bot : Vec3, top : Vec3, @material : Material)
     raise "XYRect bot & top don't have the same z value" if bot.z != top.z
     super(bot, top)
@@ -34,8 +33,8 @@ class XYRect < Rect
     return nil if point.x < @bot.x || point.x > @top.x ||
                   point.y < @bot.y || point.y > @top.y
 
-    u = (point.x - @bot.x) / (@top.x - @bot.x) 
-    v = (point.y - @bot.y) / (@top.y - @bot.y) 
+    u = (point.x - @bot.x) / (@top.x - @bot.x)
+    v = (point.y - @bot.y) / (@top.y - @bot.y)
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
@@ -80,8 +79,8 @@ class XZRect < Rect
     return nil if point.x < @bot.x || point.x > @top.x ||
                   point.z < @bot.z || point.z > @top.z
 
-    u = (point.x - @bot.x) / (@top.x - @bot.x) 
-    v = (point.z - @bot.z) / (@top.z - @bot.z) 
+    u = (point.x - @bot.x) / (@top.x - @bot.x)
+    v = (point.z - @bot.z) / (@top.z - @bot.z)
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
@@ -126,8 +125,8 @@ class YZRect < Rect
     return nil if point.y < @bot.y || point.y > @top.y ||
                   point.z < @bot.z || point.z > @top.z
 
-    u = (point.z - @bot.z) / (@top.z - @bot.z) 
-    v = (point.y - @bot.y) / (@top.y - @bot.y) 
+    u = (point.z - @bot.z) / (@top.z - @bot.z)
+    v = (point.y - @bot.y) / (@top.y - @bot.y)
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 

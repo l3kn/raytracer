@@ -13,13 +13,11 @@ class UTexture < Texture
   end
 end
 
-
 class Julia < DE::DistanceEstimatable
   def initialize(@iterations = 4)
     # @d = Quaternion.new(0.18, 0.88, 0.24, 0.16)
-    @d = Quaternion.new(-0.137,-0.630,-0.475,-0.046)
+    @d = Quaternion.new(-0.137, -0.630, -0.475, -0.046)
     # @d = Quaternion.new(-0.218,-0.113,-0.181,-0.496)
-
   end
 
   def distance_estimate(pos)

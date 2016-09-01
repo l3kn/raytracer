@@ -30,10 +30,10 @@ camera = Camera.new(
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
-                                hitables: hitables,
-                                camera: camera,
-                                samples: 1,
-                                background: ConstantBackground.new(Vec3.new(1.0)))
+  hitables: hitables,
+  camera: camera,
+  samples: 1,
+  background: ConstantBackground.new(Vec3.new(1.0)))
 raytracer.recursion_depth = 1
 
 raytracer.render("fractal.png")

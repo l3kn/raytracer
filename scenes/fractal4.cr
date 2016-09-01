@@ -12,7 +12,6 @@ class UTexture < Texture
   end
 end
 
-
 class Octahedron < DE::DistanceEstimatable
   def initialize(@iterations = 4, @scale = 4.0)
   end
@@ -50,10 +49,10 @@ camera = Camera.new(
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
-                                hitables: hitables,
-                                camera: camera,
-                                samples: 1,
-                                background: SkyBackground.new)
+  hitables: hitables,
+  camera: camera,
+  samples: 1,
+  background: SkyBackground.new)
 raytracer.recursion_depth = 1
 
 raytracer.render("fractal4.png")

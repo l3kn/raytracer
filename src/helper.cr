@@ -47,7 +47,7 @@ def random_cosine_direction
   r1 = pos_random
   r2 = pos_random
 
-  z = Math.sqrt(1-r2)
+  z = Math.sqrt(1 - r2)
   phi = 2*Math::PI*r1
 
   sqrt = Math.sqrt(r2)

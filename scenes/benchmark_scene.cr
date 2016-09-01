@@ -39,9 +39,9 @@ camera = Camera.new(
 )
 
 raytracer = SimpleRaytracer.new(width, height,
-                                hitables: HitableList.new(hitables),
-                                camera: camera,
-                                samples: 50,
-                                background: SkyBackground.new)
+  hitables: HitableList.new(hitables),
+  camera: camera,
+  samples: 50,
+  background: SkyBackground.new)
 
 raytracer.render("benchmark.png")

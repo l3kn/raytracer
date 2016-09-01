@@ -4,7 +4,7 @@ module OBJ
 
     hitables = [] of Hitable
     vertices = [] of Vec3
-    normals  = [] of Vec3
+    normals = [] of Vec3
 
     obj.lines.each do |line|
       tokens = line.split
@@ -21,18 +21,18 @@ module OBJ
         vs = tokens[1..-1].map { |i| i.split("/") }
 
         (1..(vs.size - 2)).each do |i|
-          a = vertices[vs[  0][0].to_i - 1]
-          b = vertices[vs[  i][0].to_i - 1]
-          c = vertices[vs[i+1][0].to_i - 1]
+          a = vertices[vs[0][0].to_i - 1]
+          b = vertices[vs[i][0].to_i - 1]
+          c = vertices[vs[i + 1][0].to_i - 1]
 
           unless interpolated
             hitables << Triangle.new(a, b, c, mat)
           else
             raise "Error, there are no normals in this .obj file" if normals.empty?
 
-            na = normals[vs[  0][2].to_i - 1]
-            nb = normals[vs[  i][2].to_i - 1]
-            nc = normals[vs[i+1][2].to_i - 1]
+            na = normals[vs[0][2].to_i - 1]
+            nb = normals[vs[i][2].to_i - 1]
+            nc = normals[vs[i + 1][2].to_i - 1]
             hitables << InterpolatedTriangle.new(a, b, c, na, nb, nc, mat)
           end
         end

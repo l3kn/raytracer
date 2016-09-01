@@ -18,7 +18,7 @@ module DE
         theta = Math.acos(z.z / r)
         phi = Math.atan2(z.y, z.x)
 
-        dr = (r ** (@power-1)) * @power * dr + 1.0
+        dr = (r ** (@power - 1)) * @power * dr + 1.0
 
         zr = r ** @power
         theta = theta*@power
@@ -27,8 +27,8 @@ module DE
         sin_theta = Math.sin(theta)
 
         z = Vec3.new(sin_theta * Math.cos(phi),
-                     sin_theta * Math.sin(phi),
-                     Math.cos(theta)) * zr
+          sin_theta * Math.sin(phi),
+          Math.cos(theta)) * zr
         z += pos
       end
 

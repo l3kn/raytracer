@@ -8,7 +8,6 @@ record HitRecord,
   u : Float64, # Vars for texture mapping
   v : Float64
 
-
 abstract class Hitable
   abstract def hit(ray : Ray, t_min : Float, t_max : Float) : (HitRecord | Nil)
   abstract def bounding_box
@@ -25,4 +24,3 @@ abstract class Hitable
     raise "Error, this feature is not supported yet"
   end
 end
-

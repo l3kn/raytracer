@@ -2,10 +2,10 @@ require "../src/raytracer"
 require "../src/backgrounds/*"
 
 # Instructions
-# 
+#
 # The .png cubemaps for this example
 # are to big to upload them to github (~200MB)
-# 
+#
 # To run this example:
 #
 # 1. Download a set of cubemap images from
@@ -46,10 +46,10 @@ camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture)
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
-                                hitables: sphere,
-                                camera: camera,
-                                samples: 20,
-                                background: CubeMap.new("cube_maps/Yokohama"))
+  hitables: sphere,
+  camera: camera,
+  samples: 20,
+  background: CubeMap.new("cube_maps/Yokohama"))
 
 (0...360).each do |p|
   # Rotate the camera around the y-axis

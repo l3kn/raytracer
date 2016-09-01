@@ -10,7 +10,6 @@ class UTexture < Texture
   end
 end
 
-
 class Mandelbox < DE::DistanceEstimatable
   def initialize(@iterations = 4, @scale = 2.9)
     @min_radius = 0.5

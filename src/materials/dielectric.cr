@@ -16,7 +16,7 @@ class Dielectric < Material
       outward_normal = -hit.normal
       ni_over_nt = @reflection_index
       cosine = dir_normal / ray.direction.length
-      cosine = Math.sqrt(1 - (reflection_index**2)*(1-cosine**2))
+      cosine = Math.sqrt(1 - (reflection_index**2)*(1 - cosine**2))
     else
       outward_normal = hit.normal
       ni_over_nt = 1.0 / @reflection_index

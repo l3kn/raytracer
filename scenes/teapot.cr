@@ -17,11 +17,11 @@ camera = Camera.new(
 )
 
 raytracer = SimpleRaytracer.new(width, height,
-                                hitables: BVHNode.new(hitables),
-                                camera: camera,
-                                samples: 100,
-                                background: CubeMap.new("cube_maps/Yokohama"))
-                                # background: SkyBackground.new)
-                                # background: ConstantBackground.new(Vec3.new(1.0, 0.0, 0.0)))
+  hitables: BVHNode.new(hitables),
+  camera: camera,
+  samples: 10,
+  # background: CubeMap.new("cube_maps/Yokohama"))
+  # background: SkyBackground.new)
+  background: ConstantBackground.new(Vec3.new(1.0, 0.0, 0.0)))
 
 raytracer.render("teapot1.png")

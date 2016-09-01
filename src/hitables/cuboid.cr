@@ -3,6 +3,7 @@ require "./hitable_list"
 
 class Cuboid < Hitable
   getter list : HitableList
+
   def initialize(p1, p2, top, bottom, front, back, left, right)
     # back | front, right | left, top | bottom
     brt = Vec3.new(p2.x, p2.y, p2.z)
@@ -14,24 +15,23 @@ class Cuboid < Hitable
     flt = Vec3.new(p1.x, p2.y, p1.z)
     flb = Vec3.new(p1.x, p1.y, p1.z)
 
-    rect_front  = XYRect.new(flb, frt, front)
-    rect_back   = XYRect.new(blb, brt, back)
+    rect_front = XYRect.new(flb, frt, front)
+    rect_back = XYRect.new(blb, brt, back)
 
-    rect_left   = YZRect.new(flb, blt, left)
-    rect_right  = YZRect.new(frb, brt, right)
+    rect_left = YZRect.new(flb, blt, left)
+    rect_right = YZRect.new(frb, brt, right)
 
     rect_bottom = XZRect.new(flb, brb, bottom)
-    rect_top    = XZRect.new(flt, brt, top)
+    rect_top = XZRect.new(flt, brt, top)
 
     rect_front.flip!
     rect_left.flip!
     rect_bottom.flip!
 
     @list = HitableList.new([rect_front, rect_back,
-                             rect_left, rect_right,
-                             rect_bottom, rect_top])
+      rect_left, rect_right,
+      rect_bottom, rect_top])
   end
-
 
   def initialize(p1, p2, mat)
     # Use the same material for all 6 sides

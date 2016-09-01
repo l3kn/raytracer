@@ -16,7 +16,7 @@ module DE
       a = a ** @k
       b = b ** @k
 
-      ((a*b)/(a+b)) ** (1.0 / @k)
+      ((a*b)/(a + b)) ** (1.0 / @k)
     end
   end
 end

@@ -1,37 +1,37 @@
 require "../src/raytracer"
 
 white = Lambertian.new(Vec3.new(0.73))
-red   = Lambertian.new(Vec3.new(0.65, 0.05, 0.05))
+red = Lambertian.new(Vec3.new(0.65, 0.05, 0.05))
 green = Lambertian.new(Vec3.new(0.12, 0.45, 0.15))
 light = DiffuseLight.new(Vec3.new(15.0))
 aluminum = Metal.new(Vec3.new(0.8, 0.85, 0.88), 0.0)
 
-left   = YZRect.new(Vec3.new(555.0, 0.0, 0.0),
-                    Vec3.new(555.0, 555.0, 555.0),
-                    green)
+left = YZRect.new(Vec3.new(555.0, 0.0, 0.0),
+  Vec3.new(555.0, 555.0, 555.0),
+  green)
 left.flip!
 
-right  = YZRect.new(Vec3.new(0.0, 0.0, 0.0),
-                    Vec3.new(0.0, 555.0, 555.0),
-                    red)
+right = YZRect.new(Vec3.new(0.0, 0.0, 0.0),
+  Vec3.new(0.0, 555.0, 555.0),
+  red)
 
 bottom = XZRect.new(Vec3.new(0.0, 0.0, 0.0),
-                    Vec3.new(555.0, 0.0, 555.0),
-                    white)
+  Vec3.new(555.0, 0.0, 555.0),
+  white)
 
-top    = XZRect.new(Vec3.new(0.0, 555.0, 0.0),
-                    Vec3.new(555.0, 555.0, 555.0),
-                    white)
+top = XZRect.new(Vec3.new(0.0, 555.0, 0.0),
+  Vec3.new(555.0, 555.0, 555.0),
+  white)
 top.flip!
 
-back   = XYRect.new(Vec3.new(0.0, 0.0, 555.0),
-                    Vec3.new(555.0, 555.0, 555.0),
-                    white)
+back = XYRect.new(Vec3.new(0.0, 0.0, 555.0),
+  Vec3.new(555.0, 555.0, 555.0),
+  white)
 back.flip!
 
 light_ = XZRect.new(Vec3.new(213.0, 554.0, 227.0),
-                    Vec3.new(343.0, 554.0, 332.0),
-                    light)
+  Vec3.new(343.0, 554.0, 332.0),
+  light)
 light_.flip!
 
 cube1 = Translate.new(
@@ -43,10 +43,10 @@ cube1 = Translate.new(
 )
 
 cube2 = Translate.new(
-  RotateY.new(
-    Cuboid.new(Vec3.new(0.0), Vec3.new(165.0, 330.0, 165.0), aluminum),
-    15.0
-  ),
+  # RotateY.new(
+  Cuboid.new(Vec3.new(0.0), Vec3.new(165.0, 330.0, 165.0), aluminum),
+  # 15.0
+  # ),
   Vec3.new(265.0, 0.0, 295.0)
 )
 
@@ -71,10 +71,11 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-                          hitables: HitableList.new(hitables),
-                          focus_hitables: HitableList.new([light_, sphere]),
-                          camera: camera,
-                          samples: 50,
-                          background: ConstantBackground.new(Vec3.new(0.0)))
+  hitables: HitableList.new(hitables),
+  focus_hitables: HitableList.new([light_, sphere, cube2]),
+  # focus_hitables: HitableList.new([light_, sphere]),
+  camera: camera,
+  samples: 100,
+  background: ConstantBackground.new(Vec3.new(0.0)))
 
 raytracer.render("cornell.png")

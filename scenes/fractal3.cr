@@ -12,7 +12,6 @@ class UTexture < Texture
   end
 end
 
-
 class SierpinskyTetrahedron < DE::DistanceEstimatable
   def initialize(@iterations = 4, @scale = 2.0)
   end
@@ -20,9 +19,9 @@ class SierpinskyTetrahedron < DE::DistanceEstimatable
   def distance_estimate(pos)
     @iterations.times do
       # Folding across some of the symmetry planes
-      pos = pos._y_xz if pos.x+pos.y < 0
-      pos = pos._zy_x if pos.x+pos.z < 0
-      pos = pos.x_z_y if pos.y+pos.z < 0
+      pos = pos._y_xz if pos.x + pos.y < 0
+      pos = pos._zy_x if pos.x + pos.z < 0
+      pos = pos.x_z_y if pos.y + pos.z < 0
 
       pos = pos*@scale - (@scale - 1.0)
     end
@@ -50,10 +49,10 @@ camera = Camera.new(
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
-                                hitables: hitables,
-                                camera: camera,
-                                samples: 3,
-                                background: ConstantBackground.new(Vec3.new(1.0)))
+  hitables: hitables,
+  camera: camera,
+  samples: 3,
+  background: ConstantBackground.new(Vec3.new(1.0)))
 raytracer.recursion_depth = 1
 
 raytracer.render("fractal3.png")

@@ -11,7 +11,7 @@ class ApplyMatrix < Hitable
 
   def initialize(@object, @matrix, @inverse)
     min = Vec3.new(-Float64::MAX)
-    max = Vec3.new( Float64::MAX)
+    max = Vec3.new(Float64::MAX)
     bbox = @object.bounding_box
 
     (0...2).each do |i|
@@ -29,9 +29,9 @@ class ApplyMatrix < Hitable
 
     @bounding_box = AABB.new(min, max)
   end
-  
+
   def hit(ray, t_min, t_max)
-    rotated_origin    = @inverse * ray.origin
+    rotated_origin = @inverse * ray.origin
     rotated_direction = @inverse * ray.direction
     rotated_ray = Ray.new(rotated_origin, rotated_direction)
 
@@ -50,7 +50,7 @@ class ApplyMatrix < Hitable
   end
 
   def pdf_value(origin, direction)
-    rotated_origin    = @inverse * origin
+    rotated_origin = @inverse * origin
     rotated_direction = @inverse * direction
     @object.pdf_value(rotated_origin, rotated_direction)
   end

@@ -21,9 +21,9 @@ camera = Camera.new(
 )
 
 raytracer = NormalRaytracer.new(width, height,
-                                hitables: hitables,
-                                camera: camera,
-                                samples: 1,
-                                background: SkyBackground.new)
+  hitables: hitables,
+  camera: camera,
+  samples: 1,
+  background: SkyBackground.new)
 
 raytracer.render("sphere_test.png")

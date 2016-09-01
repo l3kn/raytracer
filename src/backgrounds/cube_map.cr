@@ -3,19 +3,19 @@ require "../vec3"
 require "../background"
 
 class CubeMap < Background
-  getter right    : StumpyPNG::Canvas
-  getter left     : StumpyPNG::Canvas
-  getter up       : StumpyPNG::Canvas
-  getter down     : StumpyPNG::Canvas
-  getter forward  : StumpyPNG::Canvas
+  getter right : StumpyPNG::Canvas
+  getter left : StumpyPNG::Canvas
+  getter up : StumpyPNG::Canvas
+  getter down : StumpyPNG::Canvas
+  getter forward : StumpyPNG::Canvas
   getter backward : StumpyPNG::Canvas
 
   def initialize(name)
-    @right    = StumpyPNG.read("#{name}/posx.png")
-    @left     = StumpyPNG.read("#{name}/negx.png")
-    @up       = StumpyPNG.read("#{name}/posy.png")
-    @down     = StumpyPNG.read("#{name}/negy.png")
-    @forward  = StumpyPNG.read("#{name}/posz.png")
+    @right = StumpyPNG.read("#{name}/posx.png")
+    @left = StumpyPNG.read("#{name}/negx.png")
+    @up = StumpyPNG.read("#{name}/posy.png")
+    @down = StumpyPNG.read("#{name}/negy.png")
+    @forward = StumpyPNG.read("#{name}/posz.png")
     @backward = StumpyPNG.read("#{name}/negz.png")
   end
 

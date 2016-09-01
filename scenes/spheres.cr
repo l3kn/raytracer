@@ -36,10 +36,10 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-                          hitables: HitableList.new([floor, BVHNode.new(world)]),
-                          focus_hitables: HitableList.new([light]),
-                          camera: camera,
-                          samples: 100,
-                          background: ConstantBackground.new(Vec3.new(0.0)))
+  hitables: HitableList.new([floor, BVHNode.new(world)]),
+  focus_hitables: HitableList.new([light]),
+  camera: camera,
+  samples: 100,
+  background: ConstantBackground.new(Vec3.new(0.0)))
 
 raytracer.render("spheres.png")

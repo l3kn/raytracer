@@ -3,8 +3,8 @@ class AABB
 
   def initialize(@min : Vec3, @max : Vec3)
     # if @min.z == @max.z
-      # @min = Vec3.new(@min.xy, @min.z - 0.01)
-      # @max = Vec3.new(@max.xy, @max.z + 0.01)
+    # @min = Vec3.new(@min.xy, @min.z - 0.01)
+    # @max = Vec3.new(@max.xy, @max.z + 0.01)
     # end
   end
 

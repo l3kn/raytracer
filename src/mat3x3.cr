@@ -18,8 +18,8 @@ struct Mat3x3
     cos = Math.cos(angle * RADIANTS)
 
     self.new(
-      Vec3.new(1.0,  0.0, 0.0),
-      Vec3.new(0.0,  cos, sin),
+      Vec3.new(1.0, 0.0, 0.0),
+      Vec3.new(0.0, cos, sin),
       Vec3.new(0.0, -sin, cos)
     )
   end
@@ -30,8 +30,8 @@ struct Mat3x3
 
     self.new(
       Vec3.new(cos, 0.0, -sin),
-      Vec3.new(0.0, 1.0,  0.0),
-      Vec3.new(sin, 0.0,  cos)
+      Vec3.new(0.0, 1.0, 0.0),
+      Vec3.new(sin, 0.0, cos)
     )
   end
 
@@ -40,9 +40,9 @@ struct Mat3x3
     cos = Math.cos(angle * RADIANTS)
 
     self.new(
-      Vec3.new( cos, sin, 0.0),
+      Vec3.new(cos, sin, 0.0),
       Vec3.new(-sin, cos, 0.0),
-      Vec3.new( 0.0, 0.0, 1.0)
+      Vec3.new(0.0, 0.0, 1.0)
     )
   end
 end

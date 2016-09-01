@@ -12,7 +12,7 @@ class Translate < Hitable
       @object.bounding_box.max + @offset,
     )
   end
-  
+
   def hit(ray, t_min, t_max)
     moved_ray = Ray.new(ray.origin - @offset, ray.direction)
 

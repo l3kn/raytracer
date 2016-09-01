@@ -7,7 +7,7 @@ struct Vec3
   Y = Vec3.new(0.0, 1.0, 0.0)
   Z = Vec3.new(0.0, 0.0, 1.0)
 
-  ONE = Vec3.new(1.0)
+  ONE  = Vec3.new(1.0)
   ZERO = Vec3.new(0.0)
 
   def initialize
@@ -148,7 +148,7 @@ struct Vec3
 
   def refract(normal, eta)
     dt = normalize.dot(normal)
-    discriminant = 1.0 - (eta**2) * (1-dt**2)
+    discriminant = 1.0 - (eta**2) * (1 - dt**2)
 
     if discriminant > 0
       normalize * eta - normal * (eta * dt + Math.sqrt(discriminant))
@@ -162,9 +162,9 @@ struct Vec3
   end
 
   def self.from_hex(hex)
-    r = hex[1,2].to_i(16).to_f / 255
-    g = hex[3,2].to_i(16).to_f / 255
-    b = hex[5,2].to_i(16).to_f / 255
+    r = hex[1, 2].to_i(16).to_f / 255
+    g = hex[3, 2].to_i(16).to_f / 255
+    b = hex[5, 2].to_i(16).to_f / 255
 
     Vec3.new(r, g, b)
   end

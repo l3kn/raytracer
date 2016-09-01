@@ -15,7 +15,7 @@ sphere2 = Sphere.new(
 
 floor = XZRect.new(
   Vec3.new(-3.0, -1.0, -3.0),
-  Vec3.new( 3.0, -1.0,  3.0),
+  Vec3.new(3.0, -1.0, 3.0),
   Lambertian.new(Vec3.new(0.9))
 )
 
@@ -31,10 +31,10 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-                          hitables: HitableList.new([sphere1, sphere2, floor]),
-                          focus_hitables: sphere2,
-                          camera: camera,
-                          samples: 1000,
-                          background: CubeMap.new("cube_maps/Yokohama"))
+  hitables: HitableList.new([sphere1, sphere2, floor]),
+  focus_hitables: sphere2,
+  camera: camera,
+  samples: 1000,
+  background: CubeMap.new("cube_maps/Yokohama"))
 
 raytracer.render("cube_map2.png")
