@@ -43,10 +43,10 @@ cube1 = Translate.new(
 )
 
 cube2 = Translate.new(
-  # RotateY.new(
-  Cuboid.new(Vec3.new(0.0), Vec3.new(165.0, 330.0, 165.0), aluminum),
-  # 15.0
-  # ),
+  RotateY.new(
+    Cuboid.new(Vec3.new(0.0), Vec3.new(165.0, 330.0, 165.0), aluminum),
+    15.0
+  ),
   Vec3.new(265.0, 0.0, 295.0)
 )
 
@@ -73,9 +73,8 @@ camera = Camera.new(
 raytracer = Raytracer.new(width, height,
   hitables: HitableList.new(hitables),
   focus_hitables: HitableList.new([light_, sphere, cube2]),
-  # focus_hitables: HitableList.new([light_, sphere]),
   camera: camera,
-  samples: 100,
+  samples: 1000,
   background: ConstantBackground.new(Vec3.new(0.0)))
 
 raytracer.render("cornell.png")

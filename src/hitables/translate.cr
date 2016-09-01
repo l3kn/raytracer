@@ -35,6 +35,6 @@ class Translate < Hitable
   end
 
   def random(origin)
-    @object.random(origin + @offset)
+    @object.random(origin - @offset)
   end
 end

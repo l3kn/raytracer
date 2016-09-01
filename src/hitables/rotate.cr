@@ -56,7 +56,7 @@ class ApplyMatrix < Hitable
   end
 
   def random(origin)
-    @matrix * @object.random(origin)
+    @matrix * @object.random(@inverse * origin)
   end
 end
 
