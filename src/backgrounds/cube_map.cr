@@ -60,7 +60,7 @@ class CubeMap < Background
     j = (v * texture.height).to_i
 
     max = UInt16::MAX
-    pixel = texture.get_pixel(i, j)
+    pixel = texture[i, j]
 
     Vec3.new(
       pixel.r.to_f / max,

@@ -69,7 +69,7 @@ class NormalRaytracer
           UInt16::MAX
         )
 
-        canvas.set_pixel(x, (@height - 1) - y, rgba)
+        canvas[x, (@height - 1) - y] = rgba
       end
 
       print "\rTraced line #{y} / #{@height}"
