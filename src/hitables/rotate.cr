@@ -48,6 +48,16 @@ class ApplyMatrix < Hitable
       nil
     end
   end
+
+  def pdf_value(origin, direction)
+    rotated_origin    = @inverse * origin
+    rotated_direction = @inverse * direction
+    @object.pdf_value(rotated_origin, rotated_direction)
+  end
+
+  def random(origin)
+    @matrix * @object.random(origin)
+  end
 end
 
 class RotateX < ApplyMatrix

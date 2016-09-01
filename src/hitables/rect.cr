@@ -38,6 +38,29 @@ class XYRect < Rect
     v = (point.y - @bot.y) / (@top.y - @bot.y) 
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
+
+  def pdf_value(origin, direction)
+    hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
+    if hit
+      area = (@top.x - @bot.x) * (@top.y - @bot.y)
+      distance_squared = hit.t * hit.t * direction.squared_length
+      cosine = (direction.dot(hit.normal) / direction.length).abs
+
+      distance_squared / (cosine * area)
+    else
+      0.0
+    end
+  end
+
+  def random(origin)
+    random_point = Vec3.new(
+      @bot.x + pos_random * (@top.x - @bot.x),
+      @bot.y + pos_random * (@top.y - @bot.y),
+      @bot.z
+    )
+
+    random_point - origin
+  end
 end
 
 class XZRect < Rect
@@ -106,5 +129,28 @@ class YZRect < Rect
     u = (point.z - @bot.z) / (@top.z - @bot.z) 
     v = (point.y - @bot.y) / (@top.y - @bot.y) 
     return HitRecord.new(t, point, @normal, @material, u, v)
+  end
+
+  def pdf_value(origin, direction)
+    hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
+    if hit
+      area = (@top.y - @bot.y) * (@top.z - @bot.z)
+      distance_squared = hit.t * hit.t * direction.squared_length
+      cosine = (direction.dot(hit.normal) / direction.length).abs
+
+      distance_squared / (cosine * area)
+    else
+      0.0
+    end
+  end
+
+  def random(origin)
+    random_point = Vec3.new(
+      @bot.x,
+      @bot.y + pos_random * (@top.y - @bot.y),
+      @bot.z + pos_random * (@top.z - @bot.z)
+    )
+
+    random_point - origin
   end
 end

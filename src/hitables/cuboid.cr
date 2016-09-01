@@ -45,4 +45,12 @@ class Cuboid < Hitable
   def bounding_box
     @list.bounding_box
   end
+
+  def pdf_value(origin, direction)
+    @list.pdf_value(origin, direction)
+  end
+
+  def random(origin)
+    @list.random(origin)
+  end
 end

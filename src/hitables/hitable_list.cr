@@ -1,3 +1,6 @@
+require "../hitable"
+require "../aabb"
+
 class HitableList < Hitable
   property objects, bounding_box : AABB
 

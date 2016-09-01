@@ -29,4 +29,12 @@ class Translate < Hitable
       nil
     end
   end
+
+  def pdf_value(origin, direction)
+    @object.pdf_value(origin - @offset, direction)
+  end
+
+  def random(origin)
+    @object.random(origin + @offset)
+  end
 end
