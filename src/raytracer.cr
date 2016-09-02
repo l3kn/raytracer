@@ -120,7 +120,7 @@ end
 
 class SimpleRaytracer < NormalRaytracer
   def initialize(width, height, hitables, camera, samples, background = nil)
-    super(width, height, hitables, camera, samples)
+    super(width, height, hitables, camera, samples, background)
   end
 
   def color(ray, hit, recursion_depth)
