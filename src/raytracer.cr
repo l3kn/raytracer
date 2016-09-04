@@ -142,3 +142,18 @@ class SimpleRaytracer < NormalRaytracer
     end
   end
 end
+
+class SingleRaytracer < NormalRaytracer
+  def initialize(width, height, hitables, camera, samples, background = nil)
+    super(width, height, hitables, camera, samples, background)
+  end
+
+  def color(ray, hit, recursion_depth)
+    scatter = hit.material.scatter(ray, hit)
+    if scatter
+      scatter.albedo
+    else
+      Vec3::ZERO
+    end
+  end
+end
