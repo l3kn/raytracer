@@ -168,4 +168,14 @@ struct Vec3
 
     Vec3.new(r, g, b)
   end
+
+  def [](axis)
+    if axis == 0
+      @x
+    elsif axis == 1
+      @y
+    else
+      @z
+    end
+  end
 end
