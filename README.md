@@ -123,6 +123,12 @@ _800x400px, 3 samples / pixel, no lights, time: 18s_
 
 _400x400px, 5 samples / pixel, no lights, time: 30s_
 
+### [WIP] `scenes/sponza.cr`
+
+![](images/sponza.png)
+
+_400x400px, 5000 samples / pixel, no lights, time: 13h_
+
 ### `scenes/cube_map1.cr`
 
 ![](images/cube_map1.png)
