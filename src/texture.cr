@@ -1,3 +1,4 @@
+require "stumpy_png"
 require "./perlin"
 
 abstract class Texture
@@ -35,5 +36,25 @@ class NoiseTexture < Texture
 
   def value(point, u, v)
     Vec3.new(@noise.perlin(point * @scale))
+  end
+end
+
+class ImageTexture < Texture
+  getter canvas : StumpyPNG::Canvas
+
+  def initialize(path)
+    @canvas = StumpyPNG.read(path)
+  end
+
+  def value(point, u, v)
+    x = (1 - (u % 1.0)) * (@canvas.width - 1)
+    y = (1 - (v % 1.0)) * (@canvas.height - 1)
+
+    color = @canvas[x.to_i, y.to_i]
+    Vec3.new(
+      color.r.to_f / UInt16::MAX,
+      color.g.to_f / UInt16::MAX,
+      color.b.to_f / UInt16::MAX
+    )
   end
 end
