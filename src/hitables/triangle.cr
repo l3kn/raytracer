@@ -51,18 +51,24 @@ class Triangle < Hitable
 
     if (t < t_max && t > t_min)
       point = ray.point_at_parameter(t)
-      return HitRecord.new(t, point, get_normal(ray, point), @material, u, v)
+      u, v = get_uv(ray, point, u, v)
+      normal = get_normal(ray, point, u, v)
+      return HitRecord.new(t, point, normal, @material, u, v)
     else
       return nil
     end
   end
 
-  def get_normal(ray, point)
+  def get_normal(ray, point, u, v)
     if @normal.dot(ray.direction) < 0.0
       @normal
     else
       -@normal
     end
+  end
+
+  def get_uv(ray, point, u, v)
+    {u, v}
   end
 
   def barycentric_coordinates(p)
@@ -96,14 +102,14 @@ class InterpolatedTriangle < Triangle
     super(@a, @b, @c, @material)
   end
 
-  def get_normal(ray, point)
+  def get_normal(ray, point, u, v)
     bc = barycentric_coordinates(point)
     @na * bc.x + @nb * bc.y + @nc * bc.z
   end
 end
 
 class TexturedTriangle < InterpolatedTriangle
-  # Vertex normals
+  # Texture coordinates
   getter ta : Vec3
   getter tb : Vec3
   getter tc : Vec3
@@ -112,42 +118,9 @@ class TexturedTriangle < InterpolatedTriangle
     super(@a, @b, @c, @na, @nb, @nc, @material)
   end
 
-  # Möller-Trumbore intersection algorithm
-  def hit(ray, t_min, t_max)
-    p = ray.direction.cross(@edge2)
-    det = @edge1.dot(p)
-
-    # Ray lies in the plane of the triangle
-    return nil if det > -EPSILON && det < EPSILON
-
-    inv_det = 1.0 / det
-
-    t = ray.origin - @a
-    u = t.dot(p) * inv_det
-
-    # The intersection lies outside of the triangle
-    return nil if u < 0.0 || u > 1.0
-
-    q = t.cross(@edge1)
-    v = ray.direction.dot(q) * inv_det
-
-    # The intersection lies outside of the triangle
-    return nil if v < 0.0 || (u + v) > 1.0
-
-    t = @edge2.dot(q) * inv_det
-
-    if (t < t_max && t > t_min)
-      point = ray.point_at_parameter(t)
-      texture = get_texture(point)
-      return HitRecord.new(t, point, get_normal(ray, point), @material, texture[0], texture[1])
-    else
-      return nil
-    end
-  end
-
-  def get_texture(point)
+  def get_uv(ray, point, u, v)
     bc = barycentric_coordinates(point)
-    texture = @ta * bc.x + @tb * bc.y + @tc * bc.z
-    texture.xy
+    texture_coords = @ta * bc.x + @tb * bc.y + @tc * bc.z
+    texture_coords.xy
   end
 end
