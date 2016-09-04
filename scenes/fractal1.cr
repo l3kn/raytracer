@@ -2,18 +2,7 @@ require "../src/raytracer"
 require "../src/backgrounds/*"
 require "../src/distance_estimatables/*"
 
-class UTexture < Texture
-  def initialize
-  end
-
-  def value(point, u, v)
-    col = Vec3::ONE * (1 - u)
-    col **= 10.0
-  end
-end
-
-mat = Lambertian.new(UTexture.new)
-
+mat = Lambertian.new(UTexture.new(10.0))
 de = DE::Mandelbulb.new(iterations: 20)
 hitables = DistanceEstimator.new(mat, de, maximum_steps: 500)
 

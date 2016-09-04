@@ -3,15 +3,6 @@ require "../src/backgrounds/*"
 require "../src/distance_estimatable"
 require "../src/quaternion"
 
-class UTexture < Texture
-  def initialize
-  end
-
-  def value(point, u, v)
-    col = Vec3::ONE * (1 - u)
-    col **= 20.0
-  end
-end
 
 class Julia < DE::DistanceEstimatable
   def initialize(@iterations = 4)
@@ -35,7 +26,7 @@ class Julia < DE::DistanceEstimatable
   end
 end
 
-mat = Lambertian.new(UTexture.new)
+mat = Lambertian.new(UTexture.new(20.0))
 
 de = Julia.new(100)
 hitables = DistanceEstimator.new(

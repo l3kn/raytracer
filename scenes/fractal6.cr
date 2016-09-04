@@ -3,13 +3,6 @@ require "../src/backgrounds/*"
 require "../src/distance_estimatable"
 require "../src/quaternion"
 
-class UTexture < Texture
-  def value(point, u, v)
-    col = Vec3::ONE * (1 - u)
-    # col **= 20.0
-  end
-end
-
 class Mandelbox < DE::DistanceEstimatable
   def initialize(@iterations = 4, @scale = 2.9)
     @min_radius = 0.5

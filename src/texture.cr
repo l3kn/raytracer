@@ -58,3 +58,12 @@ class ImageTexture < Texture
     )
   end
 end
+
+class UTexture < Texture
+  def initialize(@factor = 1.0)
+  end
+
+  def value(point, u, v)
+    Vec3.new(1 - u) ** @factor
+  end
+end

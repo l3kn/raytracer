@@ -2,16 +2,6 @@ require "../src/raytracer"
 require "../src/backgrounds/*"
 require "../src/distance_estimatable"
 
-class UTexture < Texture
-  def initialize
-  end
-
-  def value(point, u, v)
-    col = Vec3::ONE * (1 - u)
-    col **= 40.0
-  end
-end
-
 class Octahedron < DE::DistanceEstimatable
   def initialize(@iterations = 4, @scale = 4.0)
   end
@@ -30,7 +20,7 @@ class Octahedron < DE::DistanceEstimatable
   end
 end
 
-mat = Lambertian.new(UTexture.new)
+mat = Lambertian.new(UTexture.new(40.0))
 
 de = Octahedron.new(1, 2.0)
 hitables = DistanceEstimator.new(mat, de, maximum_steps: 1000)
