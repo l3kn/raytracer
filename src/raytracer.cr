@@ -119,10 +119,6 @@ class Raytracer < NormalRaytracer
 end
 
 class SimpleRaytracer < NormalRaytracer
-  def initialize(width, height, hitables, camera, samples, background = nil)
-    super(width, height, hitables, camera, samples, background)
-  end
-
   def color(ray, hit, recursion_depth)
     scatter = hit.material.scatter(ray, hit)
     if scatter && recursion_depth > 0
@@ -144,10 +140,6 @@ class SimpleRaytracer < NormalRaytracer
 end
 
 class SingleRaytracer < NormalRaytracer
-  def initialize(width, height, hitables, camera, samples, background = nil)
-    super(width, height, hitables, camera, samples, background)
-  end
-
   def color(ray, hit, recursion_depth)
     scatter = hit.material.scatter(ray, hit)
     if scatter
