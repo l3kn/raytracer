@@ -7,7 +7,7 @@ class Camera
   getter vertical : Vec3
   getter lens_radius : Float64
 
-  def initialize(look_from, look_at, up, vertical_fov, aspect_ratio, aperture)
+  def initialize(look_from, look_at, vertical_fov, aspect_ratio, up = Vec3::Y, aperture = 0.0)
     initialize(look_from, look_at, up, vertical_fov, aspect_ratio, aperture, (look_from - look_at).length)
   end
 

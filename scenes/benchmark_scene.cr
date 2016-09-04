@@ -32,7 +32,6 @@ width, height = {800, 400}
 camera = Camera.new(
   look_from: Vec3.new(-1.5, 1.5, 1.5),
   look_at: Vec3.new(0.0, 0.0, -1.0),
-  up: Vec3::Y,
   vertical_fov: 30,
   aspect_ratio: width.to_f / height.to_f,
   aperture: 0.05

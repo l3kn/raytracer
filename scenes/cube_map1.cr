@@ -34,15 +34,10 @@ width, height = {400, 400}
 # Camera params
 look_from = Vec3.new(0.0, 0.0, 2.5)
 look_at = Vec3.new(0.0)
-
-up = Vec3::Y
 fov = 60
-
 aspect_ratio = width.to_f / height.to_f
-dist_to_focus = (look_from - look_at).length
-aperture = 0.05
 
-camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture)
+camera = Camera.new(look_from, look_at, fov, aspect_ratio)
 
 # Raytracer
 raytracer = SimpleRaytracer.new(width, height,
@@ -62,9 +57,8 @@ raytracer = SimpleRaytracer.new(width, height,
   c = Math.cos(angle)
 
   look_from = Vec3.new(x * c - z * s, 0.5, x * s + z * c)
-  camera = Camera.new(look_from, look_at, up, fov, aspect_ratio, aperture)
+  camera = Camera.new(look_from, look_at, fov, aspect_ratio)
 
   raytracer.camera = camera
-
   raytracer.render("cube#{p.to_s.rjust(3, '0')}.png")
 end

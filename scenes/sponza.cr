@@ -55,16 +55,11 @@ hitables << light
 width, height = 400, 400
 node = SAHBVHNode.new(hitables)
 
-
-look_from = Vec3.new(940.0, 600.0, 80.0)
-look_at = Vec3.new(0.0, 400.0, 0.0)
-up = Vec3::Y
-vertical_fov = 70
-aspect_ratio = width.to_f / height.to_f
-
 camera = Camera.new(
-  look_from, look_at, up, vertical_fov, aspect_ratio,
-  aperture: 0.0
+  look_from: Vec3.new(940.0, 600.0, 80.0),
+  look_at: Vec3.new(0.0, 400.0, 0.0),
+  vertical_fov: 70,
+  aspect_ratio: width.to_f / height.to_f,
 )
 
 raytracer = Raytracer.new(width, height,

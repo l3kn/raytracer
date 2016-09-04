@@ -29,7 +29,6 @@ end
 camera = Camera.new(
   look_from: Vec3.new(0.0, 20.0, 20.0),
   look_at: Vec3.new(0.0, 0.0, 0.0),
-  up: Vec3::Y,
   vertical_fov: 35,
   aspect_ratio: width.to_f / height.to_f,
   aperture: 0.05

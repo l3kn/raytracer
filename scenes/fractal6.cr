@@ -66,10 +66,8 @@ width, height = {192 * 5, 108 * 5}
 camera = Camera.new(
   look_from: Vec3.new(4.5, 0.0, 1.0),
   look_at: Vec3.new(0.0, 0.0, -3.0),
-  up: Vec3::Y,
   vertical_fov: 25,
   aspect_ratio: width.to_f / height.to_f,
-  aperture: 0.00
 )
 
 # Raytracer
