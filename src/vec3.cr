@@ -26,7 +26,7 @@ struct Vec3
     @x, @y = xy
   end
 
-  def initialize(@x, ys : Tuple(Float64, Float64))
+  def initialize(@x, yz : Tuple(Float64, Float64))
     @y, @z = yz
   end
 
