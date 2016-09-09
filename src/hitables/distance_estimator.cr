@@ -78,10 +78,11 @@ class BruteForceDistanceEstimator < Hitable
 
     unless closest == @maximum
       point = ray.point_at_parameter(closest)
+      normal = @object.normal(point)
       ::HitRecord.new(
         t: closest,
-        point: point,
-        normal: @object.normal(point),
+        point: point + normal * 0.1,
+        normal: normal,
         material: @material,
         u: closest / @maximum, v: 0.0
       )

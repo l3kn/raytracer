@@ -3,37 +3,14 @@ require "../src/hitables/distance_estimator"
 require "../src/backgrounds/*"
 require "../src/distance_estimatables/*"
 
-mat = Lambertian.new(UTexture.new(1.0))
-
-class Metaball < DE::DistanceEstimatable
-  def distance_estimate(pos)
-    points = [
-      {Vec3.new(1.0, 0.0, 0.0), 1.0},
-      {Vec3.new(-1.0, 0.0, 0.0), 1.0}
-    ]
-
-    potential = 0.0
-
-    points.each do |target, target_potential|
-      dist = (target - pos).length
-      potential += dist
-    end
-
-    (potential - 1.0).abs
-  end
-end
-
-# class BFSphere < DE::BruteForceDistanceEstimatable
-  # def inside?(pos)
-    # pos.length < 1.0
-  # end
-# end
+mat = Metal.new(Vec3.new(0.8), 0.0)
 
 class BFMeta < DE::BruteForceDistanceEstimatable
   def initialize
     @points = [
-      {Vec3.new(1.0, 0.0, 0.0), 1.0},
-      {Vec3.new(-1.0, 0.0, 0.0), 1.0}
+      {Vec3.new(1.0, -0.5, -0.2), 1.0},
+      {Vec3.new(0.0, 0.5, 0.2), 1.0},
+      {Vec3.new(-1.0, -0.5, 0.0), 1.0},
     ]
   end
 
@@ -41,42 +18,43 @@ class BFMeta < DE::BruteForceDistanceEstimatable
     potential = 0.0
 
     @points.each do |p_i, r_i|
-      potential += (r_i ** 2) / (pos - p_i).squared_length
+      potential += r_i / (pos - p_i).squared_length
     end
 
-    potential > 1.6
+    potential > 3.4
   end
 
   def normal(pos)
-    normal = Vec3::ZERO
+    n = Vec3::ZERO
     @points.each do |p_i, r_i|
-      normal = normal + (pos - p_i) * (2 * (r_i ** 2) / ((pos - p_i).squared_length ** 2))
+      a = -2.0 * r_i
+      b = p_i - pos
+      c = (p_i - pos).squared_length
+      n = n + b * (a / c) 
     end
 
-    normal.normalize
+    n.normalize
   end
 end
 
-# de = Metaball.new
 bfde = BFMeta.new
-# hitables = DistanceEstimator.new(mat, de, maximum_steps: 10000)
-hitables = BruteForceDistanceEstimator.new(mat, bfde)
+hitables = BruteForceDistanceEstimator.new(mat, bfde, 10.0)
 
-width, height = {200, 200}
+width, height = {800, 400}
 
 camera = Camera.new(
-  look_from: Vec3.new(0.0, 0.0, 10.0),
+  look_from: Vec3.new(0.0, 0.0, 2.0),
   look_at: Vec3.new(0.0, 0.0, 0.0),
-  vertical_fov: 25,
+  vertical_fov: 70,
   aspect_ratio: width.to_f / height.to_f,
 )
 
-raytracer = NormalRaytracer.new(
+raytracer = SimpleRaytracer.new(
   width, height,
   hitables: hitables,
   camera: camera,
   samples: 10,
-  background: ConstantBackground.new(Vec3::ZERO))
+  background: CubeMap.new("cube_maps/Yokohama"))
 raytracer.gamma_correction = 1.0
 
-raytracer.render("meta.png")
+raytracer.render("metaball.png")

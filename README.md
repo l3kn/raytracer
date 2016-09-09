@@ -129,30 +129,26 @@ _400x400px, 5 samples / pixel, no lights, time: 30s_
 
 _400x400px, 5000 samples / pixel, no lights, time: 13h_
 
-### `scenes/cube_map1.cr`
+### `scenes/metaball.cr`
 
-![](images/cube_map1.png)
+![](images/metaball.png)
 
-[Animation on imgur](http://imgur.com/qMTPt9f)
-
-_360 frames a 400x400px, 20 samples / pixel, no lights, time: 725s_  
+_800x400px, 10 samples / pixel, no lights, time: 5m_
 
 The cube map in this example is
-"[Yokohama](http://www.humus.name/Textures/Yokohama3.zip)" by
+"[Yokohama](http://www.humus.name/Textures/Yokohama.zip)" by
 [Emil "Humus" Persson](http://www.humus.name/index.php?page=Textures),
 licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/)
 
 In order to run this example:
 
-1. Download the [set of cubemaps](http://www.humus.name/Textures/Yokohama3.zip)
-
+1. Download the [set of cubemaps](http://www.humus.name/Textures/Yokohama.zip)
 2. Unzip the folder
-
 3. Convert each .jpg to .png
-    e.g. using `convert negx.jpg negx.png` etc.
+    e.g. using `mogrify -format png *.jpg` etc.
     (`convert` is part of the imagemagick)
-
 4. Copy all six png files (`negx.png`, `negy.png`, `negz.png`, `posx.png`, `posy.png`, `posz.png`) to `cube_maps/Yokohama`
+5. Mirror `negx.png`, e.g. using `convert negx.png -flop negx.png` 
 
 ## Resources
 
