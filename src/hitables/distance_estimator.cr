@@ -55,3 +55,42 @@ class DistanceEstimator < Hitable
     raise "Error, this feature is not supported yet"
   end
 end
+
+class BruteForceDistanceEstimator < Hitable
+  property material : Material
+  property object : DE::BruteForceDistanceEstimatable
+  property maximum : Float64
+
+  def initialize(@material, @object, @maximum = 1000.0)
+  end
+
+  def hit(ray, t_min, t_max)
+    steps = 1000
+    closest = @maximum
+
+    steps.times do
+      t = closest * pos_random
+      point = ray.point_at_parameter(t)
+      if object.inside?(point)
+        closest = t
+      end
+    end
+
+    unless closest == @maximum
+      point = ray.point_at_parameter(closest)
+      ::HitRecord.new(
+        t: closest,
+        point: point,
+        normal: @object.normal(point),
+        material: @material,
+        u: closest / @maximum, v: 0.0
+      )
+    else
+      nil
+    end
+  end
+
+  def bounding_box
+    raise "Error, this feature is not supported yet"
+  end
+end
