@@ -84,7 +84,7 @@ class NormalRaytracer
   end
 
   def color(ray, hit, recursion_depth)
-    Vec3::ONE * 0.5 + hit.normal
+    (Vec3::ONE + hit.normal) * 0.5
   end
 end
 
