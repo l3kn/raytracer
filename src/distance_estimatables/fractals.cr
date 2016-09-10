@@ -37,19 +37,25 @@ module DE
   end
 
   class MengerSponge < DE::DistanceEstimatable
-    def initialize(@iterations = 4, @scale = 3.0)
+    property iterations : Int32
+    property scale : Float64
+    property offset : Vec3
+    property rotation : Mat3x3
+
+    def initialize(@iterations = 4, @scale = 3.0, @offset = Vec3::ONE, @rotation = Mat3x3::ID)
     end
 
     def distance_estimate(pos)
       @iterations.times do
+        pos = @rotation * pos
         pos = pos.abs
 
         pos = pos.yxz if pos.x < pos.y
         pos = pos.xzy if pos.y < pos.z
         pos = pos.yxz if pos.x < pos.y
 
-        pos = pos * @scale - (@scale - 1.0)
-        pos = Vec3.new(pos.xy, pos.z + (@scale - 1.0)) if pos.z < -0.5 * (@scale - 1.0)
+        pos = pos * @scale - @offset * (@scale - 1.0)
+        pos = Vec3.new(pos.xy, pos.z + @offset.z * (@scale - 1.0)) if pos.z < -0.5 * @offset.z * (@scale - 1.0)
       end
 
       pos.length * (@scale ** (-@iterations))
