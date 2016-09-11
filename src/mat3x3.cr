@@ -1,6 +1,7 @@
 struct Mat3x3
   getter v1, v2, v3
   RADIANTS = (Math::PI / 180)
+  ID = Mat3x3.new(Vec3::X, Vec3::Y, Vec3::Z)
 
   def initialize(@v1 : Vec3, @v2 : Vec3, @v3 : Vec3)
   end

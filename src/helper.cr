@@ -4,8 +4,8 @@ def de_nan(vec)
   (vec.x.nan? || vec.y.nan? || vec.z.nan?) ? Vec3::ZERO : vec
 end
 
-def clamp(x, x_min, x_max)
-  min(max(x, x_min), x_max)
+def clamp(x, min, max)
+  min(max(x, min), max)
 end
 
 def smoothstep(x)
