@@ -1,3 +1,5 @@
+require "../vec3"
+require "../mat3x3"
 require "../distance_estimatable"
 
 module DE
