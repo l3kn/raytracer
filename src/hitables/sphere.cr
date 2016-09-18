@@ -1,9 +1,11 @@
 require "../hitable"
 
-class Sphere < Hitable
+class Sphere < FiniteHitable
   property center, radius, material
 
   def initialize(@center : Vec3, @radius : Float64, @material : Material)
+    r = Vec3.new(@radius)
+    @bounding_box = AABB.new(@center - r, @center + r)
   end
 
   def hit(ray, t_min, t_max)
@@ -42,11 +44,6 @@ class Sphere < Hitable
 
       return nil
     end
-  end
-
-  def bounding_box
-    r = Vec3.new(radius)
-    AABB.new(@center - r, @center + r)
   end
 
   def pdf_value(origin, direction)

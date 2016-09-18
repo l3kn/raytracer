@@ -1,12 +1,13 @@
 require "../hitable"
 
-class ConstantMedium < Hitable
-  property object : Hitable
+class ConstantMedium < FiniteHitable
+  property object : FiniteHitable
   property density : Float64
   property material : Material
 
   def initialize(@object, @density, texture)
     @material = Lambertian.new(texture)
+    @bounding_box = @object.bounding_box
   end
 
   def hit(ray, t_min, t_max)
@@ -36,9 +37,5 @@ class ConstantMedium < Hitable
       end
     end
     nil
-  end
-
-  def bounding_box
-    @object.bounding_box
   end
 end

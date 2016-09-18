@@ -15,7 +15,7 @@ class CrystalLogo
       Vec3.new(-0.550563524346, -0.758024984088, 0.349682612032),
     ]
 
-    HitableList.new([
+    FiniteHitableList.new([
       Triangle.new(vertices[0], vertices[1], vertices[2], material),
       Triangle.new(vertices[1], vertices[3], vertices[4], material),
       Triangle.new(vertices[0], vertices[2], vertices[5], material),

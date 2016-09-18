@@ -1,8 +1,8 @@
 require "../hitable"
 require "./hitable_list"
 
-class Cuboid < Hitable
-  getter list : HitableList
+class Cuboid < FiniteHitable
+  getter list : FiniteHitableList
 
   def initialize(p1, p2, top, bottom, front, back, left, right)
     # back | front, right | left, top | bottom
@@ -28,9 +28,10 @@ class Cuboid < Hitable
     rect_left.flip!
     rect_bottom.flip!
 
-    @list = HitableList.new([rect_front, rect_back,
+    @list = FiniteHitableList.new([rect_front, rect_back,
       rect_left, rect_right,
       rect_bottom, rect_top])
+    @bounding_box = AABB.new(p1, p2)
   end
 
   def initialize(p1, p2, mat)
@@ -40,10 +41,6 @@ class Cuboid < Hitable
 
   def hit(ray, t_min, t_max)
     @list.hit(ray, t_min, t_max)
-  end
-
-  def bounding_box
-    @list.bounding_box
   end
 
   def pdf_value(origin, direction)

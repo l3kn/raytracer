@@ -1,16 +1,16 @@
 require "../aabb"
 require "../hitable"
 
-class BVHNode < Hitable
-  getter left : Hitable
-  getter right : Hitable
+class BVHNode < FiniteHitable
+  getter left : FiniteHitable
+  getter right : FiniteHitable
   getter bounding_box : AABB
 
   @@hit_both = 0_u32
   @@hit_one = 0_u32
   @@hit_overall = 0_u32
 
-  def initialize(list)
+  def initialize(list : Array(FiniteHitable))
     raise "Error, trying to construct an empty BVHNode" if list.empty?
 
     n = list.size

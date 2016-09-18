@@ -1,10 +1,11 @@
 require "../hitable"
 require "../aabb"
 
-class Translate < Hitable
+# TODO: Do we need an infinite version of this, too?
+# (see `HitableList` and `Rotate`)
+class Translate < FiniteHitable
   getter offset : Vec3
-  getter object : Hitable
-  getter bounding_box : AABB
+  getter object : FiniteHitable
 
   def initialize(@object, @offset)
     @bounding_box = AABB.new(

@@ -87,8 +87,8 @@ class SAHBVHNode < BVHNode
         end
       end
 
-      left_ = [] of Hitable
-      right_ = [] of Hitable
+      left_ = [] of FiniteHitable
+      right_ = [] of FiniteHitable
 
       # Perform split
       sorted.each do |obj|

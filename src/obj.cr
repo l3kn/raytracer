@@ -4,7 +4,7 @@ module OBJ
   def self.parse(filename, mat, interpolated = false, textured = false, textures = {} of String => Texture)
     obj = File.read(filename)
 
-    hitables = [] of Hitable
+    hitables = [] of FiniteHitable
     vertices = [] of Vec3
     normals = [] of Vec3
     texture_coords = [] of Vec3

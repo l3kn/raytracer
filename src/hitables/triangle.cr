@@ -1,7 +1,6 @@
 require "../hitable"
 
-class Triangle < Hitable
-  getter bounding_box : AABB
+class Triangle < FiniteHitable
   getter a : Vec3
   getter b : Vec3
   getter c : Vec3

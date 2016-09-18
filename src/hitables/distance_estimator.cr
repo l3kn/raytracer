@@ -50,10 +50,6 @@ class DistanceEstimator < Hitable
   def distance_estimate(pos)
     @object.distance_estimate(pos)
   end
-
-  def bounding_box
-    raise "Error, this feature is not supported yet"
-  end
 end
 
 class BruteForceDistanceEstimator < Hitable
@@ -89,9 +85,5 @@ class BruteForceDistanceEstimator < Hitable
     else
       nil
     end
-  end
-
-  def bounding_box
-    raise "Error, this feature is not supported yet"
   end
 end

@@ -1,18 +1,15 @@
 require "../hitable"
 
-abstract class Rect < Hitable
+abstract class Rect < FiniteHitable
   property material
   getter bot, top
 
   def initialize(@bot : Vec3, @top : Vec3)
+    @bounding_box = AABB.new(bot, top)
   end
 
   def flip!
     @normal = -@normal
-  end
-
-  def bounding_box
-    AABB.new(bot, top)
   end
 end
 

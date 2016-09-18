@@ -2,10 +2,10 @@ require "../hitable"
 require "../aabb"
 require "../mat3x3"
 
-class ApplyMatrix < Hitable
-  getter object : Hitable
-  getter bounding_box : AABB
-
+# TODO: Do we need an infinite version of this, too?
+# (see `HitableList` and `Translate`)
+class ApplyMatrix < FiniteHitable
+  getter object : FiniteHitable
   getter matrix : Mat3x3
   getter inverse : Mat3x3
 
