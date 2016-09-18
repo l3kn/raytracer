@@ -94,10 +94,12 @@ _800x400px, 10000 samples / pixel, time: 2h15m_
 ![](images/teapot_metal.png)
 ![](images/teapot_dielectric.png)
 
-Note: The glass teapot looks a little bit buggy,
-maybe there are some float errors
-
 _400x400px, 100 samples / pixel, no lights, 2464 triangles with interpolated normals, time: 64s, 60s, 120s_
+
+The cube map in this example is
+"[Yokohama 3](http://www.humus.name/Textures/Yokohama3.zip)" by
+[Emil "Humus" Persson](http://www.humus.name/index.php?page=Textures),
+licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/)
 
 ### `scenes/minecraft.cr`
 
