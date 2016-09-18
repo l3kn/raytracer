@@ -10,8 +10,8 @@ class ApplyMatrix < FiniteHitable
   getter inverse : Mat3x3
 
   def initialize(@object, @matrix, @inverse)
-    min = Vec3.new(-Float64::MAX)
-    max = Vec3.new(Float64::MAX)
+    min = Vec3.new(Float64::MAX)
+    max = Vec3.new(-Float64::MAX)
     bbox = @object.bounding_box
 
     (0...2).each do |i|
@@ -22,7 +22,7 @@ class ApplyMatrix < FiniteHitable
 
           tester = @matrix * xyz
           max = max.max(tester)
-          min = min.max(tester)
+          min = min.min(tester)
         end
       end
     end
