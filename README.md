@@ -129,7 +129,17 @@ _400x400px, 5 samples / pixel, no lights, time: 30s_
 
 ![](images/sponza.png)
 
-_400x400px, 5000 samples / pixel, no lights, time: 13h_
+_400x400px, 5000 samples / pixel, 1 light, time: 13h_
+
+Model: [Crytek Sponza](http://www.crytek.com/cryengine/cryengine3/downloads)
+
+### [WIP] `scenes/sponza_phong.cr`
+
+![](images/sponza_phong.png)
+
+_400x400px, 5 samples / pixel, 1 light, phong lighting, time: 37s_
+
+Model: [Crytek Sponza without Banner](http://graphics.cs.williams.edu/data/meshes.xml#2)
 
 ### `scenes/metaball.cr`
 
