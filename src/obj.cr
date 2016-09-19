@@ -1,7 +1,5 @@
 module OBJ
-  DEFAULT_TEXTURE = ConstantTexture.new(Vec3.new(0.0, 1.0, 0.0))
-
-  def self.parse(filename, mat, interpolated = false, textured = false, textures = {} of String => Texture)
+  def self.parse(filename, mat, interpolated = false, textured = false, materials = {} of String => Material)
     obj = File.read(filename)
 
     hitables = [] of FiniteHitable
@@ -9,7 +7,7 @@ module OBJ
     normals = [] of Vec3
     texture_coords = [] of Vec3
 
-    texture = DEFAULT_TEXTURE
+    material = mat
 
     obj.lines.each do |line|
       tokens = line.split
@@ -18,11 +16,11 @@ module OBJ
       case tokens[0]
       when "usemtl"
         name = tokens[1]
-        if textures.has_key?(name)
-          texture = textures[name]
+        if materials.has_key?(name)
+          material = materials[name]
         else
           puts "Error, Missing material #{name}"
-          texture = DEFAULT_TEXTURE
+          material = mat
         end
       when "v"
         cords = tokens[1, 3].map(&.to_f)
@@ -48,12 +46,12 @@ module OBJ
             nb = normals[vs[i][2].to_i - 1]
             nc = normals[vs[i + 1][2].to_i - 1]
             if textured
-              raise "Error, there are no texture coords in this .obj file" if textures.empty?
+              raise "Error, there are no texture coords in this .obj file" if materials.empty?
               ta = texture_coords[vs[0][1].to_i - 1]
               tb = texture_coords[vs[i][1].to_i - 1]
               tc = texture_coords[vs[i + 1][1].to_i - 1]
 
-              hitables << TexturedTriangle.new(a, b, c, na, nb, nc, ta, tb, tc, Lambertian.new(texture))
+              hitables << TexturedTriangle.new(a, b, c, na, nb, nc, ta, tb, tc, material)
             else
               hitables << InterpolatedTriangle.new(a, b, c, na, nb, nc, mat)
             end
@@ -65,7 +63,7 @@ module OBJ
     end
     puts "Parsed #{vertices.size} vertices"
     puts "Parsed #{vertices.size} normals"
-    puts "Parsed #{textures.size} texture coords"
+    puts "Parsed #{texture_coords.size} texture coords"
     puts "Parsed #{hitables.size} faces"
 
     hitables

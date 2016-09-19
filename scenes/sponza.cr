@@ -5,44 +5,44 @@ require "../src/obj"
 ct2 = ConstantTexture.new(Vec3.new(0.0, 0.0, 1.0))
 mat = Lambertian.new(ct2)
 
-def get_texture(name)
-  # The textures are to big to include them in this repo,
+def get_material(name)
+  # The materials are to big to include them in this repo,
   # download them here: http://www.crytek.com/cryengine/cryengine3/downloads
   # and convert all .tga files to .png
   # e.g. using `mogrify -format png *.tga
-  ImageTexture.new("old/models/sponza/textures/#{name}.png")
+  Lambertian.new(ImageTexture.new("old/models/sponza/materials/#{name}.png"))
 end
 
-textures = {
-  "leaf" => get_texture("thorn"),
-  "vase_round" => get_texture("vase_round"),
-  "Material__57" => get_texture("vase_plant"),
-  "Material__298" => get_texture("background"),
-  "16___Default" => ConstantTexture.new(Vec3.new(0.5880)),
-  "bricks" => get_texture("bricks"),
-  "arch" => get_texture("sponza_arch_diff"),
-  "column_a" => get_texture("sponza_column_a_diff"),
-  "column_b" => get_texture("sponza_column_b_diff"),
-  "column_c" => get_texture("sponza_column_c_diff"),
-  "floor" => get_texture("sponza_floor_a_diff"),
-  "details" => get_texture("sponza_details_diff"),
-  "Material__47" => ConstantTexture.new(Vec3.new(0.5880)),
-  "flagpole" => get_texture("sponza_flagpole_diff"),
-  "fabric_e" => get_texture("sponza_fabric_green_diff"),
-  "fabric_d" => get_texture("sponza_fabric_blue_diff"),
-  "fabric_a" => get_texture("sponza_fabric_diff"),
-  "fabric_g" => get_texture("sponza_curtain_blue_diff"),
-  "fabric_c" => get_texture("sponza_curtain_diff"),
-  "fabric_f" => get_texture("sponza_curtain_green_diff"),
-  "chain" => get_texture("chain_texture"),
-  "vase_hanging" => get_texture("vase_hanging"),
-  "vase" => get_texture("vase_dif"),
-  "Material__25" => get_texture("lion"),
-  "roof" => get_texture("sponza_roof_diff"),
-  "ceiling" => get_texture("sponza_ceiling_a_diff"),
+materials = {
+  "leaf" => get_material("thorn"),
+  "vase_round" => get_material("vase_round"),
+  "Material__57" => get_material("vase_plant"),
+  "Material__298" => get_material("background"),
+  "16___Default" => Lambertian.new(Vec3.new(0.5880)),
+  "bricks" => get_material("bricks"),
+  "arch" => get_material("sponza_arch_diff"),
+  "column_a" => get_material("sponza_column_a_diff"),
+  "column_b" => get_material("sponza_column_b_diff"),
+  "column_c" => get_material("sponza_column_c_diff"),
+  "floor" => get_material("sponza_floor_a_diff"),
+  "details" => get_material("sponza_details_diff"),
+  "Material__47" => Lambertian.new(Vec3.new(0.5880)),
+  "flagpole" => get_material("sponza_flagpole_diff"),
+  "fabric_e" => get_material("sponza_fabric_green_diff"),
+  "fabric_d" => get_material("sponza_fabric_blue_diff"),
+  "fabric_a" => get_material("sponza_fabric_diff"),
+  "fabric_g" => get_material("sponza_curtain_blue_diff"),
+  "fabric_c" => get_material("sponza_curtain_diff"),
+  "fabric_f" => get_material("sponza_curtain_green_diff"),
+  "chain" => get_material("chain_texture"),
+  "vase_hanging" => get_material("vase_hanging"),
+  "vase" => get_material("vase_dif"),
+  "Material__25" => get_material("lion"),
+  "roof" => get_material("sponza_roof_diff"),
+  "ceiling" => get_material("sponza_ceiling_a_diff"),
 }
 
-hitables = OBJ.parse("old/models/sponza/sponza.obj", mat, interpolated: true, textured: true, textures: textures)
+hitables = OBJ.parse("old/models/sponza/sponza.obj", mat, interpolated: true, textured: true, materials: materials)
 
 light = XZRect.new(
   Vec3.new(-900.0, 1800.0, -80.0),
