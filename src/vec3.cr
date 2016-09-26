@@ -30,19 +30,23 @@ struct Vec3
     @y, @z = yz
   end
 
-  {% for op in %w(+ - * / **) %}
+  {% for op in %w(+ - * /) %}
     def {{op.id}}(other : Vec3)
       Vec3.new(@x {{op.id}} other.x, @y {{op.id}} other.y, @z {{op.id}} other.z)
     end
+  {% end %}
 
-    def {{op.id}}(other : Float)
-      Vec3.new(@x {{op.id}} other, @y {{op.id}} other, @z {{op.id}} other)
-    end
-
-    def {{op.id}}(other : Int)
+  {% for op in %w(* **) %}
+    def {{op.id}}(other : (Float | Int))
       Vec3.new(@x {{op.id}} other, @y {{op.id}} other, @z {{op.id}} other)
     end
   {% end %}
+
+
+  def /(other : (Float | Int))
+    inv = 1.0 / other
+    Vec3.new(@x * inv, @y * inv, @z * inv)
+  end
 
   def abs
     Vec3.new(@x.abs, @y.abs, @z.abs)
@@ -138,8 +142,8 @@ struct Vec3
   end
 
   def normalize
-    l = length
-    Vec3.new(@x / l, @y / l, @z / l)
+    inv = 1.0 / length
+    Vec3.new(@x * inv, @y * inv, @z * inv)
   end
 
   def reflect(normal)
