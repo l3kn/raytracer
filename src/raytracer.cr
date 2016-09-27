@@ -1,5 +1,5 @@
 require "stumpy_png"
-require "./vec3"
+require "./vector"
 require "./ray"
 require "./hitable"
 require "./hitables/*"
@@ -26,7 +26,7 @@ class NormalRaytracer
 
   def initialize(@width, @height, @hitables, @camera, @samples, background = nil)
     if background.nil?
-      @background = ConstantBackground.new(Vec3::ONE)
+      @background = ConstantBackground.new(Color::WHITE)
     else
       @background = background
     end
@@ -43,7 +43,7 @@ class NormalRaytracer
 
     (0...@height).each do |y|
       (0...@width).each do |x|
-        col = Vec3::ZERO
+        col = Color::BLACK
 
         (0...samples_sqrt).each do |i|
           (0...samples_sqrt).each do |j|
@@ -54,7 +54,7 @@ class NormalRaytracer
             v = (y + off_y).to_f / @height
 
             ray = @camera.get_ray(u, v)
-            col += de_nan(cast_ray(ray))
+            col += cast_ray(ray).de_nan
           end
         end
 
@@ -63,9 +63,9 @@ class NormalRaytracer
         col **= @gamma_correction # Gamma Correction
 
         rgba = StumpyPNG::RGBA.new(
-          (UInt16::MAX * col.x).to_u16,
-          (UInt16::MAX * col.y).to_u16,
-          (UInt16::MAX * col.z).to_u16,
+          (UInt16::MAX * col.r).to_u16,
+          (UInt16::MAX * col.g).to_u16,
+          (UInt16::MAX * col.b).to_u16,
           UInt16::MAX
         )
 
@@ -84,7 +84,11 @@ class NormalRaytracer
   end
 
   def color(ray, hit, recursion_depth)
-    (Vec3::ONE + hit.normal) * 0.5
+    Color.new(
+      (1.0 + hit.normal.x) * 0.5,
+      (1.0 + hit.normal.y) * 0.5,
+      (1.0 + hit.normal.z) * 0.5,
+    )
   end
 end
 
@@ -134,7 +138,7 @@ class SimpleRaytracer < NormalRaytracer
         scatter.albedo * cast_ray(scattered, recursion_depth - 1) * pdf
       end
     else
-      Vec3::ZERO
+      Color::BLACK
     end
   end
 end
@@ -145,7 +149,7 @@ class SingleRaytracer < NormalRaytracer
     if scatter
       scatter.albedo
     else
-      Vec3::ZERO
+      Color::BLACK
     end
   end
 end

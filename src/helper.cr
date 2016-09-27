@@ -1,8 +1,4 @@
-require "./vec3"
-
-def de_nan(vec)
-  (vec.x.nan? || vec.y.nan? || vec.z.nan?) ? Vec3::ZERO : vec
-end
+require "./vector"
 
 def clamp(x, min, max)
   min(max(x, min), max)
@@ -22,22 +18,22 @@ def random
 end
 
 def random_vec
-  Vec3.new(pos_random, pos_random, pos_random)
+  Vector.new(pos_random, pos_random, pos_random)
 end
 
 def random_in_unit_sphere
-  point = Vec3::ONE
+  point = Vector::ONE
   while point.squared_length >= 1.0
-    point = Vec3.new(random, random, random)
+    point = Vector.new(random, random, random)
   end
 
   point
 end
 
 def random_in_unit_circle
-  point = Vec3::ONE
+  point = Vector::ONE
   while point.squared_length >= 1.0
-    point = Vec3.new(random, random, 0.0)
+    point = Vector.new(random, random, 0.0)
   end
 
   point
@@ -54,7 +50,7 @@ def random_cosine_direction
   x = Math.cos(phi) * 2 * sqrt
   y = Math.sin(phi) * 2 * sqrt
 
-  Vec3.new(x, y, z)
+  Vector.new(x, y, z)
 end
 
 def random_to_sphere(radius, distance_squared)
@@ -68,7 +64,7 @@ def random_to_sphere(radius, distance_squared)
   x = Math.cos(phi) * sqrt
   y = Math.sin(phi) * sqrt
 
-  Vec3.new(x, y, z)
+  Vector.new(x, y, z)
 end
 
 def schlick(cosine, reflection_index)

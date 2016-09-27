@@ -2,14 +2,14 @@ require "stumpy_png"
 require "./perlin"
 
 abstract class Texture
-  abstract def value(point, u, v)
+  abstract def value(point : Point, u : Float64, v : Float64) : Color
 end
 
 class ConstantTexture < Texture
-  def initialize(@color : Vec3)
+  def initialize(@color : Color)
   end
 
-  def value(point, u, v)
+  def value(_point, _u, _v)
     @color
   end
 end
@@ -35,7 +35,7 @@ class NoiseTexture < Texture
   end
 
   def value(point, u, v)
-    Vec3.new(@noise.perlin(point * @scale))
+    Color.new(@noise.perlin(point * @scale))
   end
 end
 
@@ -51,7 +51,7 @@ class ImageTexture < Texture
     y = (1 - (v % 1.0)) * (@canvas.height - 1)
 
     color = @canvas[x.to_i, y.to_i]
-    Vec3.new(
+    Color.new(
       color.r.to_f / UInt16::MAX,
       color.g.to_f / UInt16::MAX,
       color.b.to_f / UInt16::MAX
@@ -64,6 +64,6 @@ class UTexture < Texture
   end
 
   def value(point, u, v)
-    Vec3.new(1 - u) ** @factor
+    Color.new((1 - u) ** @factor)
   end
 end

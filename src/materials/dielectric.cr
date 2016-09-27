@@ -13,7 +13,7 @@ class Dielectric < Material
     dir_normal = dir.dot(hit.normal)
 
     if dir_normal > 0
-      outward_normal = -hit.normal
+      outward_normal = hit.normal.flip
       ni_over_nt = @reflection_index
       cosine = dir_normal / ray.direction.length
       cosine = Math.sqrt(1 - (reflection_index**2)*(1 - cosine**2))
@@ -28,7 +28,7 @@ class Dielectric < Material
     if refracted
       reflect_prob = schlick(cosine, @reflection_index)
     else
-      return ScatterRecord.new(Vec3::ONE, Ray.new(hit.point, reflected))
+      return ScatterRecord.new(Color::WHITE, Ray.new(hit.point, reflected))
     end
 
     if rand < reflect_prob
@@ -37,6 +37,6 @@ class Dielectric < Material
       ray_new = Ray.new(hit.point, refracted)
     end
 
-    ScatterRecord.new(Vec3::ONE, ray_new)
+    ScatterRecord.new(Color::WHITE, ray_new)
   end
 end

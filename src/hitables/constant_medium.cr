@@ -29,7 +29,7 @@ class ConstantMedium < FiniteHitable
           return HitRecord.new(
             t: t ,
             point: ray.point_at_parameter(t),
-            normal: -ray.direction.normalize,
+            normal: (-ray.direction).to_normal,
             material: @material,
             u: 0.0, v: 0.0
           )

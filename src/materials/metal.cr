@@ -4,7 +4,7 @@ require "../texture"
 class Metal < Material
   property texture, fuzz
 
-  def initialize(color : Vec3, @fuzz = 0.0)
+  def initialize(color : Color, @fuzz = 0.0)
     @texture = ConstantTexture.new(color)
   end
 

@@ -1,23 +1,23 @@
 require "../hitable"
 
 abstract class Rect < FiniteHitable
-  property material
-  getter bot, top
+  getter bot : Point
+  getter top : Point
 
-  def initialize(@bot : Vec3, @top : Vec3)
+  def initialize(@bot : Point, @top : Point)
     @bounding_box = AABB.new(bot, top)
   end
 
   def flip!
-    @normal = -@normal
+    @normal = @normal.flip
   end
 end
 
 class XYRect < Rect
-  def initialize(bot : Vec3, top : Vec3, @material : Material)
+  def initialize(bot : Point, top : Point, @material : Material)
     raise "XYRect bot & top don't have the same z value" if bot.z != top.z
     super(bot, top)
-    @normal = Vec3::Z
+    @normal = Normal.new(0.0, 0.0, 1.0)
   end
 
   def hit(ray, t_min, t_max)
@@ -49,7 +49,7 @@ class XYRect < Rect
   end
 
   def random(origin)
-    random_point = Vec3.new(
+    random_point = Point.new(
       @bot.x + pos_random * (@top.x - @bot.x),
       @bot.y + pos_random * (@top.y - @bot.y),
       @bot.z
@@ -60,10 +60,10 @@ class XYRect < Rect
 end
 
 class XZRect < Rect
-  def initialize(bot : Vec3, top : Vec3, @material : Material)
+  def initialize(bot : Point, top : Point, @material : Material)
     raise "XZRect bot & top don't have the same y value" if bot.y != top.y
     super(bot, top)
-    @normal = Vec3::Y
+    @normal = Normal.new(0.0, 1.0, 0.0)
   end
 
   def hit(ray, t_min, t_max)
@@ -95,7 +95,7 @@ class XZRect < Rect
   end
 
   def random(origin)
-    random_point = Vec3.new(
+    random_point = Point.new(
       @bot.x + pos_random * (@top.x - @bot.x),
       @bot.y,
       @bot.z + pos_random * (@top.z - @bot.z)
@@ -106,10 +106,10 @@ class XZRect < Rect
 end
 
 class YZRect < Rect
-  def initialize(bot : Vec3, top : Vec3, @material : Material)
+  def initialize(bot : Point, top : Point, @material : Material)
     raise "YZRect bot & top don't have the same x value" if bot.x != top.x
     super(bot, top)
-    @normal = Vec3::X
+    @normal = Normal.new(1.0, 0.0, 0.0)
   end
 
   def hit(ray, t_min, t_max)
@@ -141,7 +141,7 @@ class YZRect < Rect
   end
 
   def random(origin)
-    random_point = Vec3.new(
+    random_point = Point.new(
       @bot.x,
       @bot.y + pos_random * (@top.y - @bot.y),
       @bot.z + pos_random * (@top.z - @bot.z)

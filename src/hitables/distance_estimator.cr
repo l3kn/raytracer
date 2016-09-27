@@ -30,13 +30,15 @@ class DistanceEstimator < Hitable
       break if distance < @minimum_distance
     end
 
-    x_dir = Vec3.new(@step, 0.0, 0.0)
-    y_dir = Vec3.new(0.0, @step, 0.0)
-    z_dir = Vec3.new(0.0, 0.0, @step)
+    x_dir = Vector.new(@step, 0.0, 0.0)
+    y_dir = Vector.new(0.0, @step, 0.0)
+    z_dir = Vector.new(0.0, 0.0, @step)
 
-    normal = Vec3.new(distance_estimate(point + x_dir) - distance_estimate(point - x_dir),
+    normal = Vector.new(
+      distance_estimate(point + x_dir) - distance_estimate(point - x_dir),
       distance_estimate(point + y_dir) - distance_estimate(point - y_dir),
-      distance_estimate(point + z_dir) - distance_estimate(point - z_dir)).normalize
+      distance_estimate(point + z_dir) - distance_estimate(point - z_dir)
+    ).normalize
 
     return ::HitRecord.new(
       t: total_distance,

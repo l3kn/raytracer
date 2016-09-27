@@ -1,14 +1,14 @@
 require "../hitable"
 
 class Triangle < FiniteHitable
-  getter a : Vec3
-  getter b : Vec3
-  getter c : Vec3
+  getter a : Point
+  getter b : Point
+  getter c : Point
   property material : Material
 
-  getter edge1 : Vec3
-  getter edge2 : Vec3
-  getter normal : Vec3
+  getter edge1 : Vector
+  getter edge2 : Vector
+  getter normal : Normal
 
   def initialize(@a, @b, @c, @material)
     min = @a.min(@b).min(@c)
@@ -19,7 +19,7 @@ class Triangle < FiniteHitable
     @edge1 = @b - @a
     @edge2 = @c - @a
 
-    @normal = edge1.cross(edge2).normalize
+    @normal = edge1.cross(edge2).to_normal
   end
 
   EPSILON = 0.000001
@@ -62,7 +62,7 @@ class Triangle < FiniteHitable
     if @normal.dot(ray.direction) < 0.0
       @normal
     else
-      -@normal
+      @normal.flip
     end
   end
 
@@ -87,15 +87,15 @@ class Triangle < FiniteHitable
     w = (d00 * d21 - d01 * d20) / denom
     u = 1.0 - v - w
 
-    Vec3.new(u, v, w)
+    Point.new(u, v, w)
   end
 end
 
 class InterpolatedTriangle < Triangle
   # Vertex normals
-  getter na : Vec3
-  getter nb : Vec3
-  getter nc : Vec3
+  getter na : Normal
+  getter nb : Normal
+  getter nc : Normal
 
   def initialize(@a, @b, @c, @na, @nb, @nc, @material)
     super(@a, @b, @c, @material)
@@ -103,15 +103,19 @@ class InterpolatedTriangle < Triangle
 
   def get_normal(ray, point, u, v)
     bc = barycentric_coordinates(point)
-    @na * bc.x + @nb * bc.y + @nc * bc.z
+    Vector.new(
+      @na.x * bc.x + @nb.x * bc.y + @nc.x * bc.z,
+      @na.y * bc.x + @nb.y * bc.y + @nc.y * bc.z,
+      @na.z * bc.x + @nb.z * bc.y + @nc.z * bc.z,
+    ).to_normal
   end
 end
 
 class TexturedTriangle < InterpolatedTriangle
   # Texture coordinates
-  getter ta : Vec3
-  getter tb : Vec3
-  getter tc : Vec3
+  getter ta : Vector
+  getter tb : Vector
+  getter tc : Vector
 
   def initialize(@a, @b, @c, @na, @nb, @nc, @ta, @tb, @tc, @material)
     super(@a, @b, @c, @na, @nb, @nc, @material)

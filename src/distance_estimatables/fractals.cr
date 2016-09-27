@@ -1,4 +1,4 @@
-require "../vec3"
+require "../vector"
 require "../mat3x3"
 require "../distance_estimatable"
 

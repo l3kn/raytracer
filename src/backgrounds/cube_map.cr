@@ -1,5 +1,5 @@
 require "stumpy_png"
-require "../vec3"
+require "../vector"
 require "../background"
 
 class CubeMap < Background
@@ -62,7 +62,7 @@ class CubeMap < Background
     max = UInt16::MAX
     pixel = texture[i, j]
 
-    Vec3.new(
+    Color.new(
       pixel.r.to_f / max,
       pixel.g.to_f / max,
       pixel.b.to_f / max,

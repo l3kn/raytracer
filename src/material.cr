@@ -1,10 +1,10 @@
 require "./ray"
-require "./vec3"
+require "./vector"
 require "./pdf"
 
 # Either there result contains a pdf or a specular ray
 record ScatterRecord,
-  albedo : Vec3,
+  albedo : Color,
   pdf_or_ray : (PDF | Ray)
 
 class Material
@@ -17,6 +17,6 @@ class Material
   end
 
   def emitted(ray, hit)
-    Vec3::ZERO
+    Color::BLACK
   end
 end

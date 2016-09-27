@@ -1,6 +1,6 @@
 module Phong
   class Light
-    property position : Vec3
+    property position : Point
     property intensity : Float64
 
     def initialize(@position, @intensity)

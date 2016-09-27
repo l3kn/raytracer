@@ -2,13 +2,13 @@ require "./hitable"
 require "./onb"
 
 abstract class PDF
-  abstract def value(direction)
-  abstract def generate
+  abstract def value(direction : Vector)
+  abstract def generate : Vector
 end
 
 class HitablePDF < PDF
   getter hitable : Hitable
-  getter origin : Vec3
+  getter origin : Point
 
   def initialize(@hitable, @origin)
   end

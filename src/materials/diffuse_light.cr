@@ -5,7 +5,7 @@ class DiffuseLight < Material
   property texture
   property intensity
 
-  def initialize(color : Vec3, @intensity = 1.0)
+  def initialize(color : Color, @intensity = 1.0)
     @texture = ConstantTexture.new(color)
   end
 
@@ -17,7 +17,7 @@ class DiffuseLight < Material
     if hit.normal.dot(ray.direction) < 0.0
       @texture.value(hit.point, hit.u, hit.v) * @intensity
     else
-      Vec3::ZERO
+      Color::BLACK
     end
   end
 end

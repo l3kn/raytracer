@@ -3,8 +3,8 @@ require "../hitable"
 class Sphere < FiniteHitable
   property center, radius, material
 
-  def initialize(@center : Vec3, @radius : Float64, @material : Material)
-    r = Vec3.new(@radius)
+  def initialize(@center : Point, @radius : Float64, @material : Material)
+    r = Vector.new(@radius)
     @bounding_box = AABB.new(@center - r, @center + r)
   end
 
@@ -21,7 +21,9 @@ class Sphere < FiniteHitable
 
       if (tmp < t_max && tmp > t_min)
         point = ray.point_at_parameter(tmp)
-        normal = (point - center) / radius
+
+        # TODO: is it faster to divide by `radius` here?
+        normal = (point - center).to_normal
 
         # Naive:
         #   u = Math.asin(normal.x) / Math::PI + 0.5
@@ -35,7 +37,8 @@ class Sphere < FiniteHitable
 
       if (tmp < t_max && tmp > t_min)
         point = ray.point_at_parameter(tmp)
-        normal = (point - center) / radius
+        # TODO: is it faster to divide by `radius` here?
+        normal = (point - center).to_normal
 
         u = Math.atan2(-normal.z, -normal.x) / (2 * Math::PI) + 0.5
         v = Math.asin(-normal.y) / Math::PI + 0.5
@@ -58,7 +61,7 @@ class Sphere < FiniteHitable
     end
   end
 
-  def random(origin)
+  def random(origin : Point)
     direction = @center - origin
     distance_squared = direction.squared_length
 

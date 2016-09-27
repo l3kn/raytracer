@@ -1,5 +1,5 @@
 require "../distance_estimatable"
-require "../vec3"
+require "../vector"
 
 module DE
   class Sphere < DistanceEstimatable

@@ -1,19 +1,24 @@
-require "./vec3"
+require "./vector"
 
 class Camera
-  getter u : Vec3, v : Vec3, w : Vec3
-  getter lower_left_corner : Vec3
-  getter horizontal : Vec3
-  getter vertical : Vec3
+  getter u : Vector, v : Vector, w : Vector
+  getter lower_left_corner : Point
+  getter horizontal : Vector
+  getter vertical : Vector
   getter lens_radius : Float64
 
-  def initialize(look_from, look_at, vertical_fov, aspect_ratio, up = Vec3::Y, aperture = 0.0)
+  def initialize(look_from : Point,
+                 look_at : Point,
+                 vertical_fov : Int32,
+                 aspect_ratio : Float64,
+                 up = Vector::Y,
+                 aperture = 0.0)
     initialize(look_from, look_at, up, vertical_fov, aspect_ratio, aperture, (look_from - look_at).length)
   end
 
-  def initialize(look_from : Vec3,
-                 look_at : Vec3,
-                 up : Vec3,
+  def initialize(look_from : Point,
+                 look_at : Point,
+                 up : Vector,
                  vertical_fov : Int32,
                  aspect_ratio : Float64,
                  aperture : Float64,
@@ -37,7 +42,8 @@ class Camera
     rd = random_in_unit_circle * @lens_radius
     offset = @u * rd.x + @v * rd.y
 
-    direction = @lower_left_corner + @horizontal * s + @vertical * t - @origin - offset
+    direction = @lower_left_corner - @origin - offset + @horizontal * s + @vertical * t
+    # direction = @horizontal * s + @vertical * t - @origin - offset + @lower_left_corner
 
     Ray.new(@origin + offset, direction.normalize)
   end

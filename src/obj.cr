@@ -3,9 +3,9 @@ module OBJ
     obj = File.read(filename)
 
     hitables = [] of FiniteHitable
-    vertices = [] of Vec3
-    normals = [] of Vec3
-    texture_coords = [] of Vec3
+    vertices = [] of Point
+    normals = [] of Normal
+    texture_coords = [] of Vector
 
     material = mat
 
@@ -24,13 +24,14 @@ module OBJ
         end
       when "v"
         cords = tokens[1, 3].map(&.to_f)
-        vertices << Vec3.new(cords[0], cords[1], cords[2])
+        vertices << Point.new(cords[0], cords[1], cords[2])
       when "vn"
         cords = tokens[1, 3].map(&.to_f)
-        normals << Vec3.new(cords[0], cords[1], cords[2])
+        # normals << Normal.new(cords[0], cords[1], cords[2])
+        normals << Vector.new(cords[0], cords[1], cords[2]).to_normal
       when "vt"
         cords = tokens[1, 3].map(&.to_f)
-        texture_coords << Vec3.new(cords[0], cords[1], cords[2])
+        texture_coords << Vector.new(cords[0], cords[1], cords[2])
       when "f"
         vs = tokens[1..-1].map { |i| i.split("/") }
 

@@ -1,9 +1,7 @@
 require "../background"
 
 class ConstantBackground < Background
-  property color : Vec3
-
-  def initialize(@color)
+  def initialize(@color : Color)
   end
 
   def get(ray)

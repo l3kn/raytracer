@@ -6,14 +6,14 @@ class Cuboid < FiniteHitable
 
   def initialize(p1, p2, top, bottom, front, back, left, right)
     # back | front, right | left, top | bottom
-    brt = Vec3.new(p2.x, p2.y, p2.z)
-    brb = Vec3.new(p2.x, p1.y, p2.z)
-    blt = Vec3.new(p1.x, p2.y, p2.z)
-    blb = Vec3.new(p1.x, p1.y, p2.z)
-    frt = Vec3.new(p2.x, p2.y, p1.z)
-    frb = Vec3.new(p2.x, p1.y, p1.z)
-    flt = Vec3.new(p1.x, p2.y, p1.z)
-    flb = Vec3.new(p1.x, p1.y, p1.z)
+    brt = Point.new(p2.x, p2.y, p2.z)
+    brb = Point.new(p2.x, p1.y, p2.z)
+    blt = Point.new(p1.x, p2.y, p2.z)
+    blb = Point.new(p1.x, p1.y, p2.z)
+    frt = Point.new(p2.x, p2.y, p1.z)
+    frb = Point.new(p2.x, p1.y, p1.z)
+    flt = Point.new(p1.x, p2.y, p1.z)
+    flb = Point.new(p1.x, p1.y, p1.z)
 
     rect_front = XYRect.new(flb, frt, front)
     rect_back = XYRect.new(blb, brt, back)

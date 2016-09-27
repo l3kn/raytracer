@@ -1,4 +1,4 @@
-require "../vec3"
+require "../vector"
 require "../distance_estimatable"
 
 module DE

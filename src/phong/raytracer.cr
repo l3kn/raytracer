@@ -24,7 +24,7 @@ module Phong
           l = (light.position - hit.point).normalize
           hit2 = @hitables.hit(Ray.new(hit.point, l), 0.001, (light.position - hit.point).length)
           if hit2
-            Vec3::ZERO
+            Color::BLACK
           else
             n = hit.normal
             v = -ray.direction.normalize
@@ -37,7 +37,7 @@ module Phong
 
         material.k_a * color * @ambient + material.k_d * color * diffuse + material.k_s * specular
       else
-        Vec3::ZERO
+        Color::BLACK
       end
     end
   end

@@ -1,7 +1,7 @@
-require "./vec3"
+require "./vector"
 
 struct ONB
-  getter u : Vec3, v : Vec3, w : Vec3
+  getter u : Vector, v : Vector, w : Vector
 
   def initialize(@u, @v, @w)
   end
@@ -11,8 +11,8 @@ struct ONB
   end
 
   def self.from_w(n)
-    w = n.normalize
-    a = w.x.abs > 0.9 ? Vec3::Y : Vec3::X
+    w = n.normalize.to_vector
+    a = w.x.abs > 0.9 ? Vector::Y : Vector::X
 
     v = w.cross(a).normalize
     u = w.cross(v)

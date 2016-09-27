@@ -1,15 +1,16 @@
-class AABB
-  getter min, max
+require "./vector"
 
-  def initialize(@min : Vec3, @max : Vec3)
-    # if @min.z == @max.z
-    # @min = Vec3.new(@min.xy, @min.z - 0.01)
-    # @max = Vec3.new(@max.xy, @max.z + 0.01)
-    # end
+struct AABB
+  getter min : Point
+  getter max : Point
+
+  def initialize(min, max)
+    @min = min.min(max)
+    @max = min.max(max)
   end
 
   def hit(ray)
-    dirfrac = Vec3::ONE / ray.direction
+    dirfrac = Vector::ONE / ray.direction
 
     x1 = (@min.x - ray.origin.x) * dirfrac.x
     x2 = (@max.x - ray.origin.x) * dirfrac.x
@@ -24,22 +25,27 @@ class AABB
     tmax > 0 && tmin <= tmax
   end
 
-  def merge(other)
-    new_min = Vec3.new(
-      min(@min.x, other.min.x),
-      min(@min.y, other.min.y),
-      min(@min.z, other.min.z)
+  def merge(other : AABB)
+    AABB.new(
+      @min.min(other.min),
+      @max.max(other.max)
     )
-    new_max = Vec3.new(
-      max(@max.x, other.max.x),
-      max(@max.y, other.max.y),
-      max(@max.z, other.max.z)
-    )
-
-    AABB.new(new_min, new_max)
   end
 
   def centroid
     @min * 0.5 + @max * 0.5
+  end
+
+  def bounding_sphere
+    center = centroid
+    BoundingSphere.new(center, center.distance(@max))
+  end
+end
+
+struct BoundingSphere
+  getter center : Point
+  getter radius : Float64
+
+  def initialize(@center, @radius)
   end
 end

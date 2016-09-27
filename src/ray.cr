@@ -1,6 +1,6 @@
 struct Ray
-  getter origin : Vec3
-  getter direction : Vec3
+  getter origin : Point
+  getter direction : Vector
 
   def initialize(@origin, @direction)
   end

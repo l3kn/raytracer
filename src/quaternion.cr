@@ -7,13 +7,13 @@ struct Quaternion
   def initialize(@x, @y, @z, @w)
   end
 
-  def initialize(@x : Float64, yzw : Vec3)
+  def initialize(@x : Float64, yzw : Vector)
     @y = yzw.x
     @z = yzw.y
     @w = yzw.z
   end
 
-  def initialize(xyz : Vec3, @w : Float64)
+  def initialize(xyz : Vector, @w : Float64)
     @x = xyz.x
     @y = xyz.y
     @z = xyz.z
@@ -33,28 +33,28 @@ struct Quaternion
     {% for second in %w(x y z w) %}
       {% for third in %w(x y z w) %}
         def {{first.id}}{{second.id}}{{third.id}}
-          Vec3.new(@{{first.id}}, @{{second.id}}, @{{third.id}})
+          Vector.new(@{{first.id}}, @{{second.id}}, @{{third.id}})
         end
         def _{{first.id}}{{second.id}}{{third.id}}
-          Vec3.new(-@{{first.id}}, @{{second.id}}, @{{third.id}})
+          Vector.new(-@{{first.id}}, @{{second.id}}, @{{third.id}})
         end
         def {{first.id}}_{{second.id}}{{third.id}}
-          Vec3.new(@{{first.id}}, -@{{second.id}}, @{{third.id}})
+          Vector.new(@{{first.id}}, -@{{second.id}}, @{{third.id}})
         end
         def _{{first.id}}_{{second.id}}{{third.id}}
-          Vec3.new(-@{{first.id}}, -@{{second.id}}, @{{third.id}})
+          Vector.new(-@{{first.id}}, -@{{second.id}}, @{{third.id}})
         end
         def {{first.id}}{{second.id}}_{{third.id}}
-          Vec3.new(@{{first.id}}, @{{second.id}}, -@{{third.id}})
+          Vector.new(@{{first.id}}, @{{second.id}}, -@{{third.id}})
         end
         def _{{first.id}}{{second.id}}_{{third.id}}
-          Vec3.new(-@{{first.id}}, @{{second.id}}, -@{{third.id}})
+          Vector.new(-@{{first.id}}, @{{second.id}}, -@{{third.id}})
         end
         def {{first.id}}_{{second.id}}_{{third.id}}
-          Vec3.new(@{{first.id}}, -@{{second.id}}, -@{{third.id}})
+          Vector.new(@{{first.id}}, -@{{second.id}}, -@{{third.id}})
         end
         def _{{first.id}}_{{second.id}}_{{third.id}}
-          Vec3.new(-@{{first.id}}, -@{{second.id}}, -@{{third.id}})
+          Vector.new(-@{{first.id}}, -@{{second.id}}, -@{{third.id}})
         end
       {% end %}
     {% end %}

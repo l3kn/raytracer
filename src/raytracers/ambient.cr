@@ -14,10 +14,10 @@ class AORaytracer < NormalRaytracer
         end
       end
 
-      Vec3.new(count / 10.0)
+      Color.new(count / 10.0)
       # scatter.albedo *
     else
-      Vec3::ZERO
+      Color::BLACK
     end
   end
 end
