@@ -4,25 +4,25 @@ require "../src/backgrounds/*"
 hitables = [] of Hitable
 
 hitables.push(Sphere.new(
-  Vec3.new(0.0, -100.5, -1.0),
+  Point.new(0.0, -100.5, -1.0),
   100.0,
-  Metal.new(Vec3.new(0.8), 0.0)
+  Metal.new(Color.new(0.8), 0.0)
 ))
 
 hitables.push(Sphere.new(
-  Vec3.new(0.0, 0.0, -1.0),
+  Point.new(0.0, 0.0, -1.0),
   0.5,
-  Lambertian.new(Vec3.new(0.1, 0.2, 0.5))
+  Lambertian.new(Color.new(0.1, 0.2, 0.5))
 ))
 
 hitables.push(Sphere.new(
-  Vec3.new(1.0, 0.0, -1.0),
+  Point.new(1.0, 0.0, -1.0),
   0.5,
-  Metal.new(Vec3.new(0.8, 0.6, 0.2), 0.0)
+  Metal.new(Color.new(0.8, 0.6, 0.2), 0.0)
 ))
 
 hitables.push(Sphere.new(
-  Vec3.new(-1.0, 0.0, -1.0),
+  Point.new(-1.0, 0.0, -1.0),
   0.5,
   Dielectric.new(1.8)
 ))
@@ -30,8 +30,8 @@ hitables.push(Sphere.new(
 width, height = {800, 400}
 
 camera = Camera.new(
-  look_from: Vec3.new(-1.5, 1.5, 1.5),
-  look_at: Vec3.new(0.0, 0.0, -1.0),
+  look_from: Point.new(-1.5, 1.5, 1.5),
+  look_at: Point.new(0.0, 0.0, -1.0),
   vertical_fov: 30,
   aspect_ratio: width.to_f / height.to_f,
   aperture: 0.05

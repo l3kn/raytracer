@@ -24,16 +24,16 @@ require "../src/backgrounds/*"
 #    e.g. using `convert cube*.png cube.gif`
 
 sphere = Sphere.new(
-  Vec3.new(0.0),
+  Point.new(0.0),
   1.0,
-  Metal.new(Vec3.new(0.8), 0.0)
+  Metal.new(Color.new(0.8), 0.0)
 )
 
 width, height = {400, 400}
 
 # Camera params
-look_from = Vec3.new(0.0, 0.0, 2.5)
-look_at = Vec3.new(0.0)
+look_from = Point.new(0.0, 0.0, 2.5)
+look_at = Point.new(0.0)
 fov = 60
 aspect_ratio = width.to_f / height.to_f
 
@@ -56,7 +56,7 @@ raytracer = SimpleRaytracer.new(width, height,
   s = Math.sin(angle)
   c = Math.cos(angle)
 
-  look_from = Vec3.new(x * c - z * s, 0.5, x * s + z * c)
+  look_from = Point.new(x * c - z * s, 0.5, x * s + z * c)
   camera = Camera.new(look_from, look_at, fov, aspect_ratio)
 
   raytracer.camera = camera

@@ -2,7 +2,7 @@ require "../src/raytracer"
 require "../src/backgrounds/*"
 require "../src/obj"
 
-ct2 = ConstantTexture.new(Vec3.new(0.0, 0.0, 1.0))
+ct2 = ConstantTexture.new(Color.new(0.0, 0.0, 1.0))
 mat = Lambertian.new(ct2)
 
 def get_material(name)
@@ -10,7 +10,7 @@ def get_material(name)
   # download them here: http://www.crytek.com/cryengine/cryengine3/downloads
   # and convert all .tga files to .png
   # e.g. using `mogrify -format png *.tga
-  Lambertian.new(ImageTexture.new("old/models/sponza/materials/#{name}.png"))
+  Lambertian.new(ImageTexture.new("old/models/sponza/textures/#{name}.png"))
 end
 
 materials = {
@@ -18,7 +18,7 @@ materials = {
   "vase_round" => get_material("vase_round"),
   "Material__57" => get_material("vase_plant"),
   "Material__298" => get_material("background"),
-  "16___Default" => Lambertian.new(Vec3.new(0.5880)),
+  "16___Default" => Lambertian.new(Color.new(0.5880)),
   "bricks" => get_material("bricks"),
   "arch" => get_material("sponza_arch_diff"),
   "column_a" => get_material("sponza_column_a_diff"),
@@ -26,7 +26,7 @@ materials = {
   "column_c" => get_material("sponza_column_c_diff"),
   "floor" => get_material("sponza_floor_a_diff"),
   "details" => get_material("sponza_details_diff"),
-  "Material__47" => Lambertian.new(Vec3.new(0.5880)),
+  "Material__47" => Lambertian.new(Color.new(0.5880)),
   "flagpole" => get_material("sponza_flagpole_diff"),
   "fabric_e" => get_material("sponza_fabric_green_diff"),
   "fabric_d" => get_material("sponza_fabric_blue_diff"),
@@ -45,9 +45,9 @@ materials = {
 hitables = OBJ.parse("old/models/sponza/sponza.obj", mat, interpolated: true, textured: true, materials: materials)
 
 light = XZRect.new(
-  Vec3.new(-900.0, 1800.0, -80.0),
-  Vec3.new(900.0, 1800.0, 80.0),
-  DiffuseLight.new(Vec3::ONE, 40.0),
+  Point.new(-900.0, 1800.0, -80.0),
+  Point.new(900.0, 1800.0, 80.0),
+  DiffuseLight.new(Color::WHITE, 40.0),
 )
 hitables << light
 
@@ -56,8 +56,8 @@ width, height = 400, 400
 node = SAHBVHNode.new(hitables)
 
 camera = Camera.new(
-  look_from: Vec3.new(940.0, 600.0, 80.0),
-  look_at: Vec3.new(0.0, 400.0, 0.0),
+  look_from: Point.new(940.0, 600.0, 80.0),
+  look_at: Point.new(0.0, 400.0, 0.0),
   vertical_fov: 70,
   aspect_ratio: width.to_f / height.to_f,
 )
@@ -67,7 +67,7 @@ raytracer = Raytracer.new(width, height,
                           focus_hitables: light,
                           camera: camera,
                           samples: 5000,
-                          background: ConstantBackground.new(Vec3.new(1.0)))
+                          background: ConstantBackground.new(Color.new(1.0)))
 
 raytracer.recursion_depth = 4
 raytracer.render("sponza.png")
@@ -84,10 +84,10 @@ raytracer.render("sponza.png")
 #     break
 #   when "look_from"
 #     x, y, z = tokens[1,3].map(&.to_f)
-#     look_from = Vec3.new(x, y, z)
+#     look_from = Point.new(x, y, z)
 #   when "look_at"
 #     x, y, z = tokens[1,3].map(&.to_f)
-#     look_at = Vec3.new(x, y, z)
+#     look_at = Point.new(x, y, z)
 #   when "size"
 #     width, height = tokens[1,2].map(&.to_i)
 #   when "render"
@@ -99,7 +99,7 @@ raytracer.render("sponza.png")
 #       hitables: node,
 #       camera: camera,
 #       samples: 10,
-#       background: ConstantBackground.new(Vec3.new(1.0)))
+#       background: ConstantBackground.new(Color.new(1.0)))
 #     raytracer.render("sponza.png")
 #     puts ""
 #   end
