@@ -1,5 +1,9 @@
 version: 1.0
 shards:
+  stumpy_core:
+    git: https://github.com/l3kn/stumpy_core.git
+    commit: da3d4a68106502e3156293ba5c6290c9a023db35
+
   stumpy_png:
     github: l3kn/stumpy_png
     commit: 776e020c43acb6955618c3e9b7a67eade3a43421
