@@ -1,5 +1,8 @@
 require "stumpy_png"
 require "./vector"
+require "./normal"
+require "./color"
+require "./point"
 require "./ray"
 require "./hitable"
 require "./hitables/*"

@@ -1,4 +1,5 @@
 require "../src/raytracer"
+require "../src/transformation"
 
 white = Lambertian.new(Color.new(0.73))
 red = Lambertian.new(Color.new(0.65, 0.05, 0.05))
@@ -34,20 +35,11 @@ light_ = XZRect.new(Point.new(213.0, 554.0, 227.0),
   light)
 light_.flip!
 
-cube1 = Translate.new(
-  RotateY.new(
-    Cuboid.new(Point.new(0.0), Point.new(165.0), white),
-    -18.0
-  ),
-  Point.new(130.0, 0.0, 65.0)
-)
-
-cube2 = Translate.new(
-  RotateY.new(
+cube2 =
+  TransformationWrapper.new(
     Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum),
-    15.0
-  ),
-  Point.new(265.0, 0.0, 295.0)
+    Transformation.rotation_y(-15.0) * Transformation.translation(Vector.new(-265.0, 0.0, -295.0)),
+    Transformation.translation(Vector.new(265.0, 0.0, 295.0)) * Transformation.rotation_y(15.0)
 )
 
 sphere = Sphere.new(
@@ -56,7 +48,6 @@ sphere = Sphere.new(
   Dielectric.new(1.5)
 )
 
-# hitables = [left, right, bottom, top, back, light_, cube1, cube2]
 hitables = [left, right, bottom, top, back, light_, sphere, cube2]
 
 width, height = {400, 400}
@@ -69,10 +60,10 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-  hitables: HitableList.new(hitables),
-  focus_hitables: HitableList.new([light_, sphere, cube2]),
+  hitables: FiniteHitableList.new(hitables),
+  focus_hitables: FiniteHitableList.new([light_, sphere]),
   camera: camera,
-  samples: 1000,
+  samples: 100,
   background: ConstantBackground.new(Color.new(0.0)))
 
 raytracer.render("cornell.png")

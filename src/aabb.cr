@@ -40,6 +40,18 @@ struct AABB
     center = centroid
     BoundingSphere.new(center, center.distance(@max))
   end
+
+  def self.from_points(points : Array(Point))
+    min = points[0]
+    max = points[0]
+
+    points[1..-1].each do |point|
+      min = min.min(point)
+      max = max.max(point)
+    end
+
+    self.new(min, max)
+  end
 end
 
 struct BoundingSphere
