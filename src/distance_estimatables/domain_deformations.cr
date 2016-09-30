@@ -12,7 +12,7 @@ module DE
       c = Math.cos(0.5*pos.y)
       s = Math.sin(0.5*pos.y)
 
-      new_pos = Vec3.new(
+      new_pos = Point.new(
         c * pos.x - s * pos.z,
         s * pos.x + c * pos.z,
         pos.y

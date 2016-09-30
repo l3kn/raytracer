@@ -1,6 +1,6 @@
 require "../vector"
-require "../mat3x3"
 require "../distance_estimatable"
+require "../transformation"
 
 module DE
   class Mandelbulb < DistanceEstimatable
@@ -28,10 +28,11 @@ module DE
 
         sin_theta = Math.sin(theta)
 
-        z = Vec3.new(sin_theta * Math.cos(phi),
-          sin_theta * Math.sin(phi),
-          Math.cos(theta)) * zr
-        z += pos
+        z = Point.new(
+          sin_theta * Math.cos(phi) * zr + pos.x,
+          sin_theta * Math.sin(phi) * zr + pos.y,
+          Math.cos(theta) * zr + pos.z
+        )
       end
 
       0.5 * Math.log(r) * r / dr
@@ -41,15 +42,15 @@ module DE
   class MengerSponge < DE::DistanceEstimatable
     property iterations : Int32
     property scale : Float64
-    property offset : Vec3
-    property rotation : Mat3x3
+    property offset : Vector
+    property transformation : Transformation
 
-    def initialize(@iterations = 4, @scale = 3.0, @offset = Vec3::ONE, @rotation = Mat3x3::ID)
+    def initialize(@iterations = 4, @scale = 3.0, @offset = Vector::ONE, @transformation = Transformation::ID)
     end
 
     def distance_estimate(pos)
       @iterations.times do
-        pos = @rotation * pos
+        pos = @transformation.apply(pos)
         pos = pos.abs
 
         pos = pos.yxz if pos.x < pos.y
@@ -57,7 +58,7 @@ module DE
         pos = pos.yxz if pos.x < pos.y
 
         pos = pos * @scale - @offset * (@scale - 1.0)
-        pos = Vec3.new(pos.xy, pos.z + @offset.z * (@scale - 1.0)) if pos.z < -0.5 * @offset.z * (@scale - 1.0)
+        pos = Point.new(pos.xy, pos.z + @offset.z * (@scale - 1.0)) if pos.z < -0.5 * @offset.z * (@scale - 1.0)
       end
 
       pos.length * (@scale ** (-@iterations))

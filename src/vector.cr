@@ -113,4 +113,12 @@ struct Vector
   def xyz
     {@x, @y, @z}
   end
+
+  def max(other : Float64)
+    Vector.new(
+      max(@x, other),
+      max(@y, other),
+      max(@z, other)
+    )
+  end
 end

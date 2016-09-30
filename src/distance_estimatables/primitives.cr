@@ -1,5 +1,7 @@
 require "../distance_estimatable"
 require "../vector"
+require "../point"
+require "../normal"
 
 module DE
   class Sphere < DistanceEstimatable
@@ -14,7 +16,7 @@ module DE
   end
 
   class Box < DistanceEstimatable
-    property dimensions : Vec3
+    property dimensions : Point
 
     def initialize(@dimensions, @radius = 0.0)
     end
@@ -71,7 +73,7 @@ module DE
   end
 
   class Plane < DistanceEstimatable
-    property normal : Vec3
+    property normal : Normal
     property w : Float64
 
     def initialize(@normal, @w)

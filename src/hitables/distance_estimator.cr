@@ -38,7 +38,7 @@ class DistanceEstimator < Hitable
       distance_estimate(point + x_dir) - distance_estimate(point - x_dir),
       distance_estimate(point + y_dir) - distance_estimate(point - y_dir),
       distance_estimate(point + z_dir) - distance_estimate(point - z_dir)
-    ).normalize
+    ).to_normal
 
     return ::HitRecord.new(
       t: total_distance,

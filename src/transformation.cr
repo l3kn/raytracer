@@ -25,6 +25,12 @@ end
 
 class Transformation
   RADIANTS = (Math::PI / 180)
+  ID = self.new([
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0
+  ])
 
   property matrix : Mat4x4
   property inverse : Mat4x4
