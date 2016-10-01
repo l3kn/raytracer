@@ -58,10 +58,10 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-  hitables: BVHNode.new(hitables),
+  hitables: FiniteHitableList.new(hitables),
   focus_hitables: FiniteHitableList.new([light_, sphere]),
   camera: camera,
-  samples: 10,
+  samples: 100,
   background: ConstantBackground.new(Color.new(0.0)))
 
 raytracer.render("cornell.png")
