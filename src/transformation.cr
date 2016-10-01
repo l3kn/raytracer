@@ -1,19 +1,20 @@
 require "./mat4x4"
 
 class TransformationWrapper < FiniteHitable
-  def initialize(@object : FiniteHitable, @world_to_object : Transformation, @object_to_world : Transformation)
-    @bounding_box = @object_to_world.apply(@object.bounding_box)
+  # NOTE: The matrix in @transformation is from world to object space
+  def initialize(@object : FiniteHitable, @transformation : Transformation)
+    @bounding_box = transformation.object_to_world(@object.bounding_box)
   end
 
   def hit(ray : Ray, t_min : Float, t_max : Float)
-    new_ray = @world_to_object.apply(ray)
+    new_ray = @transformation.world_to_object(ray)
     hit = @object.hit(new_ray, t_min, t_max)
 
     if hit
       HitRecord.new(
         hit.t,
-        @object_to_world.apply(hit.point),
-        @object_to_world.apply(hit.normal),
+        @transformation.object_to_world(hit.point),
+        @transformation.object_to_world(hit.normal),
         hit.material,
         hit.u, hit.v
       )
@@ -44,54 +45,44 @@ class Transformation
   def initialize(@matrix, @inverse)
   end
 
-  def apply(point : Point)
-    # Homogenous coordinates: (x y z 1)
-    x, y, z = point.xyz
-
-    xp = @matrix[0, 0] * x + @matrix[0, 1] * y + @matrix[0, 2] * z + @matrix[0, 3]
-    yp = @matrix[1, 0] * x + @matrix[1, 1] * y + @matrix[1, 2] * z + @matrix[1, 3]
-    zp = @matrix[2, 0] * x + @matrix[2, 1] * y + @matrix[2, 2] * z + @matrix[2, 3]
-    wp = @matrix[3, 0] * x + @matrix[3, 1] * y + @matrix[3, 2] * z + @matrix[3, 3]
-
-    wp == 1.0 ? Point.new(xp, yp, zp) : Point.new(xp / wp, yp / wp, zp / wp)
+  def world_to_object(point_or_vector : (Point | Vector))
+    @matrix * point_or_vector
   end
 
-  def apply(vector : Vector)
-    # Homogenous coordinates: (x y z 0)
-    x, y, z = vector.xyz
-
-    xp = @matrix[0, 0] * x + @matrix[0, 1] * y + @matrix[0, 2] * z
-    yp = @matrix[1, 0] * x + @matrix[1, 1] * y + @matrix[1, 2] * z
-    zp = @matrix[2, 0] * x + @matrix[2, 1] * y + @matrix[2, 2] * z
-
-    Vector.new(xp, yp, zp)
+  def object_to_world(point_or_vector : (Point | Vector))
+    @inverse * point_or_vector
   end
 
-  def apply(normal : Normal)
-    # Homogenous coordinates: (x y z 0) but using the transposed inverse matrix
-    x, y, z = normal.xyz
-
-    xp = @inverse[0, 0] * x + @inverse[1, 0] * y + @inverse[2, 0] * z
-    yp = @inverse[0, 1] * x + @inverse[1, 1] * y + @inverse[2, 1] * z
-    zp = @inverse[0, 2] * x + @inverse[1, 2] * y + @inverse[2, 2] * z
-
-    Normal.new(xp, yp, zp)
+  def world_to_object(normal : Normal)
+    # For normals the transformation
+    # works the other way around
+    # and the matrix is transposed,
+    # but that fact is hidden in the `Mat4x4.*(other : Normal)` functon
+    @inverse * normal
   end
 
-  def apply(ray : Ray)
-    Ray.new(apply(ray.origin), apply(ray.direction))
+  def object_to_world(normal : Normal)
+    @matrix * normal
   end
 
-  def apply(box : AABB)
+  def world_to_object(ray : Ray)
+    Ray.new(world_to_object(ray.origin), world_to_object(ray.direction))
+  end
+
+  def object_to_world(ray : Ray)
+    Ray.new(object_to_world(ray.origin), object_to_world(ray.direction))
+  end
+
+  def object_to_world(box : AABB)
     AABB.from_points([
-      apply(Point.new(box.min.x, box.min.y, box.min.z)),
-      apply(Point.new(box.min.x, box.min.y, box.max.z)),
-      apply(Point.new(box.min.x, box.max.y, box.min.z)),
-      apply(Point.new(box.min.x, box.max.y, box.max.z)),
-      apply(Point.new(box.max.x, box.min.y, box.min.z)),
-      apply(Point.new(box.max.x, box.min.y, box.max.z)),
-      apply(Point.new(box.max.x, box.max.y, box.min.z)),
-      apply(Point.new(box.max.x, box.max.y, box.max.z))
+      object_to_world(Point.new(box.min.x, box.min.y, box.min.z)),
+      object_to_world(Point.new(box.min.x, box.min.y, box.max.z)),
+      object_to_world(Point.new(box.min.x, box.max.y, box.min.z)),
+      object_to_world(Point.new(box.min.x, box.max.y, box.max.z)),
+      object_to_world(Point.new(box.max.x, box.min.y, box.min.z)),
+      object_to_world(Point.new(box.max.x, box.min.y, box.max.z)),
+      object_to_world(Point.new(box.max.x, box.max.y, box.min.z)),
+      object_to_world(Point.new(box.max.x, box.max.y, box.max.z))
     ])
   end
 

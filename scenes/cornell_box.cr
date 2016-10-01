@@ -35,11 +35,9 @@ light_ = XZRect.new(Point.new(213.0, 554.0, 227.0),
   light)
 light_.flip!
 
-cube2 =
-  TransformationWrapper.new(
-    Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum),
-    Transformation.rotation_y(-15.0) * Transformation.translation(Vector.new(-265.0, 0.0, -295.0)),
-    Transformation.translation(Vector.new(265.0, 0.0, 295.0)) * Transformation.rotation_y(15.0)
+cube2 = TransformationWrapper.new(
+  Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum),
+  Transformation.rotation_y(-15.0) * Transformation.translation(Vector.new(-265.0, 0.0, -295.0))
 )
 
 sphere = Sphere.new(
@@ -60,10 +58,10 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-  hitables: FiniteHitableList.new(hitables),
+  hitables: BVHNode.new(hitables),
   focus_hitables: FiniteHitableList.new([light_, sphere]),
   camera: camera,
-  samples: 100,
+  samples: 10,
   background: ConstantBackground.new(Color.new(0.0)))
 
 raytracer.render("cornell.png")
