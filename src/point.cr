@@ -105,6 +105,16 @@ struct Point
       end
     {% end %}
   {% end %}
+
+  def [](axis)
+    if axis == 0
+      @x
+    elsif axis == 1
+      @y
+    else
+      @z
+    end
+  end
 end
 
 

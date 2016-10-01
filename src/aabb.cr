@@ -33,7 +33,11 @@ struct AABB
   end
 
   def centroid
-    @min * 0.5 + @max * 0.5
+    Point.new(
+      @min.x * 0.5 + @max.x * 0.5,
+      @min.y * 0.5 + @max.y * 0.5,
+      @min.z * 0.5 + @max.z * 0.5,
+    )
   end
 
   def bounding_sphere
