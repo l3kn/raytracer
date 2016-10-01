@@ -13,7 +13,11 @@ class SierpinskyTetrahedron < DE::DistanceEstimatable
       pos = pos._zy_x if pos.x + pos.z < 0
       pos = pos.x_z_y if pos.y + pos.z < 0
 
-      pos = pos*@scale - (@scale - 1.0)
+      pos = Point.new(
+        pos.x*@scale - (@scale - 1.0),
+        pos.y*@scale - (@scale - 1.0),
+        pos.z*@scale - (@scale - 1.0)
+      )
     end
 
     (pos.length - 2) * @scale ** (-@iterations)
@@ -29,8 +33,8 @@ hitables = DistanceEstimator.new(mat, de, maximum_steps: 600)
 width, height = {400, 400}
 
 camera = Camera.new(
-  look_at: Vec3.new(1.0),
-  look_from: Vec3.new(0.0),
+  look_at: Point.new(1.0),
+  look_from: Point.new(0.0),
   vertical_fov: 22,
   aspect_ratio: width.to_f / height.to_f,
 )
@@ -40,7 +44,7 @@ raytracer = SimpleRaytracer.new(width, height,
   hitables: hitables,
   camera: camera,
   samples: 3,
-  background: ConstantBackground.new(Vec3.new(1.0)))
+  background: ConstantBackground.new(Color.new(1.0)))
 raytracer.recursion_depth = 1
 
 raytracer.render("fractal3.png")

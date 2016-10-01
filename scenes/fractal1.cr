@@ -9,8 +9,8 @@ hitables = DistanceEstimator.new(mat, de, maximum_steps: 500)
 width, height = {400, 400}
 
 camera = Camera.new(
-  look_from: Vec3.new(2.0, 0.5, 4.5) * 0.8,
-  look_at: Vec3.new(0.0, 0.0, 0.0),
+  look_from: Point.new(2.0, 0.5, 4.5) * 0.8,
+  look_at: Point.new(0.0, 0.0, 0.0),
   vertical_fov: 32,
   aspect_ratio: width.to_f / height.to_f,
 )
@@ -20,7 +20,7 @@ raytracer = SimpleRaytracer.new(width, height,
   hitables: hitables,
   camera: camera,
   samples: 1,
-  background: ConstantBackground.new(Vec3.new(1.0)))
+  background: ConstantBackground.new(Color.new(1.0)))
 raytracer.recursion_depth = 1
 
 raytracer.render("fractal.png")

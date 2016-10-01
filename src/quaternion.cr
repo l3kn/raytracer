@@ -13,10 +13,8 @@ struct Quaternion
     @w = yzw.z
   end
 
-  def initialize(xyz : Vector, @w : Float64)
-    @x = xyz.x
-    @y = xyz.y
-    @z = xyz.z
+  def initialize(point : (Point | Vector), @w : Float64)
+    @x, @y, @z = point.xyz
   end
 
   def squared_length

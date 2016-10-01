@@ -13,7 +13,11 @@ class Octahedron < DE::DistanceEstimatable
       pos = pos.yxz if pos.x - pos.y < 0.0
       pos = pos.zyx if pos.x - pos.z < 0.0
 
-      pos = pos * @scale - (@scale - 1.0)
+      pos = Point.new(
+        pos.x*@scale - (@scale - 1.0),
+        pos.y*@scale - (@scale - 1.0),
+        pos.z*@scale - (@scale - 1.0)
+      )
     end
 
     pos.length * (@scale ** (-@iterations))
@@ -29,8 +33,8 @@ hitables = DistanceEstimator.new(mat, de, maximum_steps: 1000)
 width, height = {800, 400}
 
 camera = Camera.new(
-  look_from: Vec3.new(10.0),
-  look_at: Vec3.new(0.0, 0.0, 0.0),
+  look_from: Point.new(10.0),
+  look_at: Point.new(0.0, 0.0, 0.0),
   vertical_fov: 22,
   aspect_ratio: width.to_f / height.to_f,
 )
