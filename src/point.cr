@@ -31,6 +31,12 @@ struct Point
     Vector.new(@x - other.x, @y - other.y, @z - other.z)
   end
 
+  # TODO: this is somewhat inconsisten,
+  # this method is only needed by the optimized `Transformation.object_to_world(box : AABB)` 
+  def +(other : Point)
+    Point.new(@x + other.x, @y + other.y, @z + other.z)
+  end
+
   def *(other : (Float64 | Int32))
     Point.new(@x * other, @y * other, @z * other)
   end

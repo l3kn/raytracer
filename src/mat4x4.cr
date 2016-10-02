@@ -1,5 +1,12 @@
 class Mat4x4
   # TODO: use some faster datatype
+  # TODO: currently the last row will always be (0, 0, 0, 1)^T
+  #       and we even depend on it in some places
+  #       (`Transformation.apply(box : AABB)`)
+  #       If there is no case where we would need to change it,
+  #       we could remove some checks and save space
+  #       by using a 3x3 matrix for rotations
+  #       and a Vector for the translation
   property values : Array(Array(Float64))
 
   def initialize(@values)
@@ -56,6 +63,51 @@ class Mat4x4
     end
 
     result
+  end
+
+  def *(point : Point)
+    # Homogenous coordinates: (x y z 1)
+    x, y, z = point.xyz
+
+    xp = self[0, 0] * x + self[0, 1] * y + self[0, 2] * z + self[0, 3]
+    yp = self[1, 0] * x + self[1, 1] * y + self[1, 2] * z + self[1, 3]
+    zp = self[2, 0] * x + self[2, 1] * y + self[2, 2] * z + self[2, 3]
+    wp = self[3, 0] * x + self[3, 1] * y + self[3, 2] * z + self[3, 3]
+
+    if wp == 1.0
+      Point.new(xp, yp, zp)
+    else
+      inverse = 1.0 / wp
+      Point.new(xp * inverse, yp * inverse, zp * inverse)
+    end
+  end
+
+  def *(vector : Vector)
+    # Homogenous coordinates: (x y z 0)
+    x, y, z = vector.xyz
+
+    xp = self[0, 0] * x + self[0, 1] * y + self[0, 2] * z
+    yp = self[1, 0] * x + self[1, 1] * y + self[1, 2] * z
+    zp = self[2, 0] * x + self[2, 1] * y + self[2, 2] * z
+
+    Vector.new(xp, yp, zp)
+  end
+
+  # TODO: This is a little bit hacky,
+  # this code is used in `Transformation`
+  # and would normaly multiply with the transposed inverse matrix.
+  # Because there are (currently) no cases were we need to multiply
+  # with untransposed matrices, we just transpose the matrix
+  # right in this function
+  def *(vector : Normal)
+    # Homogenous coordinates: (x y z 0)
+    x, y, z = vector.xyz
+
+    xp = self[0, 0] * x + self[1, 0] * y + self[2, 0] * z
+    yp = self[0, 1] * x + self[1, 1] * y + self[2, 1] * z
+    zp = self[0, 2] * x + self[1, 2] * y + self[2, 2] * z
+
+    Normal.new(xp, yp, zp)
   end
 
   def swap_rows(i, j)
@@ -144,50 +196,5 @@ class Mat4x4
     end
 
     inverse
-  end
-
-  def *(point : Point)
-    # Homogenous coordinates: (x y z 1)
-    x, y, z = point.xyz
-
-    xp = self[0, 0] * x + self[0, 1] * y + self[0, 2] * z + self[0, 3]
-    yp = self[1, 0] * x + self[1, 1] * y + self[1, 2] * z + self[1, 3]
-    zp = self[2, 0] * x + self[2, 1] * y + self[2, 2] * z + self[2, 3]
-    wp = self[3, 0] * x + self[3, 1] * y + self[3, 2] * z + self[3, 3]
-
-    if wp == 1.0
-      Point.new(xp, yp, zp)
-    else
-      inverse = 1.0 / wp
-      Point.new(xp * inverse, yp * inverse, zp * inverse)
-    end
-  end
-
-  def *(vector : Vector)
-    # Homogenous coordinates: (x y z 0)
-    x, y, z = vector.xyz
-
-    xp = self[0, 0] * x + self[0, 1] * y + self[0, 2] * z
-    yp = self[1, 0] * x + self[1, 1] * y + self[1, 2] * z
-    zp = self[2, 0] * x + self[2, 1] * y + self[2, 2] * z
-
-    Vector.new(xp, yp, zp)
-  end
-
-  # TODO: This is a little bit hacky,
-  # this code is used in `Transformation`
-  # and would normaly multiply with the transposed inverse matrix.
-  # Because there are (currently) no cases were we need to multiply
-  # with untransposed matrices, we just transpose the matrix
-  # right in this function
-  def *(vector : Normal)
-    # Homogenous coordinates: (x y z 0)
-    x, y, z = vector.xyz
-
-    xp = self[0, 0] * x + self[1, 0] * y + self[2, 0] * z
-    yp = self[0, 1] * x + self[1, 1] * y + self[2, 1] * z
-    zp = self[0, 2] * x + self[1, 2] * y + self[2, 2] * z
-
-    Normal.new(xp, yp, zp)
   end
 end

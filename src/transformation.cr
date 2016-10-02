@@ -74,16 +74,86 @@ class Transformation
   end
 
   def object_to_world(box : AABB)
-    AABB.from_points([
-      object_to_world(Point.new(box.min.x, box.min.y, box.min.z)),
-      object_to_world(Point.new(box.min.x, box.min.y, box.max.z)),
-      object_to_world(Point.new(box.min.x, box.max.y, box.min.z)),
-      object_to_world(Point.new(box.min.x, box.max.y, box.max.z)),
-      object_to_world(Point.new(box.max.x, box.min.y, box.min.z)),
-      object_to_world(Point.new(box.max.x, box.min.y, box.max.z)),
-      object_to_world(Point.new(box.max.x, box.max.y, box.min.z)),
-      object_to_world(Point.new(box.max.x, box.max.y, box.max.z))
-    ])
+    # An `AABB` box
+    # can be defined by a center point `c`
+    # and an offset vector `o` that is positive in all its components.
+    #
+    # This way `@min = c - o` and `@max = c + o`
+    #
+    # If we were to apply a transformation matrix `M` to the box,
+    # we would need to recalculate all `@min` and `@max` like this:
+    #
+    # ```
+    # new_box = AABB.new(
+    #   min( M * (c +- o) ),
+    #   max( M * (c +- o) )
+    # )
+    # ```
+    #
+    # where `(c +- o)` is short for
+    # `Point.new(c_x +- o_x, c_y +- o_y, c_z +- o_z)`,
+    # meaning all 2*2*2 = 8 different possible points
+    #
+    # This way we would need to do 16 (or 8, if we use a combined min-max function)
+    # Matrix-Point multiplications.
+    #
+    # `M * (c +- o)` is equivalent to
+    # ```
+    #   M[0...3, 0] * (c.x +- o.x)
+    # + M[0...3, 1] * (c.y +- o.y)
+    # + M[0...3, 2] * (c.z +- o.z)
+    # + M[0...3, 3]
+    # ```
+    # where `M[0...3, n]` denotes the (first 3 rows of the) n-th column of the matrix
+    # 
+    # Using the equality from above
+    # and the fact that min((a +- b) + (c +- d)) == min(a +- b) + min(c +- d),
+    # we can turn `min( M * (c +- o) )` (and analogously `max(...)`) into
+    #
+    # ```
+    #   min(M[0...3, 0] * (c.x +- o.x))
+    # + min(M[0...3, 1] * (c.y +- o.y))
+    # + min(M[0...3, 2] * (c.z +- o.z))
+    # + M[0...3, 3]
+    # ```
+    # which uses only 12 (or 6) vector multiplications
+    # and is (according to some quick benchmarks)
+    # ~15x faster
+
+    # In this code we assume,
+    # that the last row of the inverse is (0, 0, 0, 1)^T
+    if @inverse[3, 0] != 0.0 || @inverse[3, 1] != 0.0 ||
+        @inverse[3, 2] != 0.0 || @inverse[3, 3] != 1.0
+      raise "Unexpected transformation matrix format: #{@inverse.inspect}"
+    end
+    
+    center = box.centroid
+    offset = box.max - center
+
+    tmp = center.x - offset.x
+    a_1 = Point.new(@inverse[0, 0] * tmp, @inverse[1, 0] * tmp, @inverse[2, 0] * tmp)
+
+    tmp = center.x + offset.x
+    a_2 = Point.new(@inverse[0, 0] * tmp, @inverse[1, 0] * tmp, @inverse[2, 0] * tmp)
+
+    tmp = center.y - offset.y
+    b_1 = Point.new(@inverse[0, 1] * tmp, @inverse[1, 1] * tmp, @inverse[2, 1] * tmp)
+
+    tmp = center.y + offset.y
+    b_2 = Point.new(@inverse[0, 1] * tmp, @inverse[1, 1] * tmp, @inverse[2, 1] * tmp)
+
+    tmp = center.z - offset.z
+    c_1 = Point.new(@inverse[0, 2] * tmp, @inverse[1, 2] * tmp, @inverse[2, 2] * tmp)
+
+    tmp = center.z + offset.z
+    c_2 = Point.new(@inverse[0, 2] * tmp, @inverse[1, 2] * tmp, @inverse[2, 2] * tmp)
+
+    rest = Point.new(@inverse[0, 3], @inverse[1, 3], @inverse[2, 3])
+
+    AABB.new(
+      a_1.min(a_2) + b_1.min(b_2) + c_1.min(c_2) + rest,
+      a_1.max(a_2) + b_1.max(b_2) + c_1.max(c_2) + rest
+    )
   end
 
   def *(other : Transformation)
