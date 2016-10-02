@@ -1,5 +1,6 @@
 require "../aabb"
 require "../hitable"
+require "../eisemann"
 
 class BVHNode < FiniteHitable
   getter left : FiniteHitable
@@ -51,8 +52,29 @@ class BVHNode < FiniteHitable
     @bounding_box = @left.bounding_box.merge(@right.bounding_box)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray : Ray, t_min, t_max)
+    # Perform precomputations for the Eisemann intersection test
+    # hit(ExtendedRay.new(ray), t_min, t_max)
     if @bounding_box.hit(ray)
+      @@hit_overall += 1
+
+      hit_left = @left.hit(ray, t_min, t_max)
+      hit_right = @right.hit(ray, t_min, t_max)
+
+      if hit_left && hit_right
+        @@hit_both += 1
+        hit_left.t < hit_right.t ? hit_left : hit_right
+      else
+        @@hit_one += 1
+        hit_left || hit_right
+      end
+    else
+      nil
+    end
+  end
+
+  def hit(ray : ExtendedRay, t_min, t_max)
+    if ray.hits_aabb?(@bounding_box)
       @@hit_overall += 1
 
       hit_left = @left.hit(ray, t_min, t_max)
