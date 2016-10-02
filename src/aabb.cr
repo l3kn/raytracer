@@ -10,14 +10,16 @@ struct AABB
   end
 
   def hit(ray)
-    dirfrac = Vector::ONE / ray.direction
+    inv_x = 1.0 / ray.direction.x
+    inv_y = 1.0 / ray.direction.y
+    inv_z = 1.0 / ray.direction.z
 
-    x1 = (@min.x - ray.origin.x) * dirfrac.x
-    x2 = (@max.x - ray.origin.x) * dirfrac.x
-    y1 = (@min.y - ray.origin.y) * dirfrac.y
-    y2 = (@max.y - ray.origin.y) * dirfrac.y
-    z1 = (@min.z - ray.origin.z) * dirfrac.z
-    z2 = (@max.z - ray.origin.z) * dirfrac.z
+    x1 = (@min.x - ray.origin.x) * inv_x
+    x2 = (@max.x - ray.origin.x) * inv_x
+    y1 = (@min.y - ray.origin.y) * inv_y
+    y2 = (@max.y - ray.origin.y) * inv_y
+    z1 = (@min.z - ray.origin.z) * inv_z
+    z2 = (@max.z - ray.origin.z) * inv_z
 
     tmin = max(max(min(x1, x2), min(y1, y2)), min(z1, z2))
     tmax = min(min(max(x1, x2), max(y1, y2)), max(z1, z2))
