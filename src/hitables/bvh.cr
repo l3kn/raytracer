@@ -5,6 +5,9 @@ struct ExtendedRay
   getter inv_x : Float64
   getter inv_y : Float64
   getter inv_z : Float64
+  getter pos_x : Bool
+  getter pos_y : Bool
+  getter pos_z : Bool
 
   getter origin : Point
   getter direction : Vector
@@ -15,6 +18,10 @@ struct ExtendedRay
     @inv_x = 1.0 / direction.x
     @inv_y = 1.0 / direction.y
     @inv_z = 1.0 / direction.z
+
+    @pos_x = @inv_x > 0.0
+    @pos_y = @inv_y > 0.0
+    @pos_z = @inv_z > 0.0
   end
 
   def point_at_parameter(t)

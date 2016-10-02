@@ -10,17 +10,43 @@ struct AABB
   end
 
   def fast_hit(ray : ExtendedRay)
-    x1 = (@min.x - ray.origin.x) * ray.inv_x
-    x2 = (@max.x - ray.origin.x) * ray.inv_x
-    y1 = (@min.y - ray.origin.y) * ray.inv_y
-    y2 = (@max.y - ray.origin.y) * ray.inv_y
-    z1 = (@min.z - ray.origin.z) * ray.inv_z
-    z2 = (@max.z - ray.origin.z) * ray.inv_z
+    if ray.pos_x
+      min = (@min.x - ray.origin.x) * ray.inv_x
+      max = (@max.x - ray.origin.x) * ray.inv_x
+    else
+      max = (@min.x - ray.origin.x) * ray.inv_x
+      min = (@max.x - ray.origin.x) * ray.inv_x
+    end
 
-    tmin = max(max(min(x1, x2), min(y1, y2)), min(z1, z2))
-    tmax = min(min(max(x1, x2), max(y1, y2)), max(z1, z2))
+    if ray.pos_y
+      y_min = (@min.y - ray.origin.y) * ray.inv_y
+      y_max = (@max.y - ray.origin.y) * ray.inv_y
+    else
+      y_max = (@min.y - ray.origin.y) * ray.inv_y
+      y_min = (@max.y - ray.origin.y) * ray.inv_y
+    end
 
-    tmax > 0 && tmin <= tmax
+    return false if min > y_max || y_min > max
+    min = y_min if y_min > min
+    max = y_max if y_max < max
+
+    if ray.pos_z
+      z_min = (@min.z - ray.origin.z) * ray.inv_z
+      z_max = (@max.z - ray.origin.z) * ray.inv_z
+    else
+      z_max = (@min.z - ray.origin.z) * ray.inv_z
+      z_min = (@max.z - ray.origin.z) * ray.inv_z
+    end
+
+    return false if min > z_max || z_min > max
+    min = z_min if z_min > min
+    max = z_max if z_max < max
+
+    # TODO: check against t_min and t_max
+
+    # tmin = max(max(x_min, y_min), z_min)
+    # tmax = min(min(x_max, y_max), z_max)
+    max > 0 && min <= max
   end
 
   def merge(other : AABB)
