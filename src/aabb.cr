@@ -9,15 +9,13 @@ struct AABB
     @max = min.max(max)
   end
 
-  def hit(ray)
-    dirfrac = Vector::ONE / ray.direction
-
-    x1 = (@min.x - ray.origin.x) * dirfrac.x
-    x2 = (@max.x - ray.origin.x) * dirfrac.x
-    y1 = (@min.y - ray.origin.y) * dirfrac.y
-    y2 = (@max.y - ray.origin.y) * dirfrac.y
-    z1 = (@min.z - ray.origin.z) * dirfrac.z
-    z2 = (@max.z - ray.origin.z) * dirfrac.z
+  def fast_hit(ray : ExtendedRay)
+    x1 = (@min.x - ray.origin.x) * ray.inv_x
+    x2 = (@max.x - ray.origin.x) * ray.inv_x
+    y1 = (@min.y - ray.origin.y) * ray.inv_y
+    y2 = (@max.y - ray.origin.y) * ray.inv_y
+    z1 = (@min.z - ray.origin.z) * ray.inv_z
+    z2 = (@max.z - ray.origin.z) * ray.inv_z
 
     tmin = max(max(min(x1, x2), min(y1, y2)), min(z1, z2))
     tmax = min(min(max(x1, x2), max(y1, y2)), max(z1, z2))
