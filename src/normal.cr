@@ -2,11 +2,12 @@ struct Normal
   getter x, y, z
 
   def initialize(@x : Float64, @y : Float64, @z : Float64)
-    # TODO: add global epsilon constant and flags to ignore this check
-    # (development vs. production mode?)
-    if (self.dot(self) - 1.0).abs > 0.001
-      raise "Error, length of normal is != 1"
-    end
+    # TODO: add global epsilon constant
+    {% if flag?(:release) %}
+      if (self.dot(self) - 1.0).abs > 0.001
+        raise "Error, length of normal is != 1"
+      end
+    {% end %}
   end
 
   def *(other : Float64)
