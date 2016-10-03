@@ -10,11 +10,11 @@ def smoothstep(x)
 end
 
 def pos_random
-  rand(0.0...1.0)
+  rand
 end
 
 def random
-  rand(-1.0..1.0)
+  rand * 2 - 1.0
 end
 
 def random_vec
