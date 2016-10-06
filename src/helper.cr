@@ -1,5 +1,7 @@
 require "./vector"
 
+RADIANTS = (Math::PI / 180)
+
 def clamp(x, min, max)
   min(max(x, min), max)
 end
