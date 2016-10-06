@@ -19,6 +19,10 @@ class Sphere < FiniteHitable
     return nil if ts.nil?
 
     t0, t1 = ts
+    # We know that t0 < t1
+    #     t0 > t_max 
+    #  => t1 > t_max
+    #  => no hit
     return nil if t0 > t_max || t1 < t_min
 
     t_hit = t0
@@ -29,9 +33,7 @@ class Sphere < FiniteHitable
 
     point = ray.point_at_parameter(t_hit)
 
-    # normal = (point - center).to_normal
-    # We already know the length of (point - center),
-    # so doing this should be a little bit faster
+    # This should be a bit faster than (point - center).to_normal
     inv = 1.0 / @radius
     normal = Normal.new(
       (point.x - center.x) * inv,
@@ -39,11 +41,9 @@ class Sphere < FiniteHitable
       (point.z - center.z) * inv,
     )
 
-    # Naive:
-    #   u = Math.asin(normal.x) / Math::PI + 0.5
-    #   v = Math.asin(normal.y) / Math::PI + 0.5
     u = 0.5 + Math.atan2(-normal.z, -normal.x) / (2 * Math::PI)
     v = 0.5 - Math.asin(-normal.y) / Math::PI
+
     return HitRecord.new(t_hit, point, normal, @material, u, v)
   end
 
