@@ -87,3 +87,24 @@ end
 def mix(a, b, t)
   a*t + b*(1 - t)
 end
+
+def solve_quadratic(a, b, c) : Tuple(Float64, Float64) | Nil
+  discriminant = b * b - 4.0 * a * c
+  return nil if discriminant <= 0.0
+
+  root_discriminant = Math.sqrt(discriminant)
+  if b < 0.0
+    q = -0.5 * (b - root_discriminant)
+  else
+    q = -0.5 * (b + root_discriminant)
+  end
+
+  t0 = q / a
+  t1 = c / q
+  
+  if t0 < t1
+    {t0, t1}
+  else
+    {t1, t0}
+  end
+end

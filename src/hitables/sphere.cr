@@ -14,39 +14,37 @@ class Sphere < FiniteHitable
     a = ray.direction.squared_length
     b = 2.0 * oc.dot(ray.direction)
     c = oc.squared_length - radius**2
-    discriminant = b**2 - 4*a*c
 
-    if discriminant > 0
-      tmp = (-b - Math.sqrt(discriminant)) / (2.0*a)
+    ts = solve_quadratic(a, b, c)
+    return nil if ts.nil?
 
-      if (tmp < t_max && tmp > t_min)
-        point = ray.point_at_parameter(tmp)
+    t0, t1 = ts
+    return nil if t0 > t_max || t1 < t_min
 
-        # TODO: is it faster to divide by `radius` here?
-        normal = (point - center).to_normal
-
-        # Naive:
-        #   u = Math.asin(normal.x) / Math::PI + 0.5
-        #   v = Math.asin(normal.y) / Math::PI + 0.5
-        u = 0.5 + Math.atan2(-normal.z, -normal.x) / (2 * Math::PI)
-        v = 0.5 - Math.asin(-normal.y) / Math::PI
-        return HitRecord.new(tmp, point, normal, @material, u, v)
-      end
-
-      tmp = (-b + Math.sqrt(discriminant)) / (2.0*a)
-
-      if (tmp < t_max && tmp > t_min)
-        point = ray.point_at_parameter(tmp)
-        # TODO: is it faster to divide by `radius` here?
-        normal = (point - center).to_normal
-
-        u = Math.atan2(-normal.z, -normal.x) / (2 * Math::PI) + 0.5
-        v = Math.asin(-normal.y) / Math::PI + 0.5
-        return HitRecord.new(tmp, point, normal, @material, u, v)
-      end
-
-      return nil
+    t_hit = t0
+    if t0 < t_min
+      t_hit = t1
+      return nil if t_hit > t_max
     end
+
+    point = ray.point_at_parameter(t_hit)
+
+    # normal = (point - center).to_normal
+    # We already know the length of (point - center),
+    # so doing this should be a little bit faster
+    inv = 1.0 / @radius
+    normal = Normal.new(
+      (point.x - center.x) * inv,
+      (point.y - center.y) * inv,
+      (point.z - center.z) * inv,
+    )
+
+    # Naive:
+    #   u = Math.asin(normal.x) / Math::PI + 0.5
+    #   v = Math.asin(normal.y) / Math::PI + 0.5
+    u = 0.5 + Math.atan2(-normal.z, -normal.x) / (2 * Math::PI)
+    v = 0.5 - Math.asin(-normal.y) / Math::PI
+    return HitRecord.new(t_hit, point, normal, @material, u, v)
   end
 
   def pdf_value(origin, direction)
