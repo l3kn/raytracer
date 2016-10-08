@@ -38,13 +38,13 @@ class Camera
     @lens_radius = aperture / 2
   end
 
-  def get_ray(s, t)
+  def get_ray(s, t, t_min, t_max)
     rd = random_in_unit_circle * @lens_radius
     offset = @u * rd.x + @v * rd.y
 
     direction = @lower_left_corner - @origin - offset + @horizontal * s + @vertical * t
     # direction = @horizontal * s + @vertical * t - @origin - offset + @lower_left_corner
 
-    Ray.new(@origin + offset, direction.normalize)
+    Ray.new(@origin + offset, direction.normalize, t_min, t_max)
   end
 end

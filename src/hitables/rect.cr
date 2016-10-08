@@ -20,9 +20,9 @@ class XYRect < Rect
     @normal = Normal.new(0.0, 0.0, 1.0)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     t = (@bot.z - ray.origin.z) / ray.direction.z
-    return nil if t < t_min || t > t_max
+    return nil if t < ray.t_min || t > ray.t_max
 
     point = ray.point_at_parameter(t)
 
@@ -36,7 +36,7 @@ class XYRect < Rect
   end
 
   def pdf_value(origin, direction)
-    hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
+    hit = hit(Ray.new(origin, direction))
     if hit
       area = (@top.x - @bot.x) * (@top.y - @bot.y)
       distance_squared = hit.t * hit.t * direction.squared_length
@@ -66,9 +66,9 @@ class XZRect < Rect
     @normal = Normal.new(0.0, 1.0, 0.0)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     t = (@bot.y - ray.origin.y) / ray.direction.y
-    return nil if t < t_min || t > t_max
+    return nil if t < ray.t_min || t > ray.t_max
 
     point = ray.point_at_parameter(t)
 
@@ -82,7 +82,7 @@ class XZRect < Rect
   end
 
   def pdf_value(origin, direction)
-    hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
+    hit = hit(Ray.new(origin, direction))
     if hit
       area = (@top.x - @bot.x) * (@top.z - @bot.z)
       distance_squared = hit.t * hit.t * direction.squared_length
@@ -112,9 +112,9 @@ class YZRect < Rect
     @normal = Normal.new(1.0, 0.0, 0.0)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     t = (@bot.x - ray.origin.x) / ray.direction.x
-    return nil if t < t_min || t > t_max
+    return nil if t < ray.t_min || t > ray.t_max
 
     point = ray.point_at_parameter(t)
 
@@ -128,7 +128,7 @@ class YZRect < Rect
   end
 
   def pdf_value(origin, direction)
-    hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
+    hit = hit(Ray.new(origin, direction))
     if hit
       area = (@top.y - @bot.y) * (@top.z - @bot.z)
       distance_squared = hit.t * hit.t * direction.squared_length

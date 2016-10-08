@@ -6,9 +6,9 @@ class TransformationWrapper < FiniteHitable
     @bounding_box = transformation.object_to_world(@object.bounding_box)
   end
 
-  def hit(ray : Ray, t_min : Float, t_max : Float)
+  def hit(ray : Ray)
     new_ray = @transformation.world_to_object(ray)
-    hit = @object.hit(new_ray, t_min, t_max)
+    hit = @object.hit(new_ray)
 
     if hit
       HitRecord.new(
@@ -66,11 +66,11 @@ class Transformation
   end
 
   def world_to_object(ray : Ray)
-    Ray.new(world_to_object(ray.origin), world_to_object(ray.direction))
+    Ray.new(world_to_object(ray.origin), world_to_object(ray.direction), ray.t_min, ray.t_max)
   end
 
   def object_to_world(ray : Ray)
-    Ray.new(object_to_world(ray.origin), object_to_world(ray.direction))
+    Ray.new(object_to_world(ray.origin), object_to_world(ray.direction), ray.t_min, ray.t_max)
   end
 
   def object_to_world(box : AABB)

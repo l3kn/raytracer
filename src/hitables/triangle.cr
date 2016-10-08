@@ -25,7 +25,7 @@ class Triangle < FiniteHitable
   EPSILON = 0.000001
 
   # Möller-Trumbore intersection algorithm
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     p = ray.direction.cross(@edge2)
     det = @edge1.dot(p)
 
@@ -48,7 +48,7 @@ class Triangle < FiniteHitable
 
     t = @edge2.dot(q) * inv_det
 
-    if (t < t_max && t > t_min)
+    if (t < ray.t_max && t > ray.t_min)
       point = ray.point_at_parameter(t)
       u, v = get_uv(ray, point, u, v)
       normal = get_normal(ray, point, u, v)

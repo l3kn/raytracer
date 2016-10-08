@@ -19,7 +19,7 @@ class Cylinder < FiniteHitable
     @inv_length = 1.0 / (@y_max - @y_min)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     a = (ray.direction.x * ray.direction.x) + (ray.direction.z * ray.direction.z)
     b = 2 * ((ray.direction.x * ray.origin.x) + (ray.direction.z * ray.origin.z))
     c = (ray.origin.x * ray.origin.x) + (ray.origin.z * ray.origin.z) - (@radius * @radius)
@@ -28,7 +28,7 @@ class Cylinder < FiniteHitable
     return nil if ts.nil?
 
     t0, t1 = ts
-    return nil if t0 > t_max || t1 < t_min
+    return nil if t0 > ray.t_max || t1 < ray.t_min
 
     y0 = ray.origin.y + t0 * ray.direction.y
     y1 = ray.origin.y + t1 * ray.direction.y

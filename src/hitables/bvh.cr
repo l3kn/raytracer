@@ -12,9 +12,15 @@ struct ExtendedRay
   getter origin : Point
   getter direction : Vector
 
+  getter t_min : Float64
+  getter t_max : Float64
+
   def initialize(ray)
     @origin = ray.origin
     @direction = ray.direction
+    @t_min = ray.t_min
+    @t_max = ray.t_max
+
     @inv_x = 1.0 / direction.x
     @inv_y = 1.0 / direction.y
     @inv_z = 1.0 / direction.z
@@ -79,16 +85,16 @@ class BVHNode < FiniteHitable
     @bounding_box = @left.bounding_box.merge(@right.bounding_box)
   end
 
-  def hit(ray : Ray, t_min, t_max)
-    hit(ExtendedRay.new(ray), t_min, t_max)
+  def hit(ray : Ray)
+    hit(ExtendedRay.new(ray))
   end
 
-  def hit(ray : ExtendedRay, t_min, t_max)
+  def hit(ray : ExtendedRay)
     if @bounding_box.fast_hit(ray)
       @@hit_overall += 1
 
-      hit_left = @left.hit(ray, t_min, t_max)
-      hit_right = @right.hit(ray, t_min, t_max)
+      hit_left = @left.hit(ray)
+      hit_right = @right.hit(ray)
 
       if hit_left && hit_right
         @@hit_both += 1

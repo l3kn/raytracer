@@ -22,7 +22,7 @@ module Phong
 
         @lights.each do |light|
           l = (light.position - hit.point).normalize
-          hit2 = @hitables.hit(Ray.new(hit.point, l), 0.001, (light.position - hit.point).length)
+          hit2 = @hitables.hit(Ray.new(hit.point, l, 0.001, (light.position - hit.point).length))
           if hit2
             Color::BLACK
           else

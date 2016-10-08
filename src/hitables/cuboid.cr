@@ -39,8 +39,8 @@ class Cuboid < FiniteHitable
     initialize(p1, p2, mat, mat, mat, mat, mat, mat)
   end
 
-  def hit(ray, t_min, t_max)
-    @list.hit(ray, t_min, t_max)
+  def hit(ray)
+    @list.hit(ray)
   end
 
   def pdf_value(origin, direction)

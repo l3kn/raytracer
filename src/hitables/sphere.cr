@@ -8,7 +8,7 @@ class Sphere < FiniteHitable
     @bounding_box = AABB.new(@center - r, @center + r)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     oc = ray.origin - center
 
     a = ray.direction.squared_length
@@ -23,12 +23,12 @@ class Sphere < FiniteHitable
     #     t0 > t_max 
     #  => t1 > t_max
     #  => no hit
-    return nil if t0 > t_max || t1 < t_min
+    return nil if t0 > ray.t_max || t1 < ray.t_min
 
     t_hit = t0
-    if t0 < t_min
+    if t0 < ray.t_min
       t_hit = t1
-      return nil if t_hit > t_max
+      return nil if t_hit > ray.t_max
     end
 
     point = ray.point_at_parameter(t_hit)
@@ -48,7 +48,7 @@ class Sphere < FiniteHitable
   end
 
   def pdf_value(origin, direction)
-    hit = hit(Ray.new(origin, direction), 0.001, Float64::MAX)
+    hit = hit(Ray.new(origin, direction))
 
     if hit
       cos_theta_max = Math.sqrt(1.0 - @radius*@radius / (@center - origin).squared_length)

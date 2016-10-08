@@ -10,13 +10,13 @@ class ConstantMedium < FiniteHitable
     @bounding_box = @object.bounding_box
   end
 
-  def hit(ray, t_min, t_max)
-    if (hit1 = object.hit(ray, -Float64::MAX, Float64::MAX))
-      if (hit2 = object.hit(ray, hit1.t + 0.0001, Float64::MAX))
+  def hit(ray)
+    if (hit1 = object.hit(ray))
+      if (hit2 = object.hit(Ray.new(ray.origin, ray.direction, hit1.t + 0.0001, Float64::MAX)))
         t1 = hit1.t
         t2 = hit2.t
-        t1 = t_min if t1 < t_min
-        t2 = t_max if t2 > t_max
+        t1 = ray.t_min if t1 < ray.t_min
+        t2 = ray.t_max if t2 > ray.t_max
 
         return nil if t1 >= t2
         t1 = 0 if t1 < 0

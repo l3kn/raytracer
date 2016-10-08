@@ -11,20 +11,20 @@ class DistanceEstimator < Hitable
   def initialize(@material, @object, @step = 0.1, @maximum_steps = 1000, @minimum_distance = 0.0001)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     total_distance = 0.0
     steps = 0
 
     point = ray.origin
 
-    return nil if distance_estimate(point) <= t_min
+    return nil if distance_estimate(point) <= ray.t_min
 
     maximum_steps.times do
       point = ray.point_at_parameter(total_distance)
       distance = distance_estimate(point)
       total_distance += distance
 
-      return nil if total_distance >= t_max
+      return nil if total_distance >= ray.t_max
 
       steps += 1
       break if distance < @minimum_distance
@@ -62,7 +62,7 @@ class BruteForceDistanceEstimator < Hitable
   def initialize(@material, @object, @maximum = 1000.0)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     steps = 1000
     closest = @maximum
 

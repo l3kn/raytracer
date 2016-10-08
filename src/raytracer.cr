@@ -56,7 +56,7 @@ class NormalRaytracer
             u = (x + off_x).to_f / @width
             v = (y + off_y).to_f / @height
 
-            ray = @camera.get_ray(u, v)
+            ray = @camera.get_ray(u, v, @t_min, @t_max)
             col += cast_ray(ray).de_nan
           end
         end
@@ -82,7 +82,7 @@ class NormalRaytracer
   end
 
   def cast_ray(ray, recursion_depth = @recursion_depth)
-    hit = @hitables.hit(ray, @t_min, @t_max)
+    hit = @hitables.hit(ray)
     hit ? color(ray, hit, recursion_depth) : @background.get(ray)
   end
 
@@ -113,7 +113,7 @@ class Raytracer < NormalRaytracer
       else
         p1 = HitablePDF.new(@focus_hitables, hit.point)
         p = MixturePDF.new(p1, pdf_or_ray)
-        scattered = Ray.new(hit.point, p.generate)
+        scattered = Ray.new(hit.point, p.generate, @t_min, @t_max)
         pdf_val = p.value(scattered.direction)
 
         pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
@@ -134,7 +134,7 @@ class SimpleRaytracer < NormalRaytracer
       if pdf_or_ray.is_a? Ray
         scatter.albedo * cast_ray(pdf_or_ray, recursion_depth - 1)
       else
-        scattered = Ray.new(hit.point, pdf_or_ray.generate)
+        scattered = Ray.new(hit.point, pdf_or_ray.generate, @t_min, @t_max)
         pdf_val = pdf_or_ray.value(scattered.direction)
 
         pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val

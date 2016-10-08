@@ -28,13 +28,13 @@ class Dielectric < Material
     if refracted
       reflect_prob = schlick(cosine, @reflection_index)
     else
-      return ScatterRecord.new(Color::WHITE, Ray.new(hit.point, reflected))
+      return ScatterRecord.new(Color::WHITE, Ray.new(hit.point, reflected, ray.t_min, ray.t_max))
     end
 
     if rand < reflect_prob
-      ray_new = Ray.new(hit.point, reflected)
+      ray_new = Ray.new(hit.point, reflected, ray.t_min, ray.t_max)
     else
-      ray_new = Ray.new(hit.point, refracted)
+      ray_new = Ray.new(hit.point, refracted, ray.t_min, ray.t_max)
     end
 
     ScatterRecord.new(Color::WHITE, ray_new)

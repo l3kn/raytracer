@@ -7,12 +7,12 @@ class HitableList < Hitable
   def initialize(@objects)
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     result = nil
-    closest_so_far = t_max
+    closest_so_far = ray.t_max
 
     objects.each do |object|
-      record = object.hit(ray, t_min, closest_so_far)
+      record = object.hit(Ray.new(ray.origin, ray.direction, ray.t_min, closest_so_far))
       if record
         closest_so_far = record.t
         result = record
@@ -53,12 +53,12 @@ class FiniteHitableList < FiniteHitable
     end
   end
 
-  def hit(ray, t_min, t_max)
+  def hit(ray)
     result = nil
-    closest_so_far = t_max
+    closest_so_far = ray.t_max
 
     objects.each do |object|
-      record = object.hit(ray, t_min, closest_so_far)
+      record = object.hit(Ray.new(ray.origin, ray.direction, ray.t_min, closest_so_far))
       if record
         closest_so_far = record.t
         result = record
