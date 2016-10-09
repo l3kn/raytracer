@@ -53,10 +53,10 @@ class NormalRaytracer
             off_x = (i + rand) / samples_sqrt
             off_y = (j + rand) / samples_sqrt
 
-            u = (x + off_x).to_f / @width
-            v = (y + off_y).to_f / @height
+            x_ = (x + off_x).to_f
+            y_ = (y + off_y).to_f
 
-            ray = @camera.get_ray(u, v, @t_min, @t_max)
+            ray = @camera.generate_ray(x_, y_, @t_min, @t_max)
             col += cast_ray(ray).de_nan
           end
         end
@@ -72,7 +72,7 @@ class NormalRaytracer
           UInt16::MAX
         )
 
-        canvas[x, (@height - 1) - y] = rgba
+        canvas[x, y] = rgba
       end
 
       print "\rTraced line #{y} / #{@height}"
