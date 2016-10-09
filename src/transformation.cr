@@ -95,7 +95,7 @@ class Transformation
     # meaning all 2*2*2 = 8 different possible points
     #
     # This way we would need to do 16 (or 8, if we use a combined min-max function)
-    # Matrix-Point multiplications.
+    # Mat-Point multiplications.
     #
     # `M * (c +- o)` is equivalent to
     # ```
@@ -195,17 +195,21 @@ class Transformation
   end
 
   def self.scaling(scale)
+    self.scaling(scale.x, scale.y, scale.z)
+  end
+
+  def self.scaling(sx, sy, sz)
     Transformation.new(
       Mat4x4.new(
-        scale.x, 0.0, 0.0, 0.0,
-        0.0, scale.y, 0.0, 0.0,
-        0.0, 0.0, scale.z, 0.0,
+        sx, 0.0, 0.0, 0.0,
+        0.0, sy, 0.0, 0.0,
+        0.0, 0.0, sz, 0.0,
         0.0, 0.0, 0.0, 1.0
       ),
       Mat4x4.new(
-        1.0 / scale.x, 0.0, 0.0, 0.0,
-        0.0, 1.0 / scale.y, 0.0, 0.0,
-        0.0, 0.0, 1.0 / scale.z, 0.0,
+        1.0 / sx, 0.0, 0.0, 0.0,
+        0.0, 1.0 / sy, 0.0, 0.0,
+        0.0, 0.0, 1.0 / sz, 0.0,
         0.0, 0.0, 0.0, 1.0
       )
     )
@@ -258,7 +262,7 @@ class Transformation
     sin = Math.sin(angle * RADIANTS)
     cos = Math.cos(angle * RADIANTS)
 
-    matrix = Matrix4x4.new
+    matrix = Mat4x4.new
 
     matrix[0, 0] = axis.x * axis.x + (1.0 - axis.x * axis.x) * cos
     matrix[0, 1] = axis.x * axis.y * (1.0 - cos) - axis.z * sin
@@ -284,12 +288,13 @@ class Transformation
   end
 
   def self.look_at(look_from, look_at, up)
-    matrix = Matrix4x4.new
+    matrix = Mat4x4.new
+    # dir = (look_from - look_at).normalize
     dir = (look_at - look_from).normalize
-    left = up.normalize.cross(dir)
+    left = up.normalize.cross(dir).normalize
     newUp = dir.cross(left)
 
-    matrix = Matrix4x4.new
+    matrix = Mat4x4.new
 
     matrix[0, 0] = left.x
     matrix[1, 0] = left.y
@@ -303,9 +308,28 @@ class Transformation
     matrix[1, 2] = dir.y
     matrix[2, 2] = dir.z
     matrix[3, 2] = 0.0
-    matrix[0, 3] = pos.x
-    matrix[1, 3] = pos.y
-    matrix[2, 3] = pos.z
+    matrix[0, 3] = look_from.x
+    matrix[1, 3] = look_from.y
+    matrix[2, 3] = look_from.z
     matrix[3, 3] = 1.0
+
+    Transformation.new(matrix, matrix.invert)
+  end
+
+  def self.orthographic(z_near : Float64, z_far : Float64)
+    self.scaling(Vector.new(1.0, 1.0, 1.0 / (z_far - z_near))) *
+      self.translation(Vector.new(0.0, 0.0, -z_near))
+  end
+
+  def self.perspective(fov : Float64, n : Float64, f : Float64)
+    result = Mat4x4.new(
+      1.0, 0.0, 0.0, 0.0,
+      0.0, 1.0, 0.0, 0.0,
+      0.0, 0.0, f/(f-n), -(f*n)/(f-n),
+      0.0, 0.0, 1.0, 0.0
+    )
+
+    invTanAng = 1.0 / Math.tan(fov * RADIANTS / 2.0)
+    self.scaling(Vector.new(invTanAng, invTanAng, 1.0)) * Transformation.new(result)
   end
 end
