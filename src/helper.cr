@@ -33,9 +33,9 @@ def random_in_unit_sphere
 end
 
 def random_in_unit_circle
-  point = Vector::ONE
+  point = Point.new(1.0)
   while point.squared_length >= 1.0
-    point = Vector.new(random, random, 0.0)
+    point = Point.new(random, random, 0.0)
   end
 
   point
