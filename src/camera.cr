@@ -47,9 +47,10 @@ class ProjectiveCamera < Camera
     # The y-coordinate is inverted,
     # because it moves up in screen space
     # but down in the image
+    # TODO: for some reason the x-axis seems to be flipped, to
     screen_to_raster = Transformation.scaling(dimensions[0].to_f, dimensions[1].to_f, 1.0) *
-      Transformation.scaling(1.0 / (max_x - min_x), 1.0 / (min_y - max_y), 1.0) *
-      Transformation.translation(Vector.new(-min_x, -max_y, 0.0))
+      Transformation.scaling(1.0 / (min_x - max_x), 1.0 / (min_y - max_y), 1.0) *
+      Transformation.translation(Vector.new(-max_x, -max_y, 0.0))
     raster_to_screen = Transformation.new(screen_to_raster.inverse, screen_to_raster.matrix)
 
     @raster_to_camera = Transformation.new(camera_to_screen.inverse, camera_to_screen.matrix) * raster_to_screen
@@ -81,9 +82,9 @@ class PerspectiveCamera < ProjectiveCamera
   def initialize(look_from : Point,
                  look_at : Point,
                  dimensions : Tuple(Int32, Int32),
-                 lens_radius : Float64,
-                 focus_distance : Float64,
-                 vertical_fov : Float64,
+                 lens_radius : Float64 = 0.0,
+                 focus_distance : Float64 = 0.0,
+                 vertical_fov : Float64 = 45.0,
                  up = Vector::Y)
     super(look_from, look_at, Transformation.perspective(vertical_fov, 0.001, 1000.0), dimensions, lens_radius, focus_distance, up)
   end
@@ -124,5 +125,65 @@ class EnvironmentCamera < Camera
     ray = Ray.new(Point.new(0.0), direction, t_min, t_max)
 
     @camera_to_world.world_to_object(ray)
+  end
+end
+
+
+class OldCamera < Camera
+  getter u : Vector, v : Vector, w : Vector
+  getter lower_left_corner : Point
+  getter horizontal : Vector
+  getter vertical : Vector
+  getter lens_radius : Float64
+
+  @size_x : Float64
+  @size_y : Float64
+
+  def initialize(look_from : Point,
+                 look_at : Point,
+                 vertical_fov : Float64,
+                 dimensions : Tuple(Int32, Int32),
+                 up = Vector::Y,
+                 aperture = 0.0)
+    initialize(look_from, look_at, up, vertical_fov, dimensions, aperture, (look_from - look_at).length)
+  end
+
+  def initialize(look_from : Point,
+                 look_at : Point,
+                 up : Vector,
+                 vertical_fov : Float64,
+                 dimensions : Tuple(Int32, Int32),
+                 aperture : Float64,
+                 focus_distance : Float64)
+
+    aspect_ratio = dimensions[0].to_f / dimensions[1]
+    @size_x = dimensions[0].to_f
+    @size_y = dimensions[1].to_f
+
+    theta = vertical_fov * Math::PI / 180
+    half_height = Math.tan(theta / 2.0)
+    half_width = aspect_ratio * half_height
+
+    @w = (look_from - look_at).normalize
+    @u = up.cross(@w).normalize
+    @v = @w.cross(@u)
+
+    @origin = look_from
+    @lower_left_corner = @origin - @u * half_width * focus_distance - @v * half_height * focus_distance - @w * focus_distance
+    @horizontal = @u * 2 * half_width * focus_distance
+    @vertical = @v * 2 * half_height * focus_distance
+    @lens_radius = aperture / 2
+  end
+
+  def generate_ray(s, t, t_min, t_max)
+    s = s / @size_x
+    t = t / @size_y
+    rd = random_in_unit_circle * @lens_radius
+    offset = @u * rd.x + @v * rd.y
+
+    direction = @lower_left_corner - @origin - offset + @horizontal * s + @vertical * t
+    # direction = @horizontal * s + @vertical * t - @origin - offset + @lower_left_corner
+
+    Ray.new(@origin + offset, direction.normalize, t_min, t_max)
   end
 end

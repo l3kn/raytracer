@@ -32,11 +32,11 @@ hitables = DistanceEstimator.new(mat, de, maximum_steps: 600)
 # width, height = {1920, 1080}
 width, height = {400, 400}
 
-camera = Camera.new(
+camera = PerspectiveCamera.new(
   look_at: Point.new(1.0),
   look_from: Point.new(0.0),
-  vertical_fov: 22,
-  aspect_ratio: width.to_f / height.to_f,
+  vertical_fov: 22.0,
+  dimensions: {width, height}
 )
 
 # Raytracer

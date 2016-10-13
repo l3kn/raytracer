@@ -29,12 +29,11 @@ hitables.push(Sphere.new(
 
 width, height = {800, 400}
 
-camera = Camera.new(
+camera = PerspectiveCamera.new(
   look_from: Point.new(-1.5, 1.5, 1.5),
   look_at: Point.new(0.0, 0.0, -1.0),
-  vertical_fov: 30,
-  aspect_ratio: width.to_f / height.to_f,
-  aperture: 0.05
+  vertical_fov: 30.0,
+  dimensions: {width, height}
 )
 
 raytracer = SimpleRaytracer.new(width, height,

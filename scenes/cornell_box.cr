@@ -50,11 +50,11 @@ hitables = [left, right, bottom, top, back, light_, sphere, cube2]
 
 width, height = {400, 400}
 
-camera = Camera.new(
+camera = PerspectiveCamera.new(
   look_from: Point.new(278.0, 278.0, -800.0),
   look_at: Point.new(278.0, 278.0, 0.0),
-  vertical_fov: 40,
-  aspect_ratio: width.to_f / height.to_f,
+  vertical_fov: 40.0,
+  dimensions: {width, height}
 )
 
 raytracer = Raytracer.new(width, height,

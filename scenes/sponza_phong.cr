@@ -47,14 +47,23 @@ materials = MTL.parse("old/models/sponza/sponza.mtl")
 hitables = OBJ.parse("old/models/sponza/sponza.obj", mat, interpolated: true, textured: true, materials: materials)
 
 # width, height = {1920, 1080}
-width, height = 400, 400
+# width, height = 1024, 512
+dimensions = {2048, 2048}
+width, height = dimensions
 node = SAHBVHNode.new(hitables)
 
-camera = Camera.new(
+camera = PerspectiveCamera.new(
   look_from: Point.new(940.0, 600.0, 80.0),
   look_at: Point.new(0.0, 400.0, 0.0),
-  vertical_fov: 70,
-  aspect_ratio: width.to_f / height.to_f,
+  dimensions: dimensions,
+  vertical_fov: 70.0,
+  lens_radius: 0.0,
+  focus_distance: 0.0,
+)
+camera = EnvironmentCamera.new(
+  look_from: Point.new(940.0, 600.0, 80.0),
+  look_at: Point.new(0.0, 0.0, 0.0),
+  dimensions: dimensions,
 )
 
 raytracer = Phong::Raytracer.new(width, height,

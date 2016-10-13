@@ -7,17 +7,17 @@ hitables = OBJ.parse("models/teapot.obj", mat, interpolated: true)
 
 width, height = {400, 400}
 
-camera = Camera.new(
+camera = PerspectiveCamera.new(
   look_from: Point.new(-1.5, 1.5, -2.0),
   look_at: Point.new(0.0, 0.5, 0.0),
-  vertical_fov: 40,
-  aspect_ratio: width.to_f / height.to_f,
+  vertical_fov: 40.0,
+  dimensions: {width, height}
 )
 
 raytracer = SimpleRaytracer.new(width, height,
   hitables: BVHNode.new(hitables),
   camera: camera,
-  samples: 10,
+  samples: 50,
   # background: CubeMap.new("cube_maps/Yokohama"))
   background: SkyBackground.new)
 

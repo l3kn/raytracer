@@ -41,8 +41,12 @@ class Mandelbox < DE::DistanceEstimatable
   end
 
   def box_fold(z, dz)
-    max = Vec3.new(@folding_limit)
-    z = z.clamp(-max, max) * 2.0 - z
+    max = Point.new(@folding_limit)
+    z = Point.new(
+      clamp(z.x, -max.x, max.x) * 2.0 - z.x,
+      clamp(z.y, -max.y, max.y) * 2.0 - z.y,
+      clamp(z.z, -max.z, max.z) * 2.0 - z.z,
+    )
     {z, dz}
   end
 end
@@ -63,11 +67,11 @@ hitables = DistanceEstimator.new(
 width, height = {192 * 5, 108 * 5}
 # width, height = {800, 800}
 
-camera = Camera.new(
-  look_from: Vec3.new(4.5, 0.0, 1.0),
-  look_at: Vec3.new(0.0, 0.0, -3.0),
-  vertical_fov: 25,
-  aspect_ratio: width.to_f / height.to_f,
+camera = PerspectiveCamera.new(
+  look_from: Point.new(4.5, 0.0, 1.0),
+  look_at: Point.new(0.0, 0.0, -3.0),
+  vertical_fov: 25.0,
+  dimensions: {width, height}
 )
 
 # Raytracer

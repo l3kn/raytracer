@@ -50,7 +50,7 @@ module DE
 
     def distance_estimate(pos)
       @iterations.times do
-        pos = @transformation.apply(pos)
+        pos = @transformation.world_to_object(pos)
         pos = pos.abs
 
         pos = pos.yxz if pos.x < pos.y
