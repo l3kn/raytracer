@@ -5,6 +5,10 @@ abstract class Texture
   abstract def value(point : Point, u : Float64, v : Float64) : Color
 end
 
+abstract class Texture1D
+  abstract def value(point : Point, u : Float64, v : Float64) : Float64
+end
+
 class ConstantTexture < Texture
   def initialize(@color : Color)
   end
@@ -29,13 +33,23 @@ class CheckerTexture < Texture
   end
 end
 
-class NoiseTexture < Texture
-  def initialize(@scale = 1)
+class NoiseTexture1D < Texture1D
+  def initialize(@scale = 10.0)
     @noise = Perlin.new(100)
   end
 
   def value(point, u, v)
-    Color.new(@noise.perlin(point * @scale))
+    @noise.perlin(point * @scale)
+  end
+end
+
+class NoiseTexture < Texture
+  def initialize(scale = 10.0)
+    @tex1D = NoiseTexture1D.new(scale)
+  end
+
+  def value(point, u, v)
+    Color.new(@tex1D.value(point, u, v))
   end
 end
 
