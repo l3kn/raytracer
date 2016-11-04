@@ -78,14 +78,88 @@ class OrtographicCamera < ProjectiveCamera
   end
 end
 
+class DefocusSampler
+  @radius : Float64
+  def initialize(@radius)
+  end
+
+  def sample
+    random_in_unit_circle * @radius
+  end
+end
+
+class PolygonSampler < DefocusSampler
+  @radius : Float64
+  @n : Int32
+  @limit : Float64 # (distance from P_2 to P_3 in the explanation below)
+  @prerotation : Float64
+  def initialize(@radius, @n, @prerotation = 0.0)
+    @limit = Math.sqrt(@radius ** 2 - (@radius * Math.sin(Math::PI / @n)) ** 2)
+  end
+
+  def sample
+    point = Point.new(random, random, 0.0) * @radius
+
+    until valid?(point)
+      point = Point.new(random, random, 0.0) * @radius
+    end
+
+    point
+  end
+
+  # The length of side of a regular polygon with n sides
+  # is a = 2*r*sin(pi / n)
+  # 
+  # If we construct a triangle
+  # P_1 = one edge
+  # P_2 = center of the polygon
+  # P_3 = middle of a side adjacent to P_1
+  #
+  # The distance (P_1 to P_2) is given by r,
+  # (P_1 to P_3) is given by a / 2
+  # and the angle between (P_1 to P_3) and (P_2 to P_3) is 90deg
+  #
+  # So (P_2 to P_3) can be calculated by
+  # \sqrt{ r^2 - r * sin(\pi / n)}
+  # or, if r = 1
+  # \sqrt{ 1 - sin(\pi / n)}
+  def valid?(point)
+      point = rotate(point, @prerotation)
+    @n.times do |i|
+      return false if point.x > @limit
+      point = rotate(point, 360.0 / @n)
+    end
+    true
+  end
+
+  def rotate(point, degrees)
+    x = point.x
+    y = point.y
+
+    angle = degrees * RADIANTS
+
+    s = Math.sin(angle)
+    c = Math.cos(angle)
+
+    Point.new(
+      c*x - s*y,
+      s*x + c*y,
+      0.0
+    )
+  end
+end
+
 class PerspectiveCamera < ProjectiveCamera
+  @defocus_sampler : DefocusSampler
   def initialize(look_from : Point,
                  look_at : Point,
                  dimensions : Tuple(Int32, Int32),
                  lens_radius : Float64 = 0.0,
                  focus_distance : Float64 = 0.0,
                  vertical_fov : Float64 = 45.0,
-                 up = Vector::Y)
+                 up = Vector::Y,
+                 # @defocus_sampler = DefocusSampler.new(lens_radius))
+                 @defocus_sampler = PolygonSampler.new(lens_radius, 7))
     super(look_from, look_at, Transformation.perspective(vertical_fov, 0.001, 1000.0), dimensions, lens_radius, focus_distance, up)
   end
 
@@ -97,7 +171,7 @@ class PerspectiveCamera < ProjectiveCamera
       ft = @focus_distance / ray.direction.z
       focus_point = ray.point_at_parameter(ft)
 
-      offset = random_in_unit_circle * @lens_radius
+      offset = @defocus_sampler.sample
 
       ray = Ray.new(offset, (focus_point - offset).normalize, t_min, t_max)
     end
