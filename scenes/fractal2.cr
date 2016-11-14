@@ -17,7 +17,7 @@ camera = PerspectiveCamera.new(
 )
 
 # Raytracer
-raytracer = SingleRaytracer.new(width, height,
+raytracer = BaseRaytracer.new(width, height,
   hitables: hitables,
   camera: camera,
   samples: 4,

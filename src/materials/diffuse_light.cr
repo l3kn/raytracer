@@ -15,7 +15,7 @@ class DiffuseLight < Material
   def emitted(ray, hit)
     # Only emit light on one side
     if hit.normal.dot(ray.direction) < 0.0
-      @texture.value(hit.point, hit.u, hit.v) * @intensity
+      @texture.value(hit.point) * @intensity
     else
       Color::BLACK
     end

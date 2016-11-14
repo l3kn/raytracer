@@ -15,7 +15,7 @@ require "./background"
 require "./backgrounds/*"
 require "./pdf"
 
-class NormalRaytracer
+class BaseRaytracer
   property width : Int32
   property height : Int32
   property samples : Int32
@@ -87,15 +87,16 @@ class NormalRaytracer
   end
 
   def color(ray, hit, recursion_depth)
-    Color.new(
-      (1.0 + hit.normal.x) * 0.5,
-      (1.0 + hit.normal.y) * 0.5,
-      (1.0 + hit.normal.z) * 0.5,
-    )
+    scatter = hit.material.scatter(ray, hit)
+    if scatter
+      scatter.albedo
+    else
+      Color::BLACK
+    end
   end
 end
 
-class Raytracer < NormalRaytracer
+class Raytracer < BaseRaytracer
   property focus_hitables : Hitable
 
   def initialize(width, height, hitables, camera, samples, @focus_hitables, background = nil)
@@ -125,7 +126,7 @@ class Raytracer < NormalRaytracer
   end
 end
 
-class SimpleRaytracer < NormalRaytracer
+class SimpleRaytracer < BaseRaytracer
   def color(ray, hit, recursion_depth)
     scatter = hit.material.scatter(ray, hit)
     if scatter && recursion_depth > 0
@@ -140,17 +141,6 @@ class SimpleRaytracer < NormalRaytracer
         pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
         scatter.albedo * cast_ray(scattered, recursion_depth - 1) * pdf
       end
-    else
-      Color::BLACK
-    end
-  end
-end
-
-class SingleRaytracer < NormalRaytracer
-  def color(ray, hit, recursion_depth)
-    scatter = hit.material.scatter(ray, hit)
-    if scatter
-      scatter.albedo
     else
       Color::BLACK
     end

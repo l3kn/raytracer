@@ -15,7 +15,7 @@ class Metal < Material
     reflected = ray.direction.normalize.reflect(hit.normal)
 
     ScatterRecord.new(
-      @texture.value(hit.point, hit.u, hit.v),
+      @texture.value(hit),
       Ray.new(hit.point, reflected + random_in_unit_sphere*@fuzz, ray.t_min, ray.t_max)
     )
   end

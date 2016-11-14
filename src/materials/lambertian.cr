@@ -13,7 +13,7 @@ class Lambertian < Material
 
   def scatter(ray, hit)
     ScatterRecord.new(
-      @texture.value(hit.point, hit.u, hit.v),
+      @texture.value(hit),
       CosinePDF.new(hit.normal)
     )
   end

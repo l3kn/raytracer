@@ -7,7 +7,7 @@
 * `Sphere`
 * `Triangle`
 * `XYRect`, `XZRect`, `YZRect` (axis aligned rectangles)
-
+ 
 ### Compound
 
 * `Cuboid` (constructs a `HitableList` with a Rect for each side)
@@ -26,19 +26,19 @@
 
 ## Raytracers
 
+* `BaseRaytracer` (ignores reflections)
 * `Raytracer` (supports emissive materials and works with a list of hitables to send more rays to, e.g. lights)
 * `SimpleRaytracer` (ignores emissive materials)
-* `NormalRaytracer` (displays only the normal of the hit point, useful for debugging)
 
 ## Textures
 
 * `ConstantTexture`
 * `CheckerTexture` (creates a checkerboard pattern from two other textures)
 * `NoiseTexture` (perlin noise as a texture)
+* `NormalTexture` (color represents the normal of the hit point)
 
 ## Misc
 
-* `Vec3` (3D Vector, used for points, vectors and colors)
 * `Ray`
 * `Camera`
 * `CubeMap`

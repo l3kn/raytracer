@@ -122,5 +122,3 @@ struct Point
     end
   end
 end
-
-
