@@ -2,7 +2,7 @@ require "../raytracer"
 require "../phong/light"
 
 module Phong
-  class Raytracer < ::Raytracer
+  class Raytracer < ::BaseRaytracer
     property lights : Array(Light)
     property ambient : Float64
 
