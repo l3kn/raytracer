@@ -1,83 +1,16 @@
-struct Quaternion
-  getter x : Float64
-  getter y : Float64
-  getter z : Float64
-  getter w : Float64
+require "linalg"
 
+struct Quaternion < LA::AQuaternion
   def initialize(@x, @y, @z, @w)
   end
 
-  def initialize(@x : Float64, yzw : Vector)
-    @y = yzw.x
-    @z = yzw.y
-    @w = yzw.z
+  def initialize(@x : Float64, yzw : (Point | Vector))
+    @y, @z, @w = yzw.xyz
   end
 
-  def initialize(point : (Point | Vector), @w : Float64)
-    @x, @y, @z = point.xyz
+  def initialize(xyz : (Point | Vector), @w : Float64)
+    @x, @y, @z = xyz.xyz
   end
 
-  def squared_length
-    @x*@x + @y*@y + @z*@z + @w*@w
-  end
-
-  def length
-    Math.sqrt(squared_length)
-  end
-
-  # Swizzling, generate functions like vec.zzz, vec.xyz, etc
-  # prefixing "x", "y", "z" or "w" with "_" means negating the value
-  {% for first in %w(x y z w) %}
-    {% for second in %w(x y z w) %}
-      {% for third in %w(x y z w) %}
-        def {{first.id}}{{second.id}}{{third.id}}
-          Vector.new(@{{first.id}}, @{{second.id}}, @{{third.id}})
-        end
-        def _{{first.id}}{{second.id}}{{third.id}}
-          Vector.new(-@{{first.id}}, @{{second.id}}, @{{third.id}})
-        end
-        def {{first.id}}_{{second.id}}{{third.id}}
-          Vector.new(@{{first.id}}, -@{{second.id}}, @{{third.id}})
-        end
-        def _{{first.id}}_{{second.id}}{{third.id}}
-          Vector.new(-@{{first.id}}, -@{{second.id}}, @{{third.id}})
-        end
-        def {{first.id}}{{second.id}}_{{third.id}}
-          Vector.new(@{{first.id}}, @{{second.id}}, -@{{third.id}})
-        end
-        def _{{first.id}}{{second.id}}_{{third.id}}
-          Vector.new(-@{{first.id}}, @{{second.id}}, -@{{third.id}})
-        end
-        def {{first.id}}_{{second.id}}_{{third.id}}
-          Vector.new(@{{first.id}}, -@{{second.id}}, -@{{third.id}})
-        end
-        def _{{first.id}}_{{second.id}}_{{third.id}}
-          Vector.new(-@{{first.id}}, -@{{second.id}}, -@{{third.id}})
-        end
-      {% end %}
-    {% end %}
-  {% end %}
-
-  {% for op in %w(+ - * /) %}
-    def {{op.id}}(other : Float)
-      Quaternion.new(@x {{op.id}} other, @y {{op.id}} other, @z {{op.id}} other, @w {{op.id}} other)
-    end
-
-    def {{op.id}}(other : Int)
-      Quaternion.new(@x {{op.id}} other, @y {{op.id}} other, @z {{op.id}} other, @w {{op.id}} other)
-    end
-  {% end %}
-
-  def +(other : Quaternion)
-    Quaternion.new(@x + other.x, @y + other.y, @z + other.z, @w + other.w)
-  end
-
-  def *(other : Quaternion)
-    Quaternion.new(
-      @x*other.x - @y*other.y - @z*other.z - @w*other.w,
-      @x*other.y + @y*other.x + @z*other.w - @w*other.z,
-      @x*other.z + @z*other.x + @w*other.y - @y*other.w,
-      @x*other.w + @w*other.x + @y*other.z - @z*other.y,
-    )
-  end
+  define_vector_swizzling(3, target: Vector, signed: true)
 end

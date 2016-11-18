@@ -1,10 +1,14 @@
 version: 1.0
 shards:
+  linalg:
+    github: l3kn/linalg
+    commit: e80aed720dd40a55623be466a2c673c8fba828e9
+
   stumpy_core:
     git: https://github.com/l3kn/stumpy_core.git
-    commit: da3d4a68106502e3156293ba5c6290c9a023db35
+    commit: 1d2d3da9729d8994ad4c01e97a6203de90d1ea6f
 
   stumpy_png:
     github: l3kn/stumpy_png
-    commit: 776e020c43acb6955618c3e9b7a67eade3a43421
+    commit: 4ebfa379798a0af7396434d650e7ca140c325ac4
 
