@@ -15,7 +15,7 @@ class ProjectiveCamera < Camera
                  dimensions : Tuple(Int32, Int32),
                  @lens_radius : Float64,
                  @focus_distance : Float64,
-                 up = Vector::Y)
+                 up = Vector.y)
     initialize(Transformation.look_at(look_from, look_at, up),
                projection, dimensions,
                lens_radius, focus_distance)
@@ -68,7 +68,7 @@ class OrtographicCamera < ProjectiveCamera
                  dimensions : Tuple(Int32, Int32),
                  lens_radius : Float64,
                  focus_distance : Float64,
-                 up = Vector::Y)
+                 up = Vector.y)
     super(look_from, look_at, Transformation.orthographic(0.0, 1.0), dimensions, lens_radius, focus_distance, up)
   end
 
@@ -157,7 +157,7 @@ class PerspectiveCamera < ProjectiveCamera
                  lens_radius : Float64 = 0.0,
                  focus_distance : Float64 = 0.0,
                  vertical_fov : Float64 = 45.0,
-                 up = Vector::Y,
+                 up = Vector.y,
                  # @defocus_sampler = DefocusSampler.new(lens_radius))
                  @defocus_sampler = PolygonSampler.new(lens_radius, 7))
     super(look_from, look_at, Transformation.perspective(vertical_fov, 0.001, 1000.0), dimensions, lens_radius, focus_distance, up)
@@ -184,7 +184,7 @@ class EnvironmentCamera < Camera
   @camera_to_world : Transformation
   @size_x : Int32
   @size_y : Int32
-  def initialize(look_from : Point, look_at : Point, dimensions : Tuple(Int32, Int32), up = Vector::Y)
+  def initialize(look_from : Point, look_at : Point, dimensions : Tuple(Int32, Int32), up = Vector.y)
     @camera_to_world = Transformation.look_at(look_from, look_at, up)
     @size_x, @size_y = dimensions
   end
@@ -217,7 +217,7 @@ class OldCamera < Camera
                  look_at : Point,
                  vertical_fov : Float64,
                  dimensions : Tuple(Int32, Int32),
-                 up = Vector::Y,
+                 up = Vector.y,
                  aperture = 0.0)
     initialize(look_from, look_at, up, vertical_fov, dimensions, aperture, (look_from - look_at).length)
   end

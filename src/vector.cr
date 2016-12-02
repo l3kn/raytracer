@@ -2,7 +2,7 @@ require "linalg"
 require "./helper"
 
 struct Vector < LA::AVector3
-  define_constants(class_name: Vector)
+  define_class_methods
   define_dot(other_class: Normal)
 
   def to_normal

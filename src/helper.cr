@@ -24,7 +24,7 @@ def random_vec
 end
 
 def random_in_unit_sphere
-  point = Vector::ONE
+  point = Vector.one
   while point.squared_length >= 1.0
     point = Vector.new(random, random, random)
   end

@@ -12,7 +12,7 @@ struct ONB
 
   def self.from_w(n)
     w = n.normalize.to_vector
-    a = w.x.abs > 0.9 ? Vector::Y : Vector::X
+    a = w.x.abs > 0.9 ? Vector.y : Vector.x
 
     v = w.cross(a).normalize
     u = w.cross(v)

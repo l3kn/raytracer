@@ -21,7 +21,7 @@ module DE
     end
 
     def normal(pos)
-      n = Vector::ZERO
+      n = Vector.zero
       @points.each do |p_i, r_i|
         a = -2.0 * r_i
         b = p_i - pos
