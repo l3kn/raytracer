@@ -1,6 +1,6 @@
 /.crystal
 /.shards
-/libs
+/lib
 /tmp
 /cube_maps
 /old
