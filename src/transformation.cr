@@ -1,4 +1,4 @@
-require "./mat4x4"
+require "./matrix4"
 
 class TransformationWrapper < FiniteHitable
   # NOTE: The matrix in @transformation is from world to object space
@@ -27,16 +27,16 @@ end
 class Transformation
   RADIANTS = (Math::PI / 180)
   ID = self.new(
-    Mat4x4.new([
-      [1.0, 0.0, 0.0, 0.0],
-      [0.0, 1.0, 0.0, 0.0],
-      [0.0, 0.0, 1.0, 0.0],
-      [0.0, 0.0, 0.0, 1.0]
-    ])
+    Matrix4.new(
+      1.0, 0.0, 0.0, 0.0,
+      0.0, 1.0, 0.0, 0.0,
+      0.0, 0.0, 1.0, 0.0,
+      0.0, 0.0, 0.0, 1.0
+    )
   )
 
-  property matrix : Mat4x4
-  property inverse : Mat4x4
+  property matrix : Matrix4
+  property inverse : Matrix4
 
   def initialize(@matrix)
     @inverse = @matrix.invert
@@ -57,7 +57,7 @@ class Transformation
     # For normals the transformation
     # works the other way around
     # and the matrix is transposed,
-    # but that fact is hidden in the `Mat4x4.*(other : Normal)` functon
+    # but that fact is hidden in the `Matrix4.*(other : Normal)` functon
     @inverse * normal
   end
 
@@ -122,8 +122,7 @@ class Transformation
 
     # In this code we assume,
     # that the last row of the inverse is (0, 0, 0, 1)^T
-    if @inverse[3, 0] != 0.0 || @inverse[3, 1] != 0.0 ||
-        @inverse[3, 2] != 0.0 || @inverse[3, 3] != 1.0
+    unless @inverse.a30 == 0.0 && @inverse.a31 == 0.0 && @inverse.a32 == 0.0 && @inverse.a33 == 1.0
       raise "Unexpected transformation matrix format: #{@inverse.inspect}"
     end
     
@@ -131,24 +130,24 @@ class Transformation
     offset = box.max - center
 
     tmp = center.x - offset.x
-    a_1 = Point.new(@inverse[0, 0] * tmp, @inverse[1, 0] * tmp, @inverse[2, 0] * tmp)
+    a_1 = Point.new(@inverse.a00 * tmp, @inverse.a10 * tmp, @inverse.a20 * tmp)
 
     tmp = center.x + offset.x
-    a_2 = Point.new(@inverse[0, 0] * tmp, @inverse[1, 0] * tmp, @inverse[2, 0] * tmp)
+    a_2 = Point.new(@inverse.a00 * tmp, @inverse.a10 * tmp, @inverse.a20 * tmp)
 
     tmp = center.y - offset.y
-    b_1 = Point.new(@inverse[0, 1] * tmp, @inverse[1, 1] * tmp, @inverse[2, 1] * tmp)
+    b_1 = Point.new(@inverse.a01 * tmp, @inverse.a11 * tmp, @inverse.a21 * tmp)
 
     tmp = center.y + offset.y
-    b_2 = Point.new(@inverse[0, 1] * tmp, @inverse[1, 1] * tmp, @inverse[2, 1] * tmp)
+    b_2 = Point.new(@inverse.a01 * tmp, @inverse.a11 * tmp, @inverse.a21 * tmp)
 
     tmp = center.z - offset.z
-    c_1 = Point.new(@inverse[0, 2] * tmp, @inverse[1, 2] * tmp, @inverse[2, 2] * tmp)
+    c_1 = Point.new(@inverse.a02 * tmp, @inverse.a12 * tmp, @inverse.a22 * tmp)
 
     tmp = center.z + offset.z
-    c_2 = Point.new(@inverse[0, 2] * tmp, @inverse[1, 2] * tmp, @inverse[2, 2] * tmp)
+    c_2 = Point.new(@inverse.a02 * tmp, @inverse.a12 * tmp, @inverse.a22 * tmp)
 
-    rest = Point.new(@inverse[0, 3], @inverse[1, 3], @inverse[2, 3])
+    rest = Point.new(@inverse.a03, @inverse.a13, @inverse.a23)
 
     AABB.new(
       a_1.min(a_2) + b_1.min(b_2) + c_1.min(c_2) + rest,
@@ -164,28 +163,28 @@ class Transformation
   end
 
   def swaps_handedness?
-    det = ((@matrix[0, 0] *
-            (@matrix[1, 1] * @matrix[2, 2] -
-             @matrix[1, 2] * @matrix[2, 1])) -
-           (@matrix[0, 1] *
-             (@matrix[1, 0] * @matrix[2, 2] -
-              @matrix[1, 2] * @matrix[2, 0])) +
-           (@matrix[0, 2] *
-             (@matrix[1, 0] * @matrix[2, 1] -
-              @matrix[1, 1] * @matrix[2, 0])))
+    det = ((@matrix.a00 *
+            (@matrix.a11 * @matrix.a22 -
+             @matrix.a12 * @matrix.a21)) -
+           (@matrix.a01 *
+             (@matrix.a10 * @matrix.a22 -
+              @matrix.a12 * @matrix.a20)) +
+           (@matrix.a02 *
+             (@matrix.a10 * @matrix.a21 -
+              @matrix.a11 * @matrix.a20)))
 
     det < 0.0
   end
 
   def self.translation(offset)
     Transformation.new(
-      Mat4x4.new(
+      Matrix4.new(
         1.0, 0.0, 0.0, offset.x,
         0.0, 1.0, 0.0, offset.y,
         0.0, 0.0, 1.0, offset.z,
         0.0, 0.0, 0.0, 1.0
       ),
-      Mat4x4.new(
+      Matrix4.new(
         1.0, 0.0, 0.0, -offset.x,
         0.0, 1.0, 0.0, -offset.y,
         0.0, 0.0, 1.0, -offset.z,
@@ -200,13 +199,13 @@ class Transformation
 
   def self.scaling(sx, sy, sz)
     Transformation.new(
-      Mat4x4.new(
+      Matrix4.new(
         sx, 0.0, 0.0, 0.0,
         0.0, sy, 0.0, 0.0,
         0.0, 0.0, sz, 0.0,
         0.0, 0.0, 0.0, 1.0
       ),
-      Mat4x4.new(
+      Matrix4.new(
         1.0 / sx, 0.0, 0.0, 0.0,
         0.0, 1.0 / sy, 0.0, 0.0,
         0.0, 0.0, 1.0 / sz, 0.0,
@@ -219,7 +218,7 @@ class Transformation
     sin = Math.sin(angle * RADIANTS)
     cos = Math.cos(angle * RADIANTS)
 
-    matrix = Mat4x4.new(
+    matrix = Matrix4.new(
       1.0, 0.0,  0.0, 0.0,
       0.0, cos, -sin, 0.0,
       0.0, sin,  cos, 0.0,
@@ -233,7 +232,7 @@ class Transformation
     sin = Math.sin(angle * RADIANTS)
     cos = Math.cos(angle * RADIANTS)
 
-    matrix = Mat4x4.new(
+    matrix = Matrix4.new(
        cos, 0.0, sin, 0.0,
        0.0, 1.0, 0.0, 0.0,
       -sin, 0.0, cos, 0.0,
@@ -247,7 +246,7 @@ class Transformation
     sin = Math.sin(angle * RADIANTS)
     cos = Math.cos(angle * RADIANTS)
 
-    matrix = Mat4x4.new(
+    matrix = Matrix4.new(
       cos, -sin, 0.0, 0.0,
       sin,  cos, 0.0, 0.0,
       0.0,  0.0, 1.0, 0.0,
@@ -262,56 +261,38 @@ class Transformation
     sin = Math.sin(angle * RADIANTS)
     cos = Math.cos(angle * RADIANTS)
 
-    matrix = Mat4x4.new
-
-    matrix[0, 0] = axis.x * axis.x + (1.0 - axis.x * axis.x) * cos
-    matrix[0, 1] = axis.x * axis.y * (1.0 - cos) - axis.z * sin
-    matrix[0, 2] = axis.x * axis.z * (1.0 - cos) + axis.y * sin
-    matrix[0, 3] = 0.0
-
-    matrix[1, 0] = axis.x * axis.y * (1.0 - cos) + axis.z * sin
-    matrix[1, 1] = axis.y * axis.y + (1.0 - axis.y * axis.y) * cos
-    matrix[1, 2] = axis.y * axis.z * (1.0 - c) - axis.x * sin
-    matrix[1, 3] = 0.0
-
-    matrix[2, 0] = axis.x * axis.z * (1.0 - cos) - axis.y * sin
-    matrix[2, 1] = axis.y * axis.z * (1.0 - cos) + axis.x * sin
-    matrix[2, 2] = axis.y * axis.z * (1.0 - axis.z * axis.z) * cos
-    matrix[2, 3] = 0.0
-
-    matrix[3, 0] = 0.0
-    matrix[3, 1] = 0.0
-    matrix[3, 2] = 0.0
-    matrix[3, 3] = 1.0
+    matrix = Matrix4.new(
+      axis.x * axis.x + (1.0 - axis.x * axis.x) * cos,
+      axis.x * axis.y * (1.0 - cos) - axis.z * sin,
+      axis.x * axis.z * (1.0 - cos) + axis.y * sin,
+      0.0,
+      axis.x * axis.y * (1.0 - cos) + axis.z * sin,
+      axis.y * axis.y + (1.0 - axis.y * axis.y) * cos,
+      axis.y * axis.z * (1.0 - c) - axis.x * sin,
+      0.0,
+      axis.x * axis.z * (1.0 - cos) - axis.y * sin,
+      axis.y * axis.z * (1.0 - cos) + axis.x * sin,
+      axis.y * axis.z * (1.0 - axis.z * axis.z) * cos,
+      0.0,
+      0.0, 0.0, 0.0, 1.0
+    )
 
     Transformation.new(matrix, matrix.transpose)
   end
 
   def self.look_at(look_from, look_at, up)
-    matrix = Mat4x4.new
+    matrix = Matrix4.new
     # dir = (look_from - look_at).normalize
     dir = (look_at - look_from).normalize
     left = up.normalize.cross(dir).normalize
-    newUp = dir.cross(left)
+    new_up = dir.cross(left)
 
-    matrix = Mat4x4.new
-
-    matrix[0, 0] = left.x
-    matrix[1, 0] = left.y
-    matrix[2, 0] = left.z
-    matrix[3, 0] = 0.0
-    matrix[0, 1] = newUp.x
-    matrix[1, 1] = newUp.y
-    matrix[2, 1] = newUp.z
-    matrix[3, 1] = 0.0
-    matrix[0, 2] = dir.x
-    matrix[1, 2] = dir.y
-    matrix[2, 2] = dir.z
-    matrix[3, 2] = 0.0
-    matrix[0, 3] = look_from.x
-    matrix[1, 3] = look_from.y
-    matrix[2, 3] = look_from.z
-    matrix[3, 3] = 1.0
+    matrix = Matrix4.new(
+      left.x, new_up.x, dir.x, look_from.x,
+      left.y, new_up.y, dir.y, look_from.y,
+      left.z, new_up.z, dir.z, look_from.z,
+      0.0, 0.0, 0.0, 1.0
+    )
 
     Transformation.new(matrix, matrix.invert)
   end
@@ -322,7 +303,7 @@ class Transformation
   end
 
   def self.perspective(fov : Float64, n : Float64, f : Float64)
-    result = Mat4x4.new(
+    result = Matrix4.new(
       1.0, 0.0, 0.0, 0.0,
       0.0, 1.0, 0.0, 0.0,
       0.0, 0.0, f/(f-n), -(f*n)/(f-n),
