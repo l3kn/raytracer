@@ -16,7 +16,7 @@ module Phong
       # Because we are inside the Phong module,
       # Material = Phong::Material
       if material.is_a?(Material)
-        color = material.texture.value(hit.point, hit.u, hit.v)
+        color = material.texture.value(hit)
         diffuse = 0.0
         specular = 0.0
 
@@ -28,7 +28,7 @@ module Phong
           else
             n = hit.normal
             v = -ray.direction.normalize
-            r = ((n * l.dot(hit.normal)) * 2 - l).normalize
+            r = ((n * l.dot(hit.normal)) * 2.0 - l).normalize
 
             diffuse += light.intensity * max(l.dot(n), 0.0)
             specular += light.intensity * (max(r.dot(v), 0.0) ** material.shininess)
