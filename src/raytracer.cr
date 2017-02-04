@@ -9,11 +9,14 @@ require "./hitables/*"
 require "./camera"
 require "./helper"
 require "./material"
+require "./bxdf"
+require "./materials/bxdf/*"
 require "./materials/*"
 require "./texture"
 require "./background"
 require "./backgrounds/*"
 require "./pdf"
+require "./fresnel"
 
 class BaseRaytracer
   property width : Int32
