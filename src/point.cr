@@ -7,6 +7,18 @@ struct Point < LA::AVector3
 
   define_vector_op(:-, other_class: Point, result_class: Vector)
 
+  def initialize(value)
+    @x = @y = @z = value
+  end
+
+  def initialize(@x, @y, @z)
+  end
+
+  def initialize(xy : Tuple, @z : Float64)
+    @x = xy[0]
+    @y = xy[1]
+  end
+
   # TODO: this is somewhat inconsisten,
   # this method is only needed by the optimized `Transformation.object_to_world(box : AABB)` 
   # => this is already done by importing from the abstract struct 
@@ -29,6 +41,7 @@ struct Point < LA::AVector3
   end
 
   define_vector_swizzling(3, target: Point, signed: true)
+  define_vector_swizzling(2, target: Tuple, signed: true)
 
   # TODO: this is somewhat inconsistent with the swizzling methods above
   def xyz; {@x, @y, @z}; end

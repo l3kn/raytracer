@@ -40,6 +40,7 @@ struct Vector < LA::AVector3
   end
 
   define_vector_swizzling(2)
+  define_vector_swizzling(3, signed: true)
 
   def xyz
     {@x, @y, @z}
