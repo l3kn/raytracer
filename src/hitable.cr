@@ -6,6 +6,7 @@ record HitRecord,
   point : Point,
   normal : Normal,
   material : Material,
+  # emitted : Color,
   u : Float64, # Vars for texture mapping
   v : Float64
 

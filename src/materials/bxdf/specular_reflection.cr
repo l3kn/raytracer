@@ -1,18 +1,17 @@
 class SpecularReflection < BxDF
   def initialize(@color : Color, @fresnel : Fresnel)
-    super(BxDFType::Reflection)
+    super(BxDFType::Reflection | BxDFType::Specular)
   end
 
   def f(wo : Vector, wi : Vector)
-    0.0
+    Color::BLACK
   end
 
-  def sample_f(wo : Vector)
+  def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
     wi = Vector.new(-wo.x, -wo.y, wo.z)
     albedo = @color * @fresnel.evaluate(cos_theta(wo)) / cos_theta(wi).abs
-    # puts albedo
-    albedo = Color.new(1.0)
 
-    {albedo, wi}
+    {@color, wi, 1.0}
   end
 end
+

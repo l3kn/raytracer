@@ -19,4 +19,9 @@ class Material
   def emitted(ray, hit)
     Color::BLACK
   end
+
+  # TODO: Clean this up once the new material stuff is done
+  def bsdf
+    BSDF.new([] of BxDF)
+  end
 end

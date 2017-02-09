@@ -2,6 +2,10 @@ require "./vector"
 
 RADIANTS = (Math::PI / 180)
 
+def same_hemisphere?(v1, v2)
+  v1.z * v2.z > 0.0
+end
+
 def clamp(x, min, max)
   min(max(x, min), max)
 end
