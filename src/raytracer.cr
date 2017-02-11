@@ -99,10 +99,11 @@ end
 class IntegratorRaytracer < BaseRaytracer
   def initialize(width, height, camera, samples, scene)
     super(width, height, camera, samples, scene)
+    @integrator = Integrator.new(@scene)
   end
 
   def color(ray, hit, recursion_depth)
-    Integrator.color(@scene, ray, hit, recursion_depth, self)
+    @integrator.color(ray, hit, recursion_depth)
   end
 end
 

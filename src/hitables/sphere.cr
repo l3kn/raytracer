@@ -47,6 +47,7 @@ class Sphere < FiniteHitable
     return HitRecord.new(t_hit, point, normal, @material, u, v)
   end
 
+  # TODO: Delete this once the new pdf methods are in place
   def pdf_value(origin, direction)
     hit = hit(Ray.new(origin, direction))
 

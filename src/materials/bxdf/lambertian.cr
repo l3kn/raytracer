@@ -7,4 +7,3 @@ class LambertianReflection < BxDF
     @color / Math::PI
   end
 end
-

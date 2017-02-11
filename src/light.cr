@@ -34,6 +34,10 @@ class Light
   def is_delta_light?
     false
   end
+
+  def hit(ray) : HitRecord?
+    nil
+  end
 end
 
 class PointLight < Light
@@ -96,5 +100,28 @@ class SpotLight < Light
 
   def is_delta_light?
     true
+  end
+end
+
+class ObjectLight < Light
+  def initialize(@object : FiniteHitable, @intensity : Color)
+  end
+
+  def sample_l(point : Point) : {Vector, Color, VisibilityTester, Float64}
+    own_point = @object.random
+    dist = (own_point - point)
+    wi = dist.to_normal.to_vector
+
+    tester = VisibilityTester.from_segment(point, own_point)
+
+    {wi, @intensity / dist.squared_length, tester, @object.pdf(own_point)}
+  end
+
+  def power
+    @intensity * @object.area * Math::PI
+  end
+
+  def is_delta_light?
+    false
   end
 end

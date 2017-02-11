@@ -21,7 +21,33 @@ abstract class Hitable
     raise "Error, this feature is not supported yet"
   end
 
-  def random(origin)
+  def random
+    raise "Error, this feature is not supported yet"
+  end
+
+  def random(origin) : Vector
+    raise "Error, this feature is not supported yet"
+  end
+
+  # What is the probability that the object was hit in point?
+  def pdf(point : Point) : Float64
+    1.0 / area
+  end
+
+  # Probability ray to point w/ direction wi
+  # came from this Hitable
+  # (used for area lights)
+  def pdf(point : Point, wi : Vector) : Float64
+    hit = hit(Ray.new(point, wi))
+    if hit
+      (hit.point - point).squared_length / hit.normal.dot(-wi).abs * area
+    else
+      return 0.0
+    end
+  end
+
+  # Area of this object
+  def area : Float64
     raise "Error, this feature is not supported yet"
   end
 end

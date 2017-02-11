@@ -3,7 +3,7 @@ class Scene
   property lights : Array(Light)
   property background : Background
 
-  def initialize(hitables, @lights, @background = ConstantBackground.new(Color::WHITE))
+  def initialize(hitables, @lights, @background)
     if hitables.size > 1000
       @hitable = HitableList.new(hitables)
     else

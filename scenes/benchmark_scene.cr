@@ -6,48 +6,45 @@ hitables = [] of Hitable
 hitables.push(Sphere.new(
   Point.new(0.0, -100.5, -1.0),
   100.0,
-  # Metal.new(Color.new(0.8), 0.0)
-  BSDFMaterial.new(BSDF.new([
-    SpecularReflection.new(Color.new(0.8), FConductor.new(0.0, 1.0)).as(BxDF)
-  ]))
+  MirrorMaterial.new(Color.new(0.8))
 ))
 
 hitables.push(Sphere.new(
   Point.new(0.0, 0.0, -1.0),
   0.5,
-  # Lambertian.new(Color.new(0.1, 0.2, 0.5))
-  BSDFMaterial.new(BSDF.new([
-    LambertianReflection.new(Color.new(0.1, 0.2, 0.5)).as(BxDF)
-    # SpecularReflection.new(Color.new(0.8), FConductor.new(0.0, 1.0)).as(BxDF)
-  ]))
+  MatteMaterial.new(Color.new(0.1, 0.2, 0.5))
 ))
 
 hitables.push(Sphere.new(
   Point.new(1.0, 0.0, -1.0),
   0.5,
-  BSDFMaterial.new(BSDF.new([
-    SpecularReflection.new(Color.new(0.8, 0.6, 0.2), FConductor.new(0.0, 1.0)).as(BxDF)
-  ]))
-  # Metal.new(Color.new(0.8, 0.6, 0.2), 0.0)
+  MirrorMaterial.new(Color.new(0.8, 0.6, 0.2))
 ))
 
 hitables.push(Sphere.new(
   Point.new(-1.0, 0.0, -1.0),
   0.5,
-  # Dielectric.new(1.8)
-  BSDFMaterial.new(BSDF.new([
-    SpecularTransmission.new(Color.new(1.0), 1.0, 1.0).as(BxDF)
-  ]))
+  GlassMaterial.new(Color::WHITE, Color::WHITE, 1.8)
 ))
+
+light = XZRect.new(Point.new(-1000.0, 100.0, -1000.0),
+            Point.new(1000.0, 100.0, 1000.0),
+            DiffuseLight.new(ConstantTexture.new(Color::WHITE * 0.9)))
+light.flip!
+
+# hitables.push(light)
 
 scene = Scene.new(
   hitables,
   [
-    PointLight.new(Point.new(10.0), Color.new(200.0)).as(Light),
+    # PointLight.new(Point.new(10.0), Color.new(200.0)).as(Light),
+    # PointLight.new(Point.new(-10.0, 10.0, 10.0), Color.new(200.0)).as(Light),
+    # PointLight.new(Point.new(-10.0, 10.0, -10.0), Color.new(200.0)).as(Light),
+    # PointLight.new(Point.new(10.0, 10.0, -10.0), Color.new(200.0)).as(Light),
     # SpotLight.new(Point.new(0.0, 10.0, 0.0), Color.new(200.0), 0.2, 0.01).as(Light)
-  ],
-  ConstantBackground.new(Color::BLACK)
-  # SkyBackground.new
+    # ObjectLight.new(light, Color.new(1.0)).as(Light)
+  ] of Light,
+  SkyBackground.new
 )
 
 width, height = {800, 400}
@@ -59,6 +56,10 @@ camera = PerspectiveCamera.new(
   vertical_fov: 30.0,
   dimensions: {width, height}
 )
+raytracer = IntegratorRaytracer.new(width, height,
+                                    scene: scene,
+                                    camera: camera,
+                                    samples: 200)
 
-raytracer = IntegratorRaytracer.new(width, height, camera: camera, samples: 2, scene: scene)
+raytracer.recursion_depth = 5
 raytracer.render("benchmark.png")

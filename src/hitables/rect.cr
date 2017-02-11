@@ -3,9 +3,13 @@ require "../hitable"
 abstract class Rect < FiniteHitable
   getter bot : Point
   getter top : Point
+  getter area : Float64
 
   def initialize(@bot : Point, @top : Point)
     @bounding_box = AABB.new(bot, top)
+
+    # TODO: find a way to remove this
+    @area = 0.0
   end
 
   def flip!
@@ -18,6 +22,7 @@ class XYRect < Rect
     raise "XYRect bot & top don't have the same z value" if bot.z != top.z
     super(bot, top)
     @normal = Normal.new(0.0, 0.0, 1.0)
+    @area = (top.x - bot.x) * (top.y - bot.y)
   end
 
   def hit(ray)
@@ -35,6 +40,7 @@ class XYRect < Rect
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
+  # TODO: Delete this once the new pdf methods are in place
   def pdf_value(origin, direction)
     hit = hit(Ray.new(origin, direction))
     if hit
@@ -48,14 +54,16 @@ class XYRect < Rect
     end
   end
 
-  def random(origin)
-    random_point = Point.new(
+  def random
+    Point.new(
       @bot.x + pos_random * (@top.x - @bot.x),
       @bot.y + pos_random * (@top.y - @bot.y),
       @bot.z
     )
+  end
 
-    random_point - origin
+  def random(origin)
+    random - origin
   end
 end
 
@@ -64,6 +72,7 @@ class XZRect < Rect
     raise "XZRect bot & top don't have the same y value" if bot.y != top.y
     super(bot, top)
     @normal = Normal.new(0.0, 1.0, 0.0)
+    @area = (top.x - bot.x) * (top.z - bot.z)
   end
 
   def hit(ray)
@@ -81,6 +90,7 @@ class XZRect < Rect
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
+  # TODO: Delete this once the new pdf methods are in place
   def pdf_value(origin, direction)
     hit = hit(Ray.new(origin, direction))
     if hit
@@ -94,14 +104,16 @@ class XZRect < Rect
     end
   end
 
-  def random(origin)
-    random_point = Point.new(
+  def random
+    Point.new(
       @bot.x + pos_random * (@top.x - @bot.x),
       @bot.y,
       @bot.z + pos_random * (@top.z - @bot.z)
     )
+  end
 
-    random_point - origin
+  def random(origin)
+    random - origin
   end
 end
 
@@ -110,6 +122,7 @@ class YZRect < Rect
     raise "YZRect bot & top don't have the same x value" if bot.x != top.x
     super(bot, top)
     @normal = Normal.new(1.0, 0.0, 0.0)
+    @area = (top.y - bot.y) * (top.z - bot.z)
   end
 
   def hit(ray)
@@ -127,6 +140,7 @@ class YZRect < Rect
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
+  # TODO: Delete this once the new pdf methods are in place
   def pdf_value(origin, direction)
     hit = hit(Ray.new(origin, direction))
     if hit
@@ -140,13 +154,15 @@ class YZRect < Rect
     end
   end
 
-  def random(origin)
-    random_point = Point.new(
+  def random
+    Point.new(
       @bot.x,
       @bot.y + pos_random * (@top.y - @bot.y),
       @bot.z + pos_random * (@top.z - @bot.z)
     )
+  end
 
-    random_point - origin
+  def random(origin)
+    random - origin
   end
 end

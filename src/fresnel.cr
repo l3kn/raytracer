@@ -1,8 +1,10 @@
 class Fresnel
   def self.fresnel_dielectric(cos_i : Float64, cos_t : Float64, eta_i : Float64, eta_t : Float64)
     # Fresnel equations for parallel and perpendicular polarized light
-    r_parallel = ((eta_t * cos_i) - (eta_i * cos_t)) / ((eta_t * cos_i) + (eta_i * cos_t))
-    r_perpendicular = ((eta_i * cos_i) - (eta_t * cos_t)) / ((eta_i * cos_i) + (eta_t * cos_t))
+    r_parallel = ((eta_t * cos_i) - (eta_i * cos_t)) /
+                 ((eta_t * cos_i) + (eta_i * cos_t))
+    r_perpendicular = ((eta_i * cos_i) - (eta_t * cos_t)) /
+                      ((eta_i * cos_i) + (eta_t * cos_t))
 
     (r_parallel * r_parallel + r_perpendicular * r_perpendicular) * 0.5
   end
@@ -39,27 +41,22 @@ class FDielectric < Fresnel
   def evaluate(cos_i : Float64)
     cos_i = clamp(cos_i, -1.0, 1.0)
 
-    if (cos_i > 0.0) # entering the object
-      e_i = @eta_i
-      e_t = @eta_t
-    else
-      e_i = @eta_t
-      e_t = @eta_i
-    end
+    entering = cos_i > 0.0
+    ei, et = entering ? {@eta_i, @eta_t} : {@eta_t, @eta_i}
 
     # Snells law
-    sin_t = e_i / e_t * Math.sqrt(max(0.0, 1.0 - cos_i * cos_i))
+    sin_t = ei / et * Math.sqrt(max(0.0, 1.0 - cos_i * cos_i))
 
     if (sin_t >= 1.0) # Total internal reflection
       1.0
     else
-      const = Math.sqrt(max(0.0, 1.0 - sin_t * sin_t))
-      Fresnel.fresnel_dielectric(cos_i.abs, const, e_i, e_t)
+      cos_t = Math.sqrt(max(0.0, 1.0 - sin_t * sin_t))
+      Fresnel.fresnel_dielectric(cos_i.abs, cos_t, ei, et)
     end
   end
 end
 
-class NoOp < Fresnel
+class FresnelNoOp < Fresnel
   def evaluate(cos_i : Float64)
     1.0
   end

@@ -1,9 +1,6 @@
 class BSDFMaterial < Material
+  getter bsdf : BSDF
   def initialize(@bsdf : BSDF)
-  end
-
-  def bsdf
-    @bsdf
   end
 end
 
@@ -35,6 +32,8 @@ class BSDF
     wo = onb.world_to_local(wo_world)
     wi = onb.world_to_local(wi_world)
 
+    wo = wo / wo.length
+    wi = wi / wi.length
 
     # If both vectors are outside of the object,
     # ignore the BTDFs,
@@ -65,6 +64,7 @@ class BSDF
     normal = hit.normal
     onb = ONB.from_w(normal)
     wo = onb.world_to_local(wo_world)
+    wo = wo / wo.length
 
     color, wi, pdf = bxdf.sample_f(wo)
     return {Color.new(0.0), Vector.z, 0.0} if pdf == 0.0
@@ -77,10 +77,12 @@ class BSDF
     # it means that its pdf is a delta distribution => pdf = 1.0
     # and it would be incorrect to add other pdfs onto it
     if !(bxdf.type & BxDFType::Specular) && matching.size > 1
-      @bxdfs.each do |bxdf_|
+      matching.each do |bxdf_|
         pdf += bxdf_.pdf(wo, wi) if bxdf_ != bxdf
       end
     end
+
+    pdf /= matching.size
 
     # Compute the value of the sampled bxdf for the sampled directions.
     #
@@ -92,7 +94,7 @@ class BSDF
     # this saves some time
 
     if (bxdf.type & BxDFType::Specular)
-      {color, wi_world, pdf / matching.size}
+      {color, wi_world, pdf}
     else
       if wi_world.dot(normal) * wo_world.dot(normal) > 0
         flags = flags & ~BxDFType::Transmission
@@ -105,15 +107,48 @@ class BSDF
         color += bxdf.f(wo, wi) if bxdf.matches_flags(flags)
       end
 
-      {color, wi_world, pdf / matching.size}
+      {color, wi_world, pdf}
     end
   end
 
   def pdf(wo : Vector, wi : Vector, flags = BxDFType::All)
     pdf = 0.0
-    @bxdfs.each do |bxdf|
-      pdf += bxdf.pdf(wo, wi) if bxdf.matches_flags(flags)
+    matching = @bxdfs.filter(&.matches_flags(flags))
+    matching.each do |bxdf|
+      pdf += bxdf.pdf(wo, wi)
     end
-    pdf
+
+    matching.size == 0 ? 0.0 : pdf / matching.size
+  end
+end
+
+class GlassMaterial < Material
+  getter bsdf : BSDF
+
+  def initialize(color_reflected, color_transmitted, ior)
+    @bsdf = BSDF.new([
+      SpecularReflection.new(color_reflected, FDielectric.new(1.0, ior)).as(BxDF),
+      SpecularTransmission.new(color_transmitted, 1.0, ior).as(BxDF)
+    ])
+  end
+end
+
+class MatteMaterial < Material
+  getter bsdf : BSDF
+
+  def initialize(color)
+    @bsdf = BSDF.new([
+      LambertianReflection.new(color).as(BxDF),
+    ])
+  end
+end
+
+class MirrorMaterial < Material
+  getter bsdf : BSDF
+
+  def initialize(color)
+    @bsdf = BSDF.new([
+      SpecularReflection.new(color, FresnelNoOp.new).as(BxDF),
+    ])
   end
 end
