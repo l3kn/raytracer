@@ -37,6 +37,7 @@ struct Matrix4 < LA::AMatrix4
   # right in this function
   def *(vector : Normal)
     # Homogenous coordinates: (x y z 0)
+    x, y, z = vector.to_tuple
 
     xp = self.a00 * x + self.a10 * y + self.a20 * z
     yp = self.a01 * x + self.a11 * y + self.a21 * z
