@@ -176,6 +176,12 @@ class MatteMaterial < SingleMaterial
   end
 end
 
+class OrenNayarMaterial < SingleMaterial
+  def initialize(color, sig)
+    super(OrenNayarReflection.new(color, sig).as(BxDF))
+  end
+end
+
 class MirrorMaterial < SingleMaterial
   def initialize(color)
     super(SpecularReflection.new(color, FresnelNoOp.new).as(BxDF))
