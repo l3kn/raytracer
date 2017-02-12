@@ -27,7 +27,7 @@ struct Normal < LA::AVector3
   # in combination with pdf distributions around a normal
   def normalize; self; end
   def to_vector; Vector.new(@x, @y, @z); end
-  def xyz; {@x, @y, @z}; end
+  def to_tuple; {@x, @y, @z}; end
 
   def face_forward(v)
     dot(v) < 0.0 ? -self : self

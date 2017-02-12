@@ -3,7 +3,7 @@ require "linalg"
 struct Matrix4 < LA::AMatrix4
   def *(point : Point)
     # Homogenous coordinates: (x y z 1)
-    x, y, z = point.xyz
+    x, y, z = point.to_tuple
 
     xp = self.a00 * x + self.a01 * y + self.a02 * z + self.a03
     yp = self.a10 * x + self.a11 * y + self.a12 * z + self.a13
@@ -20,7 +20,7 @@ struct Matrix4 < LA::AMatrix4
 
   def *(vector : Vector)
     # Homogenous coordinates: (x y z 0)
-    x, y, z = vector.xyz
+    x, y, z = vector.to_tuple
 
     xp = self.a00 * x + self.a01 * y + self.a02 * z
     yp = self.a10 * x + self.a11 * y + self.a12 * z
@@ -37,7 +37,7 @@ struct Matrix4 < LA::AMatrix4
   # right in this function
   def *(vector : Normal)
     # Homogenous coordinates: (x y z 0)
-    x, y, z = vector.xyz
+    x, y, z = vector.to_tuple
 
     xp = self.a00 * x + self.a10 * y + self.a20 * z
     yp = self.a01 * x + self.a11 * y + self.a21 * z

@@ -10,31 +10,6 @@ struct Vector < LA::AVector3
     Normal.new(self.x * inv, self.y * inv, self.z * inv)
   end
 
-  # TODO: move this to the normal class
-  # and flip the arguments `normal.reflect(vector)
-  def reflect(normal)
-    dt = self.dot(normal)
-
-    Vector.new(
-      self.x - normal.x * dt * 2.0,
-      self.y - normal.y * dt * 2.0,
-      self.z - normal.z * dt * 2.0,
-    )
-    # self - normal*dot(normal)*2.0
-  end
-
-  # TODO: move this to the normal class
-  def refract(normal, eta)
-    dt = normalize.dot(normal)
-    discriminant = 1.0 - (eta**2) * (1 - dt**2)
-
-    if discriminant > 0
-      normalize * eta - normal * (eta * dt + Math.sqrt(discriminant))
-    else
-      nil
-    end
-  end
-
   # TODO, see Normal.to_normal
   def to_vector; self;
   end
@@ -42,7 +17,7 @@ struct Vector < LA::AVector3
   define_vector_swizzling(2)
   define_vector_swizzling(3, signed: true)
 
-  def xyz
+  def to_tuple
     {@x, @y, @z}
   end
 
