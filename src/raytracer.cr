@@ -19,8 +19,9 @@ require "./backgrounds/*"
 require "./pdf"
 require "./light"
 require "./scene"
+require "./sample"
 
-require "../../stumpy_term/src/stumpy_term"
+require "../../stumpy_utils/src/stumpy_utils"
 
 abstract class Raytracer
   property width : Int32
@@ -51,33 +52,50 @@ abstract class Raytracer
     end
   end
 
-  def render(filename)
-    canvas = StumpyPNG::Canvas.new(@width, @height)
+  def sample_pixel(sample, x, y, samples)
     samples_sqrt = Math.sqrt(samples).ceil
+    (0...samples_sqrt).each do |i|
+      (0...samples_sqrt).each do |j|
+        off_x = (i + rand) / samples_sqrt
+        off_y = (j + rand) / samples_sqrt
 
-    pr_x = @width / 140
+        x_ = (x + off_x).to_f
+        y_ = (y + off_y).to_f
+
+        ray = @camera.generate_ray(x_, y_, @t_min, @t_max)
+        sample.add(cast_ray(ray).de_nan)
+      end
+    end
+  end
+
+  def render(filename, adaptive = false)
+    canvas = StumpyPNG::Canvas.new(@width, @height)
+    vis = Visualisation.new(@width, @height)
+    vis.add_layer(:variance)
+
+    pr_x = @width / 80
     pr_y = (pr_x / 0.4).to_i
 
     start = Time.now
 
     (0...@height).each do |y|
       (0...@width).each do |x|
-        col = Color::BLACK
+        sample = Sample.new
 
-        (0...samples_sqrt).each do |i|
-          (0...samples_sqrt).each do |j|
-            off_x = (i + rand) / samples_sqrt
-            off_y = (j + rand) / samples_sqrt
+        if adaptive
+          sample_pixel(sample, x, y, samples / 2)
+          var = sample.variance
 
-            x_ = (x + off_x).to_f
-            y_ = (y + off_y).to_f
-
-            ray = @camera.generate_ray(x_, y_, @t_min, @t_max)
-            col += cast_ray(ray).de_nan
+          if var.squared_length >= 0.1
+            sample_pixel(sample, x, y, samples * 2)
           end
+        else
+          sample_pixel(sample, x, y, samples)
         end
 
-        col /= (samples_sqrt * samples_sqrt)
+        col = sample.mean
+        vis.set(:variance, x, y, sample.variance.length)
+
         col = col.min(1.0)
         col **= @gamma_correction # Gamma Correction
 
@@ -94,10 +112,7 @@ abstract class Raytracer
           print_pixel(rgba, mode: :grayscale)
         end
       end
-      if (y % pr_y) == 0
-        print "\n"
-      end
-
+      print "\n" if (y % pr_y) == 0
       # print "\rTraced line #{y} / #{@height}"
     end
 
@@ -105,6 +120,8 @@ abstract class Raytracer
 
     puts ""
     puts "Time: #{(time.total_milliseconds / 1000).round(3)}s"
+
+    vis.write(:variance, "variance_" + filename)
     StumpyPNG.write(canvas, filename)
   end
 
