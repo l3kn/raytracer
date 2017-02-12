@@ -16,11 +16,14 @@ camera = PerspectiveCamera.new(
 )
 
 # Raytracer
-raytracer = SimpleRaytracer.new(width, height,
-  hitables: hitables,
+raytracer = BaseRaytracer.new(width, height,
+  scene: Scene.new(
+    [hitables.as(Hitable)],
+    [] of Light,
+    ConstantBackground.new(Color.new(1.0))
+  ),
   camera: camera,
-  samples: 1,
-  background: ConstantBackground.new(Color.new(1.0)))
+  samples: 1)
 raytracer.recursion_depth = 1
 
 raytracer.render("fractal.png")

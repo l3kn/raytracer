@@ -1,30 +1,14 @@
-require "../onb"
-require "../material"
-
-class Lambertian < Material
-  property texture
-
-  def initialize(color : Color)
-    @texture = ConstantTexture.new(color)
+class LambertianReflection < BxDF
+  def initialize(@color : Color)
+    super(BxDFType::Reflection | BxDFType::Diffuse)
   end
 
-  def initialize(@texture : Texture)
+  def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
+    wi = random_cosine_direction
+    {f(wo, wi), wi, pdf(wo, wi)} 
   end
 
-  def scatter(ray, hit)
-    ScatterRecord.new(
-      @texture.value(hit),
-      CosinePDF.new(hit.normal)
-    )
-  end
-
-  def scattering_pdf(ray_in, hit, scattered)
-    cosine = hit.normal.dot(scattered.direction.normalize)
-
-    if cosine < 0
-      0.0
-    else
-      cosine / Math::PI
-    end
+  def f(wo : Vector, wi : Vector)
+    @color / Math::PI
   end
 end

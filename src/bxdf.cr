@@ -24,12 +24,14 @@ class BxDF
   end
 
   def f(wo : Vector, wi : Vector) : Color
+    puts "Error: Calling f on the parent class"
     Color::BLACK
   end
 
   # used for BxDFs where the usage of f(wo, wi)
   # is not practicable, e.g. for perfectly specular surfaces
   def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
+    puts "Error: Calling sample_f on the parent class"
     {Color.new(0.0), Vector.z, 0.0}
   end
 
@@ -63,8 +65,12 @@ end
 class BRDFtoBTDFAdapter < BxDF
   def initialize(@brdf : BxDF)
     # Switch the Reflection and Transmission flags
-    # TODO:
     @type = @brdf.type ^ (BxDFType::Reflection | BxDFType::Transmission)
+  end
+
+  def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
+    color, wi, pdf = @brdf.sample_f(wo)
+    {color, Vector.new(wi.x, wi.y, -wi.z), pdf}
   end
 
   def f(wo : Vector, wi : Vector) : Color
@@ -72,6 +78,13 @@ class BRDFtoBTDFAdapter < BxDF
     # because we are using a special coordinate system,
     # we only need to swap the z value to do this
     @brdf.f(wo, Vector.new(wi.x, wi.y, -wi.z))
+  end
+
+  def pdf(wo : Vector, wi : Vector)
+    @brdf.pdf(
+      wo,
+      Vector.new(wi.x, wi.y, -wi.z)
+    )
   end
 end
 

@@ -27,10 +27,10 @@ hitables.push(Sphere.new(
   GlassMaterial.new(Color::WHITE, Color::WHITE, 1.8)
 ))
 
-light = XZRect.new(Point.new(-1000.0, 100.0, -1000.0),
-            Point.new(1000.0, 100.0, 1000.0),
-            DiffuseLight.new(ConstantTexture.new(Color::WHITE * 0.9)))
-light.flip!
+# light = XZRect.new(Point.new(-1000.0, 100.0, -1000.0),
+#         Point.new(1000.0, 100.0, 1000.0),
+#         DiffuseLight.new(ConstantTexture.new(Color::WHITE * 0.9)))
+# light.flip!
 
 # hitables.push(light)
 
@@ -48,7 +48,6 @@ scene = Scene.new(
 )
 
 width, height = {800, 400}
-# width, height = {400, 200}
 
 camera = PerspectiveCamera.new(
   look_from: Point.new(-1.5, 1.5, 1.5),
@@ -56,10 +55,11 @@ camera = PerspectiveCamera.new(
   vertical_fov: 30.0,
   dimensions: {width, height}
 )
-raytracer = IntegratorRaytracer.new(width, height,
+# raytracer = WhittedRaytracer.new(width, height,
+raytracer = RandomRaytracer.new(width, height,
                                     scene: scene,
                                     camera: camera,
-                                    samples: 200)
+                                    samples: 100)
 
 raytracer.recursion_depth = 5
 raytracer.render("benchmark.png")

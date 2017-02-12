@@ -1,6 +1,3 @@
-require "./material"
-require "./aabb"
-
 record HitRecord,
   t : Float64, # Ray parameter of the hitpoint
   point : Point,
