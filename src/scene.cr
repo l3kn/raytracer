@@ -4,7 +4,7 @@ class Scene
   property background : Background
 
   def initialize(hitables, @lights, @background)
-    if hitables.size > 1000
+    if hitables.size < 500
       @hitable = HitableList.new(hitables)
     else
       finite = hitables.select(&.is_a?(FiniteHitable)).map(&.as(FiniteHitable))
