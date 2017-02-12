@@ -12,7 +12,7 @@ class ConstantMedium < FiniteHitable
 
   def hit(ray)
     if (hit1 = object.hit(ray))
-      if (hit2 = object.hit(Ray.new(ray.origin, ray.direction, hit1.t + 0.0001, Float64::MAX)))
+      if (hit2 = object.hit(Ray.new(ray.origin, ray.direction, hit1.t + EPSILON, Float64::MAX)))
         t1 = hit1.t
         t2 = hit2.t
         t1 = ray.t_min if t1 < ray.t_min

@@ -22,8 +22,6 @@ class Triangle < FiniteHitable
     @normal = edge1.cross(edge2).to_normal
   end
 
-  EPSILON = 0.000001
-
   # Möller-Trumbore intersection algorithm
   def hit(ray)
     p = ray.direction.cross(@edge2)

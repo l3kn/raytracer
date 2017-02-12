@@ -8,7 +8,7 @@ class DistanceEstimator < Hitable
   property maximum_steps : Int32
   property minimum_distance : Float64
 
-  def initialize(@material, @object, @step = 0.1, @maximum_steps = 1000, @minimum_distance = 0.0001)
+  def initialize(@material, @object, @step = 0.1, @maximum_steps = 1000, @minimum_distance = EPSILON)
   end
 
   def hit(ray)

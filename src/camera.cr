@@ -160,7 +160,7 @@ class PerspectiveCamera < ProjectiveCamera
                  up = Vector.y,
                  # @defocus_sampler = DefocusSampler.new(lens_radius))
                  @defocus_sampler = PolygonSampler.new(lens_radius, 7))
-    super(look_from, look_at, Transformation.perspective(vertical_fov, 0.001, 1000.0), dimensions, lens_radius, focus_distance, up)
+    super(look_from, look_at, Transformation.perspective(vertical_fov, EPSILON, 1000.0), dimensions, lens_radius, focus_distance, up)
   end
 
   def generate_ray(s, t, t_min, t_max)

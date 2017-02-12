@@ -4,8 +4,7 @@ struct Ray
   getter t_min : Float64
   getter t_max : Float64
 
-  # TODO: global epsilon constant
-  def initialize(@origin, @direction, @t_min = 0.001, @t_max = Float64::MAX)
+  def initialize(@origin, @direction, @t_min = EPSILON, @t_max = Float64::MAX)
   end
 
   def point_at_parameter(t)

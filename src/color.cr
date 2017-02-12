@@ -37,8 +37,4 @@ struct Color
       min(@b, other)
     )
   end
-
-  def black?
-    r <= 0.001 && g <= 0.001 && b <= 0.001
-  end
 end

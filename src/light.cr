@@ -6,7 +6,7 @@ class VisibilityTester
 
   def self.from_segment(p1 : Point, p2 : Point)
     dir = p2 - p1
-    self.new(Ray.new(p1, dir, 0.001, dir.length))
+    new(Ray.new(p1, dir, EPSILON, dir.length))
   end
 
   def unoccluded?(scene : Scene)

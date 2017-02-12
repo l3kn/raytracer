@@ -1,3 +1,5 @@
+EPSILON = 0.0001
+
 require "stumpy_png"
 require "./vector"
 require "./normal"
@@ -32,7 +34,7 @@ abstract class Raytracer
   property scene : Scene
 
   def initialize(@width, @height, @camera, @samples, @scene)
-    @t_min = 0.0001
+    @t_min = EPSILON
     @t_max = Float64::MAX
     @gamma_correction = 1.0/2.2
     @recursion_depth = 10
