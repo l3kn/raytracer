@@ -42,7 +42,7 @@ class Sphere < FiniteHitable
     )
 
     u = 0.5 + Math.atan2(-normal.z, -normal.x) / (2 * Math::PI)
-    v = 0.5 - Math.asin(-normal.y) / Math::PI
+    v = 0.5 - Math.asin(-normal.y) / INV_PI
 
     return HitRecord.new(t_hit, point, normal, @material, u, v)
   end

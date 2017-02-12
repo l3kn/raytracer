@@ -1,6 +1,11 @@
 require "./vector"
 
 RADIANTS = (Math::PI / 180)
+INV_PI = 1.0 / Math::PI
+
+def radiants(n)
+  n * RADIANTS
+end
 
 def same_hemisphere?(v1, v2)
   v1.z * v2.z > 0.0

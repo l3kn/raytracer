@@ -31,7 +31,7 @@ class CosinePDF < PDF
 
   def value(direction)
     cosine = direction.normalize.dot(@uvw.w.normalize)
-    (cosine > 0.0) ? (cosine / Math::PI) : 0.0
+    (cosine > 0.0) ? (cosine * INV_PI) : 0.0
   end
 
   def generate

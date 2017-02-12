@@ -31,12 +31,12 @@ class BxDF
   # used for BxDFs where the usage of f(wo, wi)
   # is not practicable, e.g. for perfectly specular surfaces
   def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
-    puts "Error: Calling sample_f on the parent class"
-    {Color.new(0.0), Vector.z, 0.0}
+    wi = random_cosine_direction
+    {f(wo, wi), wi, pdf(wo, wi)} 
   end
 
   def pdf(wo, wi)
-    same_hemisphere?(wo, wi) ? cos_theta(wi).abs / Math::PI : 0.0
+    same_hemisphere?(wo, wi) ? cos_theta(wi).abs * INV_PI : 0.0
   end
 
   def cos_theta(w : Vector)
