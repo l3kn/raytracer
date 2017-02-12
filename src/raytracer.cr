@@ -114,22 +114,9 @@ abstract class Raytracer
   abstract def color(ray : Ray, hit : HitRecord, recursion_depth : Int32) : Color
 end
 
-# class IntegratorRaytracer < BaseRaytracer
-#   def initialize(width, height, camera, samples, scene)
-#     super(width, height, camera, samples, scene)
-#     @integrator = UnbiasedIntegrator.new(@scene)
-#   end
-
-#   def color(ray, hit, recursion_depth)
-#     @integrator.color(ray, hit, recursion_depth)
-#   end
-# end
-
-class RandomRaytracer < Raytracer
+class SimpleRaytracer < Raytracer
   def color(ray, hit, recursion_depth)
-    if recursion_depth <= 0
-      return Color::BLACK
-    end
+    return Color::BLACK if recursion_depth <= 0
 
     # Compute emitted and reflected light at intersection
     bsdf = hit.material
@@ -138,7 +125,11 @@ class RandomRaytracer < Raytracer
 
     wo = -ray.direction
 
-    color, wi, pdf = bsdf.sample_f(hit, wo, BxDFType::All)
+    sample = bsdf.sample_f(hit, wo, BxDFType::All)
+    return Color::BLACK if sample.nil?
+
+    color, wi, pdf = sample
+    return Color::BLACK if wi.dot(normal).abs == 0.0
 
     new_ray = Ray.new(point, wi)
     new_hit = @scene.hit(new_ray)
@@ -198,9 +189,11 @@ class WhittedRaytracer < Raytracer
     point = hit.point
     normal = hit.normal
 
-    color, wi, pdf = bsdf.sample_f(hit, wo, BxDFType::Specular | type)
+    sample = bsdf.sample_f(hit, wo, BxDFType::Specular | type)
+    return Color::BLACK if sample.nil?
 
-    return Color::BLACK if color.black? || wi.dot(normal).abs == 0.0
+    color, wi, pdf = sample
+    return Color::BLACK if wi.dot(normal).abs == 0.0
 
     new_ray = Ray.new(point, wi)
     new_hit = @scene.hit(new_ray)
@@ -239,27 +232,6 @@ end
 #       end
 #     else
 #       emitted
-#     end
-#   end
-# end
-
-# class SimpleRaytracer < BaseRaytracer
-#   def color(ray, hit, recursion_depth)
-#     scatter = hit.material.scatter(ray, hit)
-#     if scatter && recursion_depth > 0
-#       pdf_or_ray = scatter.pdf_or_ray
-
-#       if pdf_or_ray.is_a? Ray
-#         scatter.albedo * cast_ray(pdf_or_ray, recursion_depth - 1)
-#       else
-#         scattered = Ray.new(hit.point, pdf_or_ray.generate, @t_min, @t_max)
-#         pdf_val = pdf_or_ray.value(scattered.direction)
-
-#         pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
-#         scatter.albedo * cast_ray(scattered, recursion_depth - 1) * pdf
-#       end
-#     else
-#       Color::BLACK
 #     end
 #   end
 # end

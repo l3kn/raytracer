@@ -56,10 +56,10 @@ camera = PerspectiveCamera.new(
   dimensions: {width, height}
 )
 # raytracer = WhittedRaytracer.new(width, height,
-raytracer = RandomRaytracer.new(width, height,
-                                    scene: scene,
-                                    camera: camera,
-                                    samples: 100)
+raytracer = SimpleRaytracer.new(width, height,
+                                scene: scene,
+                                camera: camera,
+                                samples: 100)
 
 raytracer.recursion_depth = 5
 raytracer.render("benchmark.png")
