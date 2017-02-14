@@ -3,7 +3,6 @@ record HitRecord,
   point : Point,
   normal : Normal,
   material : Material,
-  # emitted : Color,
   u : Float64, # Vars for texture mapping
   v : Float64
 
@@ -18,12 +17,12 @@ abstract class Hitable
     raise "Error, this feature is not supported yet"
   end
 
-  def random
+  def sample : {Point, Normal}
     raise "Error, this feature is not supported yet"
   end
 
-  def random(origin) : Vector
-    raise "Error, this feature is not supported yet"
+  def sample(origin) : {Point, Normal}
+    sample
   end
 
   # What is the probability that the object was hit in point?
@@ -31,16 +30,22 @@ abstract class Hitable
     1.0 / area
   end
 
-  # Probability ray to point w/ direction wi
-  # came from this Hitable
+  # Probability that a ray(point, wi)
+  # hits the light
   # (used for area lights)
   def pdf(point : Point, wi : Vector) : Float64
     hit = hit(Ray.new(point, wi))
-    if hit
-      (hit.point - point).squared_length / hit.normal.dot(-wi).abs * area
+    if hit && hit.normal.dot(wi) < 0.0
+      pdf(hit.point)
     else
-      return 0.0
+      0.0
     end
+    # if hit
+    #   puts (point - hit.point).squared_length / hit.normal.dot(-wi).abs * area
+    #   (hit.point - point).squared_length / hit.normal.dot(-wi).abs * area
+    # else
+    #   0.0
+    # end
   end
 
   # Area of this object

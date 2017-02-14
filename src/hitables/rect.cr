@@ -40,30 +40,15 @@ class XYRect < Rect
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
-  # TODO: Delete this once the new pdf methods are in place
-  def pdf_value(origin, direction)
-    hit = hit(Ray.new(origin, direction))
-    if hit
-      area = (@top.x - @bot.x) * (@top.y - @bot.y)
-      distance_squared = hit.t * hit.t * direction.squared_length
-      cosine = (direction.dot(hit.normal) / direction.length).abs
-
-      distance_squared / (cosine * area)
-    else
-      0.0
-    end
-  end
-
-  def random
-    Point.new(
-      @bot.x + pos_random * (@top.x - @bot.x),
-      @bot.y + pos_random * (@top.y - @bot.y),
-      @bot.z
-    )
-  end
-
-  def random(origin)
-    random - origin
+  def sample
+    {
+      Point.new(
+        @bot.x + pos_random * (@top.x - @bot.x),
+        @bot.y + pos_random * (@top.y - @bot.y),
+        @bot.z
+      ),
+      @normal
+    }
   end
 end
 
@@ -90,30 +75,15 @@ class XZRect < Rect
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
-  # TODO: Delete this once the new pdf methods are in place
-  def pdf_value(origin, direction)
-    hit = hit(Ray.new(origin, direction))
-    if hit
-      area = (@top.x - @bot.x) * (@top.z - @bot.z)
-      distance_squared = hit.t * hit.t * direction.squared_length
-      cosine = (direction.dot(hit.normal) / direction.length).abs
-
-      distance_squared / (cosine * area)
-    else
-      0.0
-    end
-  end
-
-  def random
-    Point.new(
-      @bot.x + pos_random * (@top.x - @bot.x),
-      @bot.y,
-      @bot.z + pos_random * (@top.z - @bot.z)
-    )
-  end
-
-  def random(origin)
-    random - origin
+  def sample
+    {
+      Point.new(
+        @bot.x + pos_random * (@top.x - @bot.x),
+        @bot.y,
+        @bot.z + pos_random * (@top.z - @bot.z)
+      ),
+      @normal
+    }
   end
 end
 
@@ -140,29 +110,14 @@ class YZRect < Rect
     return HitRecord.new(t, point, @normal, @material, u, v)
   end
 
-  # TODO: Delete this once the new pdf methods are in place
-  def pdf_value(origin, direction)
-    hit = hit(Ray.new(origin, direction))
-    if hit
-      area = (@top.y - @bot.y) * (@top.z - @bot.z)
-      distance_squared = hit.t * hit.t * direction.squared_length
-      cosine = (direction.dot(hit.normal) / direction.length).abs
-
-      distance_squared / (cosine * area)
-    else
-      0.0
-    end
-  end
-
-  def random
-    Point.new(
-      @bot.x,
-      @bot.y + pos_random * (@top.y - @bot.y),
-      @bot.z + pos_random * (@top.z - @bot.z)
-    )
-  end
-
-  def random(origin)
-    random - origin
+  def sample
+    {
+      Point.new(
+        @bot.x,
+        @bot.y + pos_random * (@top.y - @bot.y),
+        @bot.z + pos_random * (@top.z - @bot.z)
+      ),
+      @normal
+    }
   end
 end
