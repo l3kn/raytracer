@@ -5,6 +5,7 @@ require "./vector"
 require "./normal"
 require "./color"
 require "./point"
+require "./quaternion"
 require "./ray"
 require "./hitable"
 require "./hitables/*"
@@ -26,15 +27,24 @@ require "../../stumpy_utils/src/stumpy_utils"
 abstract class Raytracer
   property width : Int32
   property height : Int32
-  property samples : Int32
   property camera : Camera
+  property samples : Int32
+  property scene : Scene
+
+  def initialize(@width, @height, @camera, @samples, @scene)
+  end
+
+  abstract def render(filename : String)
+end
+
+class BaseRaytracer < Raytracer
   property t_min : Float64
   property t_max : Float64
   property gamma_correction : Float64
   property recursion_depth : Int32
-  property scene : Scene
 
-  def initialize(@width, @height, @camera, @samples, @scene)
+  def initialize(width, height, camera, samples, scene)
+    super
     @t_min = EPSILON
     @t_max = Float64::MAX
     @gamma_correction = 1.0/2.2
@@ -120,6 +130,8 @@ abstract class Raytracer
 
     puts ""
     puts "Time: #{(time.total_milliseconds / 1000).round(3)}s"
+    puts "Total rays: #{Ray.count}"
+    puts "Rays / sec: #{((Ray.count.to_f / time.total_milliseconds) * 1000).round(3)}"
 
     vis.write(:variance, "variance_" + filename)
     StumpyPNG.write(canvas, filename)
@@ -130,10 +142,12 @@ abstract class Raytracer
     hit ? color(ray, hit, recursion_depth) : @scene.background.get(ray)
   end
 
-  abstract def color(ray : Ray, hit : HitRecord, recursion_depth : Int32) : Color
+  def color(ray : Ray, hit : HitRecord, recursion_depth : Int32) : Color
+    Color::BLACK
+  end
 end
 
-class SimpleRaytracer < Raytracer
+class SimpleRaytracer < BaseRaytracer
   def color(ray, hit, recursion_depth)
     return Color::BLACK if recursion_depth <= 0
 
@@ -144,11 +158,16 @@ class SimpleRaytracer < Raytracer
 
     wo = -ray.direction
 
+
+    # TODO: Only emit light to one side
+
     sample = bsdf.sample_f(hit, wo, BxDFType::All)
-    return Color::BLACK if sample.nil?
+    return bsdf.emitted if sample.nil?
 
     color, wi, pdf = sample
     return Color::BLACK if wi.dot(normal).abs == 0.0
+
+    color += bsdf.emitted
 
     new_ray = Ray.new(point, wi)
     new_hit = @scene.hit(new_ray)
@@ -162,7 +181,7 @@ class SimpleRaytracer < Raytracer
   end
 end
 
-class WhittedRaytracer < Raytracer
+class WhittedRaytracer < BaseRaytracer
   def color(ray, hit, recursion_depth)
     color = Color::BLACK
     return color if recursion_depth <= 0
@@ -174,28 +193,33 @@ class WhittedRaytracer < Raytracer
 
     wo = -ray.direction
 
-    # TODO: Implement emissive materials
-    # color += hit.emitted
+    color += bsdf.emitted(hit, wo)
 
     # Sample each light
     @scene.lights.each do |light|
       wi, li, visibility, pdf = light.sample_l(point)
-      f = bsdf.f(hit, wo, wi, BxDFType::All)
-
-        color += f * li * wi.dot(normal).abs / pdf
-      if visibility.unoccluded?(@scene)
+      if pdf == 0.0
+        next
+      else
+        f = bsdf.f(hit, wo, wi, BxDFType::All)
+        if visibility.unoccluded?(@scene)
+          color += f * li * wi.dot(normal).abs / pdf
+        end
       end
     end
 
     # Background lighting
-    onb = ONB.from_w(normal)
-    wi = onb.local(random_cosine_direction)
-    foo = Ray.new(point, wi)
+    background = false
+    if background
+      onb = ONB.from_w(normal)
+      wi = onb.local(random_cosine_direction)
+      foo = Ray.new(point, wi)
 
-    unless @scene.fast_hit(foo)
-      f = bsdf.f(hit, wo, wi, BxDFType::All)
-      # TODO: Bad try at calculating a pdf for the infinite background light
-      color += @scene.background.get(foo) * f * Math::PI  # * wi.dot(normal).abs * (2.0 * Math::PI)
+      unless @scene.fast_hit(foo)
+        f = bsdf.f(hit, wo, wi, BxDFType::All)
+        # TODO: Bad try at calculating a pdf for the infinite background light
+        color += @scene.background.get(foo) * f * Math::PI  # * wi.dot(normal).abs * (2.0 * Math::PI)
+      end
     end
 
     color += specular(ray, hit, bsdf, recursion_depth, BxDFType::Reflection)
