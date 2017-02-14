@@ -1,8 +1,24 @@
 require "./matrix4"
 
+# TODO: Rename classes
+# Transform => Transformation
+# Transformation => MatrixTransformation?
+
+abstract class Transform
+  abstract def world_to_object(point : Point) : Point
+  abstract def world_to_object(point : Normal) : Normal
+  abstract def world_to_object(point : Vector) : Vector
+  abstract def world_to_object(point : Ray) : Ray
+
+  abstract def object_to_world(point : Point) : Point
+  abstract def object_to_world(point : Normal) : Normal
+  abstract def object_to_world(point : Vector) : Vector
+  abstract def object_to_world(point : Ray) : Ray
+  abstract def object_to_world(point : AABB) : AABB
+end
+
 class TransformationWrapper < FiniteHitable
-  # NOTE: The matrix in @transformation is from world to object space
-  def initialize(@object : FiniteHitable, @transformation : Transformation)
+  def initialize(@object : FiniteHitable, @transformation : Transform)
     @bounding_box = transformation.object_to_world(@object.bounding_box)
   end
 
@@ -24,8 +40,139 @@ class TransformationWrapper < FiniteHitable
   end
 end
 
-class Transformation
-  RADIANTS = (Math::PI / 180)
+class VS < Transform
+  @inv_scale : Float64
+
+  # TODO: Make this code less messy
+  def initialize(@translation = Vector.new(0.0),
+                 @scale = 1.0)
+
+    @inv_scale = 1.0 / @scale
+  end
+
+  def world_to_object(point : Point) : Point
+    (point - @translation) * @inv_scale
+  end
+
+  def object_to_world(point : Point) : Point
+    point * @scale + @translation
+  end
+
+  def world_to_object(point : Vector) : Vector
+    point * @inv_scale
+  end
+
+  def object_to_world(point : Vector) : Vector
+    point * @scale
+  end
+
+  def world_to_object(n : Normal) : Normal
+    n
+  end
+
+  def object_to_world(n : Normal) : Normal
+    n
+  end
+
+  def world_to_object(ray : Ray)
+    Ray.new(world_to_object(ray.origin), world_to_object(ray.direction), ray.t_min, ray.t_max)
+  end
+
+  def object_to_world(ray : Ray)
+    Ray.new(object_to_world(ray.origin), object_to_world(ray.direction), ray.t_min, ray.t_max)
+  end
+
+  def object_to_world(box : AABB)
+    AABB.new(
+      object_to_world(box.min),
+      object_to_world(box.max)
+    )
+  end
+end
+
+class VQS < Transform
+  @inv_scale : Float64
+  @rotation : Quaternion
+  @inv_rotation : Quaternion
+
+  # TODO: Make this code less messy
+  # TODO: All quaternions are of unit length =>
+  # conjugation could be simpler
+  def initialize(@translation = Vector.new(0.0),
+                 @scale = 1.0,
+                 axis = Vector.x,
+                 degrees = 0.0)
+
+    @inv_scale = 1.0 / @scale
+    rad = radiants(degrees)
+
+    @rotation = Quaternion.new(
+      Math.cos(rad / 2.0),
+      axis * Math.sin(rad / 2.0)
+    )
+    @inv_rotation = @rotation.inverse
+  end
+
+  def world_to_object(point : Point) : Point
+    a = (point - @translation)
+    trans_ = Quaternion.new(1.0, a.x, a.y, a.z)
+    rot_ = @inv_rotation * trans_ * @rotation
+    rot = rot_.yzw.to_point
+    rot * @inv_scale
+  end
+
+  def object_to_world(point : Point) : Point
+    a = point * @scale
+    b = Quaternion.new(1.0, a.x, a.y, a.z)
+    c = @rotation * b * @inv_rotation
+
+    c.yzw.to_point + @translation
+  end
+
+  def world_to_object(point : Vector) : Vector
+    trans_ = Quaternion.new(0.0, point)
+    rot_ = @inv_rotation * trans_ * @rotation
+    rot = rot_.yzw
+    rot * @inv_scale
+  end
+
+  def object_to_world(point : Vector) : Vector
+    b = Quaternion.new(0.0, point)
+    c = @rotation * b * @inv_rotation
+
+    c.yzw + @translation
+  end
+
+  def world_to_object(n : Normal) : Normal
+    trans_ = Quaternion.new(0.0, n.x, n.y, n.z)
+    r = @inv_rotation * trans_ * @rotation
+    r.yzw.to_normal
+  end
+
+  def object_to_world(n : Normal) : Normal
+    b = Quaternion.new(0.0, n.x, n.y, n.z)
+    r = @rotation * b * @inv_rotation
+    r.yzw.to_normal
+  end
+
+  def world_to_object(ray : Ray)
+    Ray.new(world_to_object(ray.origin), world_to_object(ray.direction), ray.t_min, ray.t_max)
+  end
+
+  def object_to_world(ray : Ray)
+    Ray.new(object_to_world(ray.origin), object_to_world(ray.direction), ray.t_min, ray.t_max)
+  end
+
+  def object_to_world(box : AABB)
+    # TODO: Currently, this doesn't work with rotations
+    AABB.new(
+      object_to_world(box.min),
+      object_to_world(box.max)
+    )
+  end
+end
+
+class Transformation < Transform
   ID = self.new(
     Matrix4.new(
       1.0, 0.0, 0.0, 0.0,
@@ -122,7 +269,7 @@ class Transformation
 
     # In this code we assume,
     # that the last row of the inverse is (0, 0, 0, 1)^T
-    unless @inverse.a30 == 0.0 && @inverse.a31 == 0.0 && @inverse.a32 == 0.0 && @inverse.a33 == 1.0
+    unless @inverse.a30 == 0.0 && @inverse.a31 == 0.0 && @inverse.a32 == 0.0
       raise "Unexpected transformation matrix format: #{@inverse.inspect}"
     end
     
@@ -176,6 +323,27 @@ class Transformation
     det < 0.0
   end
 
+  def translate(x, y, z)
+    self * translation(x, y, z)
+  end
+
+  def self.translation(x, y, z)
+    Transformation.new(
+      Matrix4.new(
+        1.0, 0.0, 0.0, x,
+        0.0, 1.0, 0.0, y,
+        0.0, 0.0, 1.0, z,
+        0.0, 0.0, 0.0, 1.0
+      ),
+      Matrix4.new(
+        1.0, 0.0, 0.0, -offset.x,
+        0.0, 1.0, 0.0, -offset.y,
+        0.0, 0.0, 1.0, -offset.z,
+        0.0, 0.0, 0.0, 1.0
+      )
+    )
+  end
+
   def self.translation(offset)
     Transformation.new(
       Matrix4.new(
@@ -193,7 +361,11 @@ class Transformation
     )
   end
 
-  def self.scaling(scale)
+  def self.scaling(scale : Float64)
+    self.scaling(scale, scale, scale)
+  end
+
+  def self.scaling(scale : Vector)
     self.scaling(scale.x, scale.y, scale.z)
   end
 
