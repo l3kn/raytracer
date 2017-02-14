@@ -6,7 +6,7 @@ class VisibilityTester
 
   def self.from_segment(p1 : Point, p2 : Point)
     dir = p2 - p1
-    new(Ray.new(p1, dir, EPSILON, dir.length))
+    new(Ray.new(p1, dir.normalize, EPSILON, dir.length - EPSILON))
   end
 
   def unoccluded?(scene : Scene)
@@ -103,18 +103,19 @@ class SpotLight < Light
   end
 end
 
-class ObjectLight < Light
+class AreaLight < Light
   def initialize(@object : FiniteHitable, @intensity : Color)
   end
 
   def sample_l(point : Point) : {Vector, Color, VisibilityTester, Float64}
-    own_point = @object.random
-    dist = (own_point - point)
-    wi = dist.to_normal.to_vector
+    point_s, normal_s = @object.sample(point)
 
-    tester = VisibilityTester.from_segment(point, own_point)
+    dist = point_s - point
+    wi = dist.normalize
 
-    {wi, @intensity / dist.squared_length, tester, @object.pdf(own_point)}
+    tester = VisibilityTester.from_segment(point, point_s)
+    # {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
+    {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
   end
 
   def power
