@@ -14,6 +14,10 @@ struct Vector < LA::AVector3
   def to_vector; self;
   end
 
+  def to_point
+    Point.new(@x, @y, @z)
+  end
+
   define_vector_swizzling(2)
   define_vector_swizzling(3, signed: true)
 
