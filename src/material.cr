@@ -1,6 +1,18 @@
 abstract class Material
-  abstract def f(hit : HitRecord, wo_world : Vector, wi_world : Vector, flags : Int32) : Color
-  abstract def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64)?
+  property emitted : Color
+  @emitted = Color::BLACK
+
+  def f(hit : HitRecord, wo_world : Vector, wi_world : Vector, flags : Int32) : Color
+    Color::BLACK
+  end
+
+  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64)?
+    nil
+  end
+
+  def emitted(hit : HitRecord, wo_world) : Color
+    Color::BLACK
+  end
 end
 
 class MultiMaterial < Material
@@ -185,5 +197,13 @@ end
 class MirrorMaterial < SingleMaterial
   def initialize(color)
     super(SpecularReflection.new(color, FresnelNoOp.new).as(BxDF))
+  end
+end
+
+# require "../material"
+# require "../texture"
+
+class DiffuseLightMaterial < Material
+  def initialize(@emitted : Color)
   end
 end
