@@ -6,7 +6,6 @@ struct Ray
   @@count = 0_u64
 
   def initialize(@origin, @direction, @t_min = EPSILON, @t_max = Float64::MAX)
-    # puts "Non-normal direction!" if (@direction.length - 1.0).abs > EPSILON
     @@count += 1
   end
 
