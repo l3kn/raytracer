@@ -1,4 +1,3 @@
-require "linalg"
 require "./vector"
 
 struct Point < LA::AVector3

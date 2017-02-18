@@ -1,4 +1,3 @@
-require "linalg"
 require "./helper"
 
 struct Vector < LA::AVector3
