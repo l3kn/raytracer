@@ -119,3 +119,15 @@ def solve_quadratic(a, b, c) : Tuple(Float64, Float64) | Nil
     {t1, t0}
   end
 end
+
+# Monte Carlo heuristics
+
+def balance_heuristic(nf : Int32, f_pdf : Float64, ng : Int32, g_pdf : Float64)
+  (nf * f_pdf) / (nf * f_pdf + ng * g_pdf)
+end
+
+def power_heuristic(nf : Int32, f_pdf : Float64, ng : Int32, g_pdf : Float64)
+  f = nf * f_pdf
+  g = ng * g_pdf
+  (f*f) / (f*f + g*g)
+end
