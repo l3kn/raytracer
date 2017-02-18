@@ -1,5 +1,3 @@
-require "linalg"
-
 struct Quaternion < LA::AQuaternion
   def initialize(@x, @y, @z, @w)
   end

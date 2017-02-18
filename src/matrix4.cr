@@ -1,5 +1,3 @@
-require "linalg"
-
 struct Matrix4 < LA::AMatrix4
   def *(point : Point)
     # Homogenous coordinates: (x y z 1)
@@ -44,5 +42,6 @@ struct Matrix4 < LA::AMatrix4
     zp = self.a02 * x + self.a12 * y + self.a22 * z
 
     Normal.new(xp, yp, zp)
+    # Vector.new(xp, yp, zp).to_normal
   end
 end
