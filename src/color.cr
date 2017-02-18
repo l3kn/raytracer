@@ -1,5 +1,3 @@
-require "linalg"
-
 struct Color
   COMPONENTS = [:r, :g, :b]
   define_vector
@@ -36,5 +34,9 @@ struct Color
       min(@g, other),
       min(@b, other)
     )
+  end
+
+  def black?
+    (@r < EPSILON) && (@g < EPSILON) && (@b < EPSILON)
   end
 end
