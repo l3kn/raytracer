@@ -58,7 +58,7 @@ class ProjectiveCamera < Camera
 
   def generate_ray(s, t, t_min, t_max)
     point_camera = @raster_to_camera.world_to_object(Point.new(s, t, 0.0))
-    @camera_to_world.world_to_object(Ray.new(point_camera, Vector.new(0.0, 0.0, 1.0)))
+    @camera_to_world.world_to_object(Ray.new(point_camera, Vector.z))
   end
 end
 
@@ -66,15 +66,22 @@ class OrtographicCamera < ProjectiveCamera
   def initialize(look_from : Point,
                  look_at : Point,
                  dimensions : Tuple(Int32, Int32),
-                 lens_radius : Float64,
-                 focus_distance : Float64,
+                 focus_distance = (look_from - look_at).length,
+                 lens_radius = 0.0,
                  up = Vector.y)
     super(look_from, look_at, Transformation.orthographic(0.0, 1.0), dimensions, lens_radius, focus_distance, up)
   end
 
   def generate_ray(s, t, t_min, t_max)
     point_camera = @raster_to_camera.world_to_object(Point.new(s, t, 0.0))
-    @camera_to_world.world_to_object(Ray.new(point_camera, Vector.new(0.0, 0.0, 1.0)))
+    @camera_to_world.world_to_object(Ray.new(point_camera, Vector.z))
+  end
+
+  def corresponding(point : Point) : {Float64, Float64}
+    l_0 = @camera_to_world.object_to_world(point)
+    p = Point.new(l_0.x, l_0.y, 0.0)
+
+    @raster_to_camera.object_to_world(p).xy
   end
 end
 
