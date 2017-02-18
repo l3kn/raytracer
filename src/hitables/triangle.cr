@@ -50,7 +50,7 @@ class Triangle < FiniteHitable
       point = ray.point_at_parameter(t)
       u, v = get_uv(ray, point, u, v)
       normal = get_normal(ray, point, u, v)
-      return HitRecord.new(t, point, normal, @material, u, v)
+      return HitRecord.new(t, point, normal, @material, self, u, v)
     else
       return nil
     end

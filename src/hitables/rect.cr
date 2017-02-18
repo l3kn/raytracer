@@ -37,7 +37,7 @@ class XYRect < Rect
 
     u = (point.x - @bot.x) / (@top.x - @bot.x)
     v = (point.y - @bot.y) / (@top.y - @bot.y)
-    return HitRecord.new(t, point, @normal, @material, u, v)
+    return HitRecord.new(t, point, @normal, @material, self, u, v)
   end
 
   def sample
@@ -72,7 +72,7 @@ class XZRect < Rect
 
     u = (point.x - @bot.x) / (@top.x - @bot.x)
     v = (point.z - @bot.z) / (@top.z - @bot.z)
-    return HitRecord.new(t, point, @normal, @material, u, v)
+    return HitRecord.new(t, point, @normal, @material, self, u, v)
   end
 
   def sample
@@ -107,7 +107,7 @@ class YZRect < Rect
 
     u = (point.z - @bot.z) / (@top.z - @bot.z)
     v = (point.y - @bot.y) / (@top.y - @bot.y)
-    return HitRecord.new(t, point, @normal, @material, u, v)
+    return HitRecord.new(t, point, @normal, @material, self, u, v)
   end
 
   def sample

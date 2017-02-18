@@ -32,6 +32,7 @@ class TransformationWrapper < FiniteHitable
         @transformation.object_to_world(hit.point),
         @transformation.object_to_world(hit.normal),
         hit.material,
+        hit.object,
         hit.u, hit.v
       )
     else

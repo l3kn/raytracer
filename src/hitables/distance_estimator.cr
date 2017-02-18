@@ -45,6 +45,7 @@ class DistanceEstimator < Hitable
       point: point + normal * @minimum_distance * 2.0,
       normal: normal,
       material: @material,
+      object: self,
       u: steps.to_f / @maximum_steps, v: 0.0
     )
   end

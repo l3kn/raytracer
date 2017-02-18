@@ -12,10 +12,10 @@ class HitableList < Hitable
     closest_so_far = ray.t_max
 
     objects.each do |object|
-      record = object.hit(Ray.new(ray.origin, ray.direction, ray.t_min, closest_so_far))
-      if record
-        closest_so_far = record.t
-        result = record
+      rec = object.hit(Ray.new(ray.origin, ray.direction, ray.t_min, closest_so_far))
+      if rec
+        closest_so_far = rec.t
+        result = rec
       end
     end
 

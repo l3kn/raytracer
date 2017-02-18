@@ -64,6 +64,6 @@ class Cylinder < FiniteHitable
     u = phi * @inv_phi_max
     v = (point.z - @y_min) * @inv_length
 
-    return HitRecord.new(t_hit, point, normal, @material, u, v)
+    return HitRecord.new(t_hit, point, normal, @material, self, u, v)
   end
 end

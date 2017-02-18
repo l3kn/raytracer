@@ -18,10 +18,6 @@ class Sphere < FiniteHitable
     return nil if ts.nil?
 
     t0, t1 = ts
-    # We know that t0 < t1
-    #     t0 > t_max 
-    #  => t1 > t_max
-    #  => no hit
     return nil if t0 > ray.t_max || t1 < ray.t_min
 
     t_hit = t0
@@ -32,13 +28,13 @@ class Sphere < FiniteHitable
 
     point = ray.point_at_parameter(t_hit)
 
-    # This should be a bit faster than (point - center).to_normal
+    # This only works bc/ radius = 1.0
     normal = Normal.new(point.x, point.y, point.z)
 
-    u = 0.5 + Math.atan2(-normal.z, -normal.x) / (2 * Math::PI)
-    v = 0.5 - Math.asin(-normal.y) / INV_PI
+    u = 0.5 + Math.atan2(-normal.z, -normal.x) * 0.5 * INV_PI
+    v = 0.5 - Math.asin(-normal.y) * INV_PI
 
-    return HitRecord.new(t_hit, point, normal, @material, u, v)
+    return HitRecord.new(t_hit, point, normal, @material, self, u, v)
   end
 
   # TODO: Delete this once the new pdf methods are in place
