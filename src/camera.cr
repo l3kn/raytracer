@@ -7,24 +7,28 @@ abstract class Camera
 end
 
 class EnvironmentCamera < Camera
-  @camera_to_world : Transformation
+  @origin : Point
   @size_x : Int32
   @size_y : Int32
+
   def initialize(look_from : Point, look_at : Point, dimensions : Tuple(Int32, Int32), up = Vector.y)
-    @camera_to_world = Transformation.look_at(look_from, look_at, up)
+    dir = (look_at - look_from).normalize
+    left = up.normalize.cross(dir).normalize
+    new_up = dir.cross(left)
+
+    @origin = look_from
+    @onb = ONB.new(left, new_up, dir)
     @size_x, @size_y = dimensions
   end
 
   def generate_ray(s, t, t_min, t_max)
     theta = Math::PI * t / @size_y
     phi = 2.0 * Math::PI * s / @size_x
-
     direction = Vector.new(Math.sin(theta) * Math.cos(phi),
                            Math.cos(theta),
                            Math.sin(theta) * Math.sin(phi))
-    ray = Ray.new(Point.new(0.0), direction, t_min, t_max)
 
-    @camera_to_world.world_to_object(ray)
+    Ray.new(@origin, @onb.local_to_world(direction), t_min, t_max)
   end
 end
 
