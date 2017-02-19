@@ -4,6 +4,7 @@ require "./transformation"
 abstract class Camera
   abstract def generate_ray(x : Float64, y : Float64,
                             t_min : Float64, t_max : Float64) : Ray
+  abstract def corresponding(p : Point) : {Int32, Int32}
 end
 
 class EnvironmentCamera < Camera
@@ -24,11 +25,30 @@ class EnvironmentCamera < Camera
   def generate_ray(s, t, t_min, t_max)
     theta = Math::PI * t / @size_y
     phi = 2.0 * Math::PI * s / @size_x
+
+    # NOTE: This direction is already normalized,
+    # bc/ sin^2 + cos^2 = 1
     direction = Vector.new(Math.sin(theta) * Math.cos(phi),
                            Math.cos(theta),
                            Math.sin(theta) * Math.sin(phi))
 
     Ray.new(@origin, @onb.local_to_world(direction), t_min, t_max)
+  end
+
+  def corresponding(point : Point)
+    c = @onb.world_to_local(point).normalize
+
+    x = c.x
+    y = c.y
+    z = c.z
+
+    theta = Math.acos(c.y)
+    phi = Math.acos(c.x / Math.sin(theta))
+
+    {
+      (phi * INV_PI / 2.0 * @size_x).to_i,
+      (theta * INV_PI * @size_y).to_i
+    }
   end
 end
 
@@ -37,6 +57,7 @@ class PerspectiveCamera < Camera
   @size_x : Float64
   @size_y : Float64
   @onb : ONB
+  @factor : Vector
 
   def initialize(look_from : Point,
                  look_at : Point,
@@ -69,11 +90,14 @@ class PerspectiveCamera < Camera
 
     @origin = look_from
 
-    horizontal = u * half_width * focus_distance
-    vertical = v * half_height * focus_distance
-
+    # Extract some factors to make sure all bases of the ONB are normals
+    @factor = Vector.new(
+      half_width * focus_distance,
+      half_height * focus_distance,
+      fac_w = focus_distance
+    )
     @lens_radius = aperture / 2
-    @onb = ONB.new(horizontal, vertical, -w * focus_distance)
+    @onb = ONB.new(u, v, -w)
   end
 
   def generate_ray(s, t, t_min, t_max)
@@ -82,18 +106,21 @@ class PerspectiveCamera < Camera
     # rd = random_in_unit_circle * @lens_radius
     # offset = @u * rd.x + @v * rd.y
 
-    direction = @onb.local_to_world(Vector.new(s, t, 1.0))
+    direction = @onb.local_to_world(Vector.new(s, t, 1.0) * @factor)
     Ray.new(@origin, direction.normalize, t_min, t_max)
   end
 
   def corresponding(point : Point)
-    c = @onb.world_to_local(point)
+    dir = point - @origin
+    c = @onb.world_to_local(dir.normalize)
+
+    c /= @factor
     # Make sure c.z == 1.0
     c /= c.z
 
     { 
-      (c.x + 1.0 / 2.0 * @size_x).to_i,
-      (-c.y + 1.0 / 2.0 * @size_y).to_i
+      ((c.x + 1.0) / 2.0 * @size_x).to_i,
+      ((-c.y + 1.0) / 2.0 * @size_y).to_i
     }
   end
 end
