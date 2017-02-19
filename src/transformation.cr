@@ -1,10 +1,4 @@
-require "./matrix4"
-
-# TODO: Rename classes
-# Transform => Transformation
-# Transformation => MatrixTransformation?
-
-abstract class Transform
+abstract class Transformation
   abstract def world_to_object(point : Point) : Point
   abstract def world_to_object(point : Normal) : Normal
   abstract def world_to_object(point : Vector) : Vector
@@ -18,7 +12,7 @@ abstract class Transform
 end
 
 class TransformationWrapper < FiniteHitable
-  def initialize(@object : FiniteHitable, @transformation : Transform)
+  def initialize(@object : FiniteHitable, @transformation : Transformation)
     @bounding_box = transformation.object_to_world(@object.bounding_box)
   end
 
@@ -41,13 +35,12 @@ class TransformationWrapper < FiniteHitable
   end
 end
 
-class VS < Transform
+class VS < Transformation
   @inv_scale : Float64
 
   # TODO: Make this code less messy
   def initialize(@translation = Vector.new(0.0),
                  @scale = 1.0)
-
     @inv_scale = 1.0 / @scale
   end
 
@@ -91,7 +84,7 @@ class VS < Transform
   end
 end
 
-class VQS < Transform
+class VQS < Transformation
   @inv_scale : Float64
   @rotation : Quaternion
   @inv_rotation : Quaternion
@@ -173,317 +166,84 @@ class VQS < Transform
   end
 end
 
-class Transformation < Transform
-  ID = self.new(
-    Matrix4.new(
-      1.0, 0.0, 0.0, 0.0,
-      0.0, 1.0, 0.0, 0.0,
-      0.0, 0.0, 1.0, 0.0,
-      0.0, 0.0, 0.0, 1.0
-    )
-  )
+# TODO: Implement this piece of code for the new transformations
+# # An `AABB` box
+# # can be defined by a center point `c`
+# # and an offset vector `o` that is positive in all its components.
+# #
+# # This way `@min = c - o` and `@max = c + o`
+# #
+# # If we were to apply a transformation matrix `M` to the box,
+# # we would need to recalculate all `@min` and `@max` like this:
+# #
+# # ```
+# # new_box = AABB.new(
+# #   min( M * (c +- o) ),
+# #   max( M * (c +- o) )
+# # )
+# # ```
+# #
+# # where `(c +- o)` is short for
+# # `Point.new(c_x +- o_x, c_y +- o_y, c_z +- o_z)`,
+# # meaning all 2*2*2 = 8 different possible points
+# #
+# # This way we would need to do 16 (or 8, if we use a combined min-max function)
+# # Mat-Point multiplications.
+# #
+# # `M * (c +- o)` is equivalent to
+# # ```
+# #   M[0...3, 0] * (c.x +- o.x)
+# # + M[0...3, 1] * (c.y +- o.y)
+# # + M[0...3, 2] * (c.z +- o.z)
+# # + M[0...3, 3]
+# # ```
+# # where `M[0...3, n]` denotes the (first 3 rows of the) n-th column of the matrix
+# # 
+# # Using the equality from above
+# # and the fact that min((a +- b) + (c +- d)) == min(a +- b) + min(c +- d),
+# # we can turn `min( M * (c +- o) )` (and analogously `max(...)`) into
+# #
+# # ```
+# #   min(M[0...3, 0] * (c.x +- o.x))
+# # + min(M[0...3, 1] * (c.y +- o.y))
+# # + min(M[0...3, 2] * (c.z +- o.z))
+# # + M[0...3, 3]
+# # ```
+# # which uses only 12 (or 6) vector multiplications
+# # and is (according to some quick benchmarks)
+# # ~15x faster
 
-  property matrix : Matrix4
-  property inverse : Matrix4
+# # In this code we assume,
+# # that the last row of the inverse is (0, 0, 0, 1)^T
+# unless @inverse.a30 == 0.0 && @inverse.a31 == 0.0 && @inverse.a32 == 0.0
+#   raise "Unexpected transformation matrix format: #{@inverse.inspect}"
+# end
 
-  def initialize(@matrix)
-    @inverse = @matrix.invert
-  end
+# center = box.centroid
+# offset = box.max - center
 
-  def initialize(@matrix, @inverse)
-  end
+# tmp = center.x - offset.x
+# a_1 = Point.new(@inverse.a00 * tmp, @inverse.a10 * tmp, @inverse.a20 * tmp)
 
-  def world_to_object(point_or_vector : (Point | Vector))
-    @matrix * point_or_vector
-  end
+# tmp = center.x + offset.x
+# a_2 = Point.new(@inverse.a00 * tmp, @inverse.a10 * tmp, @inverse.a20 * tmp)
 
-  def object_to_world(point_or_vector : (Point | Vector))
-    @inverse * point_or_vector
-  end
+# tmp = center.y - offset.y
+# b_1 = Point.new(@inverse.a01 * tmp, @inverse.a11 * tmp, @inverse.a21 * tmp)
 
-  def world_to_object(normal : Normal)
-    # For normals the transformation
-    # works the other way around
-    # and the matrix is transposed,
-    # but that fact is hidden in the `Matrix4.*(other : Normal)` functon
-    @inverse * normal
-  end
+# tmp = center.y + offset.y
+# b_2 = Point.new(@inverse.a01 * tmp, @inverse.a11 * tmp, @inverse.a21 * tmp)
 
-  def object_to_world(normal : Normal)
-    @matrix * normal
-  end
+# tmp = center.z - offset.z
+# c_1 = Point.new(@inverse.a02 * tmp, @inverse.a12 * tmp, @inverse.a22 * tmp)
 
-  def world_to_object(ray : Ray)
-    Ray.new(world_to_object(ray.origin), world_to_object(ray.direction), ray.t_min, ray.t_max)
-  end
+# tmp = center.z + offset.z
+# c_2 = Point.new(@inverse.a02 * tmp, @inverse.a12 * tmp, @inverse.a22 * tmp)
 
-  def object_to_world(ray : Ray)
-    Ray.new(object_to_world(ray.origin), object_to_world(ray.direction), ray.t_min, ray.t_max)
-  end
+# rest = Point.new(@inverse.a03, @inverse.a13, @inverse.a23)
 
-  def object_to_world(box : AABB)
-    # An `AABB` box
-    # can be defined by a center point `c`
-    # and an offset vector `o` that is positive in all its components.
-    #
-    # This way `@min = c - o` and `@max = c + o`
-    #
-    # If we were to apply a transformation matrix `M` to the box,
-    # we would need to recalculate all `@min` and `@max` like this:
-    #
-    # ```
-    # new_box = AABB.new(
-    #   min( M * (c +- o) ),
-    #   max( M * (c +- o) )
-    # )
-    # ```
-    #
-    # where `(c +- o)` is short for
-    # `Point.new(c_x +- o_x, c_y +- o_y, c_z +- o_z)`,
-    # meaning all 2*2*2 = 8 different possible points
-    #
-    # This way we would need to do 16 (or 8, if we use a combined min-max function)
-    # Mat-Point multiplications.
-    #
-    # `M * (c +- o)` is equivalent to
-    # ```
-    #   M[0...3, 0] * (c.x +- o.x)
-    # + M[0...3, 1] * (c.y +- o.y)
-    # + M[0...3, 2] * (c.z +- o.z)
-    # + M[0...3, 3]
-    # ```
-    # where `M[0...3, n]` denotes the (first 3 rows of the) n-th column of the matrix
-    # 
-    # Using the equality from above
-    # and the fact that min((a +- b) + (c +- d)) == min(a +- b) + min(c +- d),
-    # we can turn `min( M * (c +- o) )` (and analogously `max(...)`) into
-    #
-    # ```
-    #   min(M[0...3, 0] * (c.x +- o.x))
-    # + min(M[0...3, 1] * (c.y +- o.y))
-    # + min(M[0...3, 2] * (c.z +- o.z))
-    # + M[0...3, 3]
-    # ```
-    # which uses only 12 (or 6) vector multiplications
-    # and is (according to some quick benchmarks)
-    # ~15x faster
-
-    # In this code we assume,
-    # that the last row of the inverse is (0, 0, 0, 1)^T
-    unless @inverse.a30 == 0.0 && @inverse.a31 == 0.0 && @inverse.a32 == 0.0
-      raise "Unexpected transformation matrix format: #{@inverse.inspect}"
-    end
-    
-    center = box.centroid
-    offset = box.max - center
-
-    tmp = center.x - offset.x
-    a_1 = Point.new(@inverse.a00 * tmp, @inverse.a10 * tmp, @inverse.a20 * tmp)
-
-    tmp = center.x + offset.x
-    a_2 = Point.new(@inverse.a00 * tmp, @inverse.a10 * tmp, @inverse.a20 * tmp)
-
-    tmp = center.y - offset.y
-    b_1 = Point.new(@inverse.a01 * tmp, @inverse.a11 * tmp, @inverse.a21 * tmp)
-
-    tmp = center.y + offset.y
-    b_2 = Point.new(@inverse.a01 * tmp, @inverse.a11 * tmp, @inverse.a21 * tmp)
-
-    tmp = center.z - offset.z
-    c_1 = Point.new(@inverse.a02 * tmp, @inverse.a12 * tmp, @inverse.a22 * tmp)
-
-    tmp = center.z + offset.z
-    c_2 = Point.new(@inverse.a02 * tmp, @inverse.a12 * tmp, @inverse.a22 * tmp)
-
-    rest = Point.new(@inverse.a03, @inverse.a13, @inverse.a23)
-
-    AABB.new(
-      a_1.min(a_2) + b_1.min(b_2) + c_1.min(c_2) + rest,
-      a_1.max(a_2) + b_1.max(b_2) + c_1.max(c_2) + rest
-    )
-  end
-
-  def *(other : Transformation)
-    Transformation.new(
-      @matrix * other.matrix,
-      other.inverse * @inverse
-    )
-  end
-
-  def swaps_handedness?
-    det = ((@matrix.a00 *
-            (@matrix.a11 * @matrix.a22 -
-             @matrix.a12 * @matrix.a21)) -
-           (@matrix.a01 *
-             (@matrix.a10 * @matrix.a22 -
-              @matrix.a12 * @matrix.a20)) +
-           (@matrix.a02 *
-             (@matrix.a10 * @matrix.a21 -
-              @matrix.a11 * @matrix.a20)))
-
-    det < 0.0
-  end
-
-  def translate(x, y, z)
-    self * translation(x, y, z)
-  end
-
-  def self.translation(x, y, z)
-    Transformation.new(
-      Matrix4.new(
-        1.0, 0.0, 0.0, x,
-        0.0, 1.0, 0.0, y,
-        0.0, 0.0, 1.0, z,
-        0.0, 0.0, 0.0, 1.0
-      ),
-      Matrix4.new(
-        1.0, 0.0, 0.0, -offset.x,
-        0.0, 1.0, 0.0, -offset.y,
-        0.0, 0.0, 1.0, -offset.z,
-        0.0, 0.0, 0.0, 1.0
-      )
-    )
-  end
-
-  def self.translation(offset)
-    Transformation.new(
-      Matrix4.new(
-        1.0, 0.0, 0.0, offset.x,
-        0.0, 1.0, 0.0, offset.y,
-        0.0, 0.0, 1.0, offset.z,
-        0.0, 0.0, 0.0, 1.0
-      ),
-      Matrix4.new(
-        1.0, 0.0, 0.0, -offset.x,
-        0.0, 1.0, 0.0, -offset.y,
-        0.0, 0.0, 1.0, -offset.z,
-        0.0, 0.0, 0.0, 1.0
-      )
-    )
-  end
-
-  def self.scaling(scale : Float64)
-    self.scaling(scale, scale, scale)
-  end
-
-  def self.scaling(scale : Vector)
-    self.scaling(scale.x, scale.y, scale.z)
-  end
-
-  def self.scaling(sx, sy, sz)
-    Transformation.new(
-      Matrix4.new(
-        sx, 0.0, 0.0, 0.0,
-        0.0, sy, 0.0, 0.0,
-        0.0, 0.0, sz, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      ),
-      Matrix4.new(
-        1.0 / sx, 0.0, 0.0, 0.0,
-        0.0, 1.0 / sy, 0.0, 0.0,
-        0.0, 0.0, 1.0 / sz, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      )
-    )
-  end
-
-  def self.rotation_x(angle)
-    sin = Math.sin(angle * RADIANTS)
-    cos = Math.cos(angle * RADIANTS)
-
-    matrix = Matrix4.new(
-      1.0, 0.0,  0.0, 0.0,
-      0.0, cos, -sin, 0.0,
-      0.0, sin,  cos, 0.0,
-      0.0, 0.0, 0.0, 1.0
-    )
-
-    Transformation.new(matrix, matrix.transpose)
-  end
-
-  def self.rotation_y(angle)
-    sin = Math.sin(angle * RADIANTS)
-    cos = Math.cos(angle * RADIANTS)
-
-    matrix = Matrix4.new(
-       cos, 0.0, sin, 0.0,
-       0.0, 1.0, 0.0, 0.0,
-      -sin, 0.0, cos, 0.0,
-       0.0, 0.0, 0.0, 1.0
-    )
-
-    Transformation.new(matrix, matrix.transpose)
-  end
-
-  def self.rotation_z(angle)
-    sin = Math.sin(angle * RADIANTS)
-    cos = Math.cos(angle * RADIANTS)
-
-    matrix = Matrix4.new(
-      cos, -sin, 0.0, 0.0,
-      sin,  cos, 0.0, 0.0,
-      0.0,  0.0, 1.0, 0.0,
-      0.0,  0.0, 0.0, 1.0
-    )
-
-    Transformation.new(matrix, matrix.transpose)
-  end
-
-  def self.rotation(angle, axis)
-    axis = axis.normalize
-    sin = Math.sin(angle * RADIANTS)
-    cos = Math.cos(angle * RADIANTS)
-
-    matrix = Matrix4.new(
-      axis.x * axis.x + (1.0 - axis.x * axis.x) * cos,
-      axis.x * axis.y * (1.0 - cos) - axis.z * sin,
-      axis.x * axis.z * (1.0 - cos) + axis.y * sin,
-      0.0,
-      axis.x * axis.y * (1.0 - cos) + axis.z * sin,
-      axis.y * axis.y + (1.0 - axis.y * axis.y) * cos,
-      axis.y * axis.z * (1.0 - c) - axis.x * sin,
-      0.0,
-      axis.x * axis.z * (1.0 - cos) - axis.y * sin,
-      axis.y * axis.z * (1.0 - cos) + axis.x * sin,
-      axis.y * axis.z * (1.0 - axis.z * axis.z) * cos,
-      0.0,
-      0.0, 0.0, 0.0, 1.0
-    )
-
-    Transformation.new(matrix, matrix.transpose)
-  end
-
-  def self.look_at(look_from, look_at, up)
-    matrix = Matrix4.new
-    # dir = (look_from - look_at).normalize
-    dir = (look_at - look_from).normalize
-    left = up.normalize.cross(dir).normalize
-    new_up = dir.cross(left)
-
-    matrix = Matrix4.new(
-      left.x, new_up.x, dir.x, look_from.x,
-      left.y, new_up.y, dir.y, look_from.y,
-      left.z, new_up.z, dir.z, look_from.z,
-      0.0, 0.0, 0.0, 1.0
-    )
-
-    Transformation.new(matrix, matrix.invert)
-  end
-
-  def self.orthographic(z_near : Float64, z_far : Float64)
-    self.scaling(Vector.new(1.0, 1.0, 1.0 / (z_far - z_near))) *
-      self.translation(Vector.new(0.0, 0.0, -z_near))
-  end
-
-  def self.perspective(fov : Float64, n : Float64, f : Float64)
-    result = Matrix4.new(
-      1.0, 0.0, 0.0, 0.0,
-      0.0, 1.0, 0.0, 0.0,
-      0.0, 0.0, f/(f-n), -(f*n)/(f-n),
-      0.0, 0.0, 1.0, 0.0
-    )
-
-    invTanAng = 1.0 / Math.tan(fov * RADIANTS / 2.0)
-    self.scaling(Vector.new(invTanAng, invTanAng, 1.0)) * Transformation.new(result)
-  end
-end
+# AABB.new(
+#   a_1.min(a_2) + b_1.min(b_2) + c_1.min(c_2) + rest,
+#   a_1.max(a_2) + b_1.max(b_2) + c_1.max(c_2) + rest
+# )
+# end
