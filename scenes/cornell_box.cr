@@ -56,12 +56,12 @@ light_object = XZRect.new(Point.new(213.0, 554.0, 227.0),
 light_object.flip!
 
 light_light = AreaLight.new(light_object, Color.new(15.0)).as(Light)
-light_hitable = LightHitable.new(light_object, light_light)
+light_object.area_light = light_light
 
 width, height = {400, 400}
 
 scene = Scene.new(
-  [left, right, bottom, top, back, sphere, cube2, light_hitable].map(&.as(Hitable)),
+  [left, right, bottom, top, back, sphere, cube2, light_object].map(&.as(Hitable)),
   # [left, right, bottom, top, back, light_hitable].map(&.as(Hitable)),
   [light_light],
   ConstantBackground.new(Color.new(0.0))
