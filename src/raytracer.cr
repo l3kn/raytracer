@@ -56,37 +56,37 @@ abstract class Raytracer
   end
 
   # TODO: remove point & normal params
-  def uniform_sample_one_light(hit, point, normal, wo, bsdf, background = true)
+  def uniform_sample_one_light(hit, wo, background = true)
     if background
       index = rand(0..@scene.lights.size)
       if index == 0
-        estimate_background(hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+        estimate_background(hit, wo, BxDFType::All & ~BxDFType::Specular)
       else
-        estimate_direct(@scene.lights[index - 1], hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+        estimate_direct(@scene.lights[index - 1], hit, wo, BxDFType::All & ~BxDFType::Specular)
       end
     else
-      estimate_direct(@scene.lights.sample, hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+      estimate_direct(@scene.lights.sample, hit, wo, BxDFType::All & ~BxDFType::Specular)
     end
   end
 
-  def uniform_sample_all_lights(hit, point, normal, wo, bsdf, background = true)
+  def uniform_sample_all_lights(hit, wo, background = true)
     color = Color::BLACK
 
     @scene.lights.each do |light|
-      color += estimate_direct(light, hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+      color += estimate_direct(light, hit, wo, BxDFType::All & ~BxDFType::Specular)
     end
 
     if background
-      color += estimate_background(hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+      color += estimate_background(hit, wo, BxDFType::All & ~BxDFType::Specular)
       color / (@scene.lights.size + 1.0)
     else
       color / @scene.lights.size.to_f
     end
   end
 
-  def estimate_background(hit, point, normal, wo, bsdf, flags)
+  def estimate_background(hit, wo, flags)
     ld = Color::BLACK
-    sample = bsdf.sample_f(hit, wo, flags)
+    sample = hit.material.sample_f(hit, wo, flags)
 
     if sample
       f, wi, bsdf_pdf, sampled_type = sample
@@ -97,74 +97,54 @@ abstract class Raytracer
         weight = power_heuristic(1, light_pdf, 1, bsdf_pdf)
       end
 
-      ray = Ray.new(point, wi)
+      ray = Ray.new(hit.point, wi)
       unless @scene.fast_hit(ray)
         li = @scene.background.get(ray)
-        ld += f * li * wi.dot(normal).abs * weight / bsdf_pdf
+        ld += f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf
       end
     end
     ld
   end
 
-  def estimate_direct(light, hit, point, normal, wo, bsdf, flags)
+  def estimate_direct(light, hit, wo, flags)
     ld = Color::BLACK
 
     # Sample light w/ multiple importance sampling
-    wi, li, visibility, light_pdf = light.sample_l(normal, scene, point)
-    pp wi, li, visibility, light_pdf
+    wi, li, visibility, light_pdf = light.sample_l(hit.normal, scene, hit.point)
 
-    unless light_pdf == 0.0 # TODO: || li.black?
-      f = bsdf.f(hit, wo, wi, flags)
-      pp f
+    unless light_pdf == 0.0 || li.black?
+      f = hit.material.f(hit, wo, wi, flags)
       if visibility.unoccluded?(@scene)# && f > EPSILON
-        if light.is_delta_light?
-          ld += f * li * (wi.dot(normal).abs / light_pdf)
+        if light.delta_light?
+          ld += f * li * (wi.dot(hit.normal).abs / light_pdf)
         else
-          bsdf_pdf = bsdf.pdf(normal, wo, wi, flags)
-          pp bsdf_pdf
-          pp light_pdf
+          bsdf_pdf = hit.material.pdf(hit.normal, wo, wi, flags)
           weight = power_heuristic(1, light_pdf, 1, bsdf_pdf)
-          pp weight
-          ld += f * li * (wi.dot(normal).abs * weight / light_pdf)
+          ld += f * li * (wi.dot(hit.normal).abs * weight / light_pdf)
         end
       end
     end
 
     # Sample BSDF w/ multiple importance sampling
-    unless light.is_delta_light?
-      sample = bsdf.sample_f(hit, wo, flags)
+    unless light.delta_light?
+      sample = hit.material.sample_f(hit, wo, flags)
 
       if sample
         f, wi, bsdf_pdf, sampled_type = sample
         weight = 1.0
         unless sampled_type & BxDFType::Specular
-          light_pdf = light.pdf(point, wi)
+          light_pdf = light.pdf(hit.point, wi)
           return ld if light_pdf == 0.0
           weight = power_heuristic(1, bsdf_pdf, 1, light_pdf)
         end
 
         # Add weight contribution from BSDF sampling
-        li = Color::BLACK
-        ray = Ray.new(point, wi)
-        pp ray
+        ray = Ray.new(hit.point, wi)
         hit = @scene.hit(ray)
 
-        if hit
-          pp hit.object
-          pp hit.object.area_light
-          pp light
-          if hit.object.area_light == light
-            li = hit.material.emitted(hit, -wi)
-          end
-        end
-
-        pp light_pdf
-        pp bsdf_pdf
-        pp weight
-        pp li
-
-        unless li.black?
-          ld += f * li * wi.dot(normal).abs * weight / bsdf_pdf
+        if hit && hit.object.area_light == light
+          li = hit.material.emitted(hit, -wi)
+          ld += f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf unless li.black?
         end
       end
     end
@@ -279,8 +259,7 @@ class BaseRaytracer < Raytracer
   end
 
   def color(ray : Ray, hit : HitRecord, recursion_depth : Int32) : Color
-    p hit.t
-    Color.new(hit.t / 2000.0)
+    Color::BLACK
   end
 end
 
@@ -365,7 +344,7 @@ class WhittedRaytracer < BaseRaytracer
 end
 
 class DirectLightingRaytracer < BaseRaytracer
-  def initialize(width, height, camera, samples, scene,
+  def initialize(width, height, camera, samples, scene, @sample_background = true,
                  @strategy = :sample_one, @light_samples = 1)
     super(width, height, camera, samples, scene)
   end
@@ -386,11 +365,11 @@ class DirectLightingRaytracer < BaseRaytracer
     case @strategy
     when :sample_all
       @light_samples.times do
-        color += uniform_sample_all_lights(hit, point, normal, wo, bsdf) / @light_samples.to_f
+        color += uniform_sample_all_lights(hit, wo, @sample_background) / @light_samples.to_f
       end
     when :sample_one
       @light_samples.times do
-        color += uniform_sample_one_light(hit, point, normal, wo, bsdf) / @light_samples.to_f
+        color += uniform_sample_one_light(hit, wo, @sample_background) / @light_samples.to_f
       end
     else
       raise "Unknown strategy for direct lighting integrator: #{@strategy}"
@@ -403,7 +382,7 @@ class DirectLightingRaytracer < BaseRaytracer
 end
 
 class PathRaytracer < BaseRaytracer
-  def initialize(width, height, camera, samples, scene)
+  def initialize(width, height, camera, samples, scene, @sample_background = true)
     super(width, height, camera, samples, scene)
   end
 
@@ -423,15 +402,10 @@ class PathRaytracer < BaseRaytracer
       wo = -ray.direction
 
       # Possibly add emitted light
-      if bounces == 0 || specular_bounce
-        l += path_throughput * bsdf.emitted(hit, wo)
-      end
+      l += path_throughput * bsdf.emitted(hit, wo) if bounces == 0 || specular_bounce
 
       # sample illumination from lights
-      # DEBUGGING
-      # TODO: background is set to false here to see if the result will look more
-      # like the reference image
-      l += path_throughput * uniform_sample_one_light(hit, p, n, wo, bsdf, false)
+      l += path_throughput * uniform_sample_one_light(hit, p, n, wo, bsdf, @sample_background)
 
       # sample bsdf to get new path dir
       sample = bsdf.sample_f(hit, wo, BxDFType::All)
@@ -461,10 +435,7 @@ class PathRaytracer < BaseRaytracer
       # find next vertex of path
       hit = @scene.hit(ray)
       if hit.nil?
-        if specular_bounce
-          # TODO: This is a little bit different in PBRT
-          l += path_throughput * @scene.background.get(ray)
-        end
+        l += path_throughput * @scene.background.get(ray) if specular_bounce
         break
       end
 

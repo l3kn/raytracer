@@ -55,9 +55,6 @@ class VisibilityTester
 
   def self.from_segment(p1 : Point, p2 : Point)
     dir = p2 - p1
-
-    # TODO: Will this work for scaled lights?
-    # (are those even allowed?)
     new(Ray.new(p1, dir.normalize, EPSILON, dir.length - EPSILON))
   end
 
@@ -66,13 +63,11 @@ class VisibilityTester
   end
 end
 
-class Light
-  # TODO: Make this class abstract
-  # NOTE: The matrix in @transformation is from world to object space
+abstract class Light
+  # TODO: Throw an error if the transformation alters the scale
+  # bc/ this would cause errors
   # def initialize(@transformation : Transformation)
   def initialize
-    # TODO: Throw an error if the transformation alters the scale
-    # bc/ this would cause errors
   end
 
   # Take a point in the scene and return:
@@ -89,19 +84,7 @@ class Light
     0.0
   end
 
-  # TODO: Is this needed anymore?
-  # Provide a way for lights w/o any geometry
-  # (infinite area light)
-  # to contribute radiance
-  def le(ray : Ray) : Color
-    Color::BLACK
-  end
-
-  def power : Color
-    Color::BLACK
-  end
-
-  def is_delta_light?
+  def delta_light?
     false
   end
 end
@@ -121,11 +104,7 @@ class PointLight < Light
     {wi, @intensity / dist.squared_length, tester, 1.0}
   end
 
-  def power
-    @intensity * 4.0 * Math::PI
-  end
-
-  def is_delta_light?
+  def delta_light?
     true
   end
 end
@@ -141,7 +120,6 @@ class AreaLight < Light
     wi = dist.normalize
 
     tester = VisibilityTester.from_segment(point, point_s)
-    # {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
     {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
   end
 
@@ -149,11 +127,7 @@ class AreaLight < Light
     @object.pdf(point, wi)
   end
 
-  def power
-    @intensity * @object.area * Math::PI
-  end
-
-  def is_delta_light?
+  def delta_light?
     false
   end
 end
