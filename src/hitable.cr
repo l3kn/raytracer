@@ -8,6 +8,9 @@ record HitRecord,
   v : Float64
 
 abstract class Hitable
+  property area_light : Light?
+  @area_light = nil
+
   abstract def hit(ray : Ray) : HitRecord?
 
   def hit(ray : ExtendedRay) : HitRecord?
@@ -16,10 +19,6 @@ abstract class Hitable
 
   def pdf_value(origin, direction)
     raise "Error, this feature is not supported yet"
-  end
-
-  def area_light
-    nil
   end
 
   def sample : {Point, Normal}
