@@ -1,5 +1,3 @@
-require "./matrix4"
-
 class LightHitable < FiniteHitable
   def initialize(@hitable : FiniteHitable, @light : Light)
     @bounding_box = @hitable.bounding_box
