@@ -15,6 +15,7 @@ end
 
 abstract class BxDF
   getter type : Int32
+  @type = 0
 
   def matches_flags(other : Int32)
     (@type & other) == @type
