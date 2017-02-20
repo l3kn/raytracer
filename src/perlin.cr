@@ -1,5 +1,3 @@
-require "./helper"
-
 # Source: http://flafla2.github.io/2014/08/09/perlinnoise.html
 
 class Perlin

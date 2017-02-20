@@ -5,6 +5,8 @@ struct Vector < LA::AVector3
   define_dot(other_class: Normal)
   define_vector_op(:*)
   define_vector_op(:/)
+  define_vector_swizzling(2)
+  define_vector_swizzling(3, signed: true)
 
   def to_normal
     inv = 1.0 / length
@@ -18,9 +20,6 @@ struct Vector < LA::AVector3
   def to_point
     Point.new(@x, @y, @z)
   end
-
-  define_vector_swizzling(2)
-  define_vector_swizzling(3, signed: true)
 
   def to_tuple
     {@x, @y, @z}

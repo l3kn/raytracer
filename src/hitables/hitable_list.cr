@@ -1,17 +1,9 @@
-require "../hitable"
-require "../aabb"
-
-class HitableList < Hitable
-  property objects : Array(Hitable)
-
-  def initialize(@objects)
-  end
-
+module HitableListMethods
   def hit(ray)
     result = nil
     closest_so_far = ray.t_max
 
-    objects.each do |object|
+    @objects.each do |object|
       rec = object.hit(Ray.new(ray.origin, ray.direction, ray.t_min, closest_so_far))
       if rec
         closest_so_far = rec.t
@@ -22,28 +14,43 @@ class HitableList < Hitable
     result
   end
 
-  def pdf_value(origin, direction)
-    weight = 1.0 / @objects.size
-    sum = 0.0
-
-    @objects.each do |obj|
-      sum += weight * obj.pdf_value(origin, direction)
+  def area
+    res = 0.0
+    @objects.each do |object|
+      res += object.area
     end
-
-    sum
+    res
   end
 
-  def random(origin)
-    index = (@objects.size * pos_random).to_i
-    @objects[index].random(origin)
+  def pdf(point, wi)
+    res = 0.0
+    @objects.each do |obj|
+      res += obj.pdf(point, wi)
+    end
+    res / @objects.size
+  end
+
+  def sample
+    @objects.sample.sample
+  end
+
+  def sample(origin)
+    @objects.sample.sample(origin)
+  end
+end
+
+class HitableList < Hitable
+  include HitableListMethods
+
+  def initialize(@objects : Array(Hitable))
   end
 end
 
 # TODO: find a way to do this with less code duplication
 class FiniteHitableList < FiniteHitable
-  property objects
+  include HitableListMethods
 
-  def initialize(list)
+  def initialize(list : Array(FiniteHitable))
     @objects = Array(FiniteHitable).new
     @bounding_box = list[0].bounding_box
 
@@ -51,36 +58,5 @@ class FiniteHitableList < FiniteHitable
       @objects << object
       @bounding_box = @bounding_box.merge(object.bounding_box)
     end
-  end
-
-  def hit(ray)
-    result = nil
-    closest_so_far = ray.t_max
-
-    objects.each do |object|
-      record = object.hit(Ray.new(ray.origin, ray.direction, ray.t_min, closest_so_far))
-      if record
-        closest_so_far = record.t
-        result = record
-      end
-    end
-
-    result
-  end
-
-  def pdf_value(origin, direction)
-    weight = 1.0 / @objects.size
-    sum = 0.0
-
-    @objects.each do |obj|
-      sum += weight * obj.pdf_value(origin, direction)
-    end
-
-    sum
-  end
-
-  def random(origin)
-    index = (@objects.size * pos_random).to_i
-    @objects[index].random(origin)
   end
 end

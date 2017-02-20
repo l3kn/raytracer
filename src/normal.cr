@@ -1,4 +1,8 @@
 struct Normal < LA::AVector3
+  define_dot(other_class: Vector)
+  define_vector_op(:+, other_class: Normal, result_class: LA::Vector3)
+  define_vector_op(:-, other_class: Normal, result_class: LA::Vector3)
+
   def initialize(@x : Float64, @y : Float64, @z : Float64)
     {% if !flag?(:release) %}
       if (self.dot(self) - 1.0).abs > EPSILON
@@ -10,11 +14,6 @@ struct Normal < LA::AVector3
   def *(other : Float64)
     Vector.new(@x * other, @y * other, @z * other)
   end
-
-  define_vector_op(:+, other_class: Normal, result_class: LA::Vector3)
-  define_vector_op(:-, other_class: Normal, result_class: LA::Vector3)
-
-  define_dot(other_class: Vector)
 
   def flip
     Normal.new(-@x, -@y, -@z)

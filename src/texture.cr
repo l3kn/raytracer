@@ -10,9 +10,6 @@ abstract class Texture1D
 end
 
 class NormalTexture < Texture
-  def initialize
-  end
-
   def value(hit)
     Color.new(
       (1.0 + hit.normal.x) * 0.5,

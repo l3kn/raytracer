@@ -1,9 +1,11 @@
-require "./vector"
-
 struct Point < LA::AVector3
   define_vector_op(:+, other_class: Vector, result_class: Point)
   define_vector_op(:-, other_class: Vector, result_class: Point)
   define_vector_op(:-, other_class: Point, result_class: Vector)
+  define_dot(other_class: Vector)
+  define_dot(other_class: Normal)
+  define_vector_swizzling(3, target: Point, signed: true)
+  define_vector_swizzling(2, target: Tuple, signed: true)
 
   def initialize(value)
     @x = @y = @z = value
@@ -25,18 +27,13 @@ struct Point < LA::AVector3
     Point.new(min(@x, other.x), min(@y, other.y), min(@z, other.z))
   end
 
-  define_dot(other_class: Vector)
-  define_dot(other_class: Normal)
-
   # TODO: the methods below are only needed for some DE Primitives
   def abs
     Point.new(@x.abs, @y.abs, @z.abs)
   end
 
-  define_vector_swizzling(3, target: Point, signed: true)
-  define_vector_swizzling(2, target: Tuple, signed: true)
-
   def to_tuple; {@x, @y, @z}; end
+  def to_vector; Vector.new(@x, @y, @z); end
 
   def [](axis)
     {@x, @y, @z}[axis]

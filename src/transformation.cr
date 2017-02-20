@@ -8,6 +8,7 @@ abstract class Transformation
   abstract def object_to_world(point : Normal) : Normal
   abstract def object_to_world(point : Vector) : Vector
   abstract def object_to_world(point : Ray) : Ray
+
   abstract def object_to_world(point : AABB) : AABB
 end
 

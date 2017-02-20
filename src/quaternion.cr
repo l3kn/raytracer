@@ -1,4 +1,6 @@
 struct Quaternion < LA::AQuaternion
+  define_vector_swizzling(3, target: Vector, signed: true)
+
   def initialize(@x, @y, @z, @w)
   end
 
@@ -22,6 +24,4 @@ struct Quaternion < LA::AQuaternion
     inv = 1.0 / squared_length
     Quaternion.new(@x * inv, -@y * inv, -@z * inv, -@w * inv)
   end
-
-  define_vector_swizzling(3, target: Vector, signed: true)
 end

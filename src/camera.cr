@@ -26,8 +26,7 @@ class EnvironmentCamera < Camera
     theta = Math::PI * t / @size_y
     phi = 2.0 * Math::PI * s / @size_x
 
-    # NOTE: This direction is already normalized,
-    # bc/ sin^2 + cos^2 = 1
+    # NOTE: This direction is already normalized bc/ sin^2 + cos^2 = 1
     direction = Vector.new(Math.sin(theta) * Math.cos(phi),
                            Math.cos(theta),
                            Math.sin(theta) * Math.sin(phi))
@@ -37,10 +36,6 @@ class EnvironmentCamera < Camera
 
   def corresponding(point : Point)
     c = @onb.world_to_local(point).normalize
-
-    x = c.x
-    y = c.y
-    z = c.z
 
     theta = Math.acos(c.y)
     phi = Math.acos(c.x / Math.sin(theta))

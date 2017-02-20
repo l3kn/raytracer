@@ -37,24 +37,16 @@ class Sphere < FiniteHitable
     return HitRecord.new(t_hit, point, normal, @material, self, u, v)
   end
 
-  # TODO: Delete this once the new pdf methods are in place
-  # def pdf_value(origin, direction)
-  #   hit = hit(Ray.new(origin, direction))
+  def area
+    4.0 * Math::PI
+  end
 
-  #   if hit
-  #     cos_theta_max = Math.sqrt(1.0 - @radius*@radius / (@center - origin).squared_length)
-  #     solid_angle = 2.0*Math::PI*(1.0 - cos_theta_max)
-  #     1.0 / solid_angle
-  #   else
-  #     0.0
-  #   end
-  # end
+  def sample : {Point, Normal}
+    point_s = Point.new(rand, rand, rand).normalize
+    { point_s, Normal.new(point_s.x, point_s.y, point_s.z) }
+  end
 
-  # def random(origin : Point)
-  #   direction = @center - origin
-  #   distance_squared = direction.squared_length
-
-  #   uvw = ONB.from_w(direction)
-  #   uvw.local(random_to_sphere(@radius, distance_squared))
+  # TODO: implement some efficient version of this
+  # def sample(point) : {Point, Normal}
   # end
 end

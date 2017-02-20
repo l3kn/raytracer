@@ -1,5 +1,3 @@
-require "../../stumpy_utils/src/stumpy_utils"
-
 class Sample
   getter n : Int32
   getter mean : Color

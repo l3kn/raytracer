@@ -1,6 +1,7 @@
 EPSILON = 0.0001
 
 require "../../linalg/src/linalg"
+require "../../stumpy_utils/src/stumpy_utils"
 
 require "stumpy_png"
 require "./vector"
@@ -10,6 +11,9 @@ require "./point"
 require "./quaternion"
 require "./ray"
 require "./hitable"
+# TODO: This needs to be required first, bc/ Cuboid < FiniteHitableList
+#       maybe create a separate folder for aggregate hitables
+require "./hitables/hitable_list"
 require "./hitables/*"
 require "./camera"
 require "./helper"
@@ -24,8 +28,6 @@ require "./onb"
 require "./scene"
 require "./sample"
 require "./wireframe"
-
-require "../../stumpy_utils/src/stumpy_utils"
 
 abstract class Raytracer
   property width : Int32

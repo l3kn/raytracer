@@ -1,17 +1,3 @@
-class VisibilityTester
-  def initialize(@ray = Ray.new(Point.zero, Vector.x))
-  end
-
-  def self.from_segment(p1 : Point, p2 : Point)
-    dir = p2 - p1
-    new(Ray.new(p1, dir.normalize, EPSILON, dir.length - EPSILON))
-  end
-
-  def unoccluded?(scene : Scene)
-    !scene.fast_hit(@ray)
-  end
-end
-
 abstract class Light
   # TODO: Throw an error if the transformation alters the scale
   # bc/ this would cause errors
@@ -24,7 +10,6 @@ abstract class Light
   #  * The color emitted in this direction
   #  * A VisibilityTester to check if the path to the light is unoccluded
   #  * The pdf for that vector / ray
-  # TODO: return nil if there is no sample
   def sample_l(normal : Normal, scene : Scene, point : Point) : {Vector, Color, VisibilityTester, Float64}
     {Vector.zero, Color::BLACK, VisibilityTester.new, 0.0}
   end

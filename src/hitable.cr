@@ -11,14 +11,11 @@ abstract class Hitable
   property area_light : Light?
   @area_light = nil
 
+  # TODO: Should area be a getter instead of a function?
   abstract def hit(ray : Ray) : HitRecord?
 
   def hit(ray : ExtendedRay) : HitRecord?
     hit(Ray.new(ray.origin, ray.direction, ray.t_min, ray.t_max))
-  end
-
-  def pdf_value(origin, direction)
-    raise "Error, this feature is not supported yet"
   end
 
   def sample : {Point, Normal}
@@ -35,8 +32,7 @@ abstract class Hitable
   end
 
   # Probability that a ray(point, wi)
-  # hits the light
-  # (used for area lights)
+  # hits the object
   def pdf(point : Point, wi : Vector) : Float64
     hit = hit(Ray.new(point, wi))
     if hit && hit.normal.dot(wi) < 0.0
@@ -52,6 +48,7 @@ abstract class Hitable
     # end
   end
 
+  # TODO: This only makes sense for finite objects
   # Area of this object
   def area : Float64
     raise "Error, this feature is not supported yet"
