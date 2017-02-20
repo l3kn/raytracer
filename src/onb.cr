@@ -1,5 +1,3 @@
-require "./vector"
-
 struct ONB
   getter u : Vector, v : Vector, w : Vector
 
