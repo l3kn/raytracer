@@ -13,11 +13,8 @@ module BxDFType
   All = AllReflection | AllTransmission
 end
 
-class BxDF
+abstract class BxDF
   getter type : Int32
-
-  def initialize(@type)
-  end
 
   def matches_flags(other : Int32)
     (@type & other) == @type
@@ -81,10 +78,7 @@ class BRDFtoBTDFAdapter < BxDF
   end
 
   def pdf(wo : Vector, wi : Vector)
-    @brdf.pdf(
-      wo,
-      Vector.new(wi.x, wi.y, -wi.z)
-    )
+    @brdf.pdf(wo, Vector.new(wi.x, wi.y, -wi.z))
   end
 end
 

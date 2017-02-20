@@ -2,7 +2,7 @@ require "../fresnel"
 
 class SpecularReflection < BxDF
   def initialize(@color : Color, @fresnel : Fresnel)
-    super(BxDFType::Reflection | BxDFType::Specular)
+    @type = BxDFType::Reflection | BxDFType::Specular
   end
 
   def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)

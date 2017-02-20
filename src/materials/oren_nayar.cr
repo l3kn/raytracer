@@ -3,7 +3,7 @@ class OrenNayarReflection < BxDF
   @b : Float64
 
   def initialize(@color : Color, sig : Float64)
-    super(BxDFType::Reflection | BxDFType::Diffuse)
+    @type = BxDFType::Reflection | BxDFType::Diffuse
     sigma = radiants(sig)
     sigma2 = sigma * sigma
 
