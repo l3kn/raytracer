@@ -22,7 +22,7 @@ end
 
 class SpecularTransmission < BxDF
   def initialize(@color : Color, @eta_i : Float64, @eta_t : Float64)
-    super(BxDFType::Transmission | BxDFType::Specular)
+    @type = BxDFType::Transmission | BxDFType::Specular
     @fresnel = FresnelDielectric.new(@eta_i, @eta_t)
   end
 
