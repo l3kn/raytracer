@@ -2,7 +2,8 @@ require "../src/raytracer"
 require "../src/backgrounds/*"
 require "../src/obj"
 
-mat = Lambertian.new(Color.from_hex("#FFD700"))
+# mat = MatteMaterial.new(Color.from_hex("#FFD700"))
+mat = OrenNayarMaterial.new(Color.from_hex("#FFD700"), 20.0)
 hitables = OBJ.parse("models/teapot.obj", mat, interpolated: true)
 
 width, height = {400, 400}
@@ -14,11 +15,23 @@ camera = PerspectiveCamera.new(
   dimensions: {width, height}
 )
 
-raytracer = SimpleRaytracer.new(width, height,
-  hitables: BVHNode.new(hitables),
+scene = Scene.new(
+  hitables.map(&.as(Hitable)),
+  [
+    PointLight.new(Point.new(-1.5, 1.5, -1.0),
+                   Color.new(10.0)).as(Light),
+  ],
+  ConstantBackground.new(Color::BLACK)
+  # SkyBackground.new
+)
+
+raytracer = WhittedRaytracer.new(
+  width, height,
+  scene: scene,
   camera: camera,
-  samples: 50,
-  # background: CubeMap.new("cube_maps/Yokohama"))
-  background: SkyBackground.new)
+  samples: 2
+)
+
+raytracer.recursion_depth = 1
 
 raytracer.render("teapot1.png")

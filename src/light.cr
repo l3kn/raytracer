@@ -1,11 +1,63 @@
 require "./matrix4"
 
+class LightHitable < FiniteHitable
+  def initialize(@hitable : FiniteHitable, @light : Light)
+    @bounding_box = @hitable.bounding_box
+  end
+
+  def hit(ray)
+    hit = @hitable.hit(ray)
+    return nil if hit.nil?
+
+    HitRecord.new(
+      hit.t,
+      hit.point,
+      hit.normal,
+      hit.material,
+      self,
+      hit.u, hit.v
+    )
+  end
+
+  def pdf_value(origin, direction)
+    @hitable.pdf_value(origin, direction)
+  end
+
+  def sample
+    @hitable.sample
+  end
+
+  def sample(origin)
+    @hitable.sample(origin)
+  end
+
+  def pdf(point : Point) : Float64
+    @hitable.pdf(point)
+  end
+
+  def pdf(point : Point, wi : Vector) : Float64
+    @hitable.pdf(point, wi)
+  end
+
+  # Area of this object
+  def area : Float64
+    @hitable.area
+  end
+
+  def area_light
+    @light
+  end
+end
+
 class VisibilityTester
   def initialize(@ray = Ray.new(Point.zero, Vector.x))
   end
 
   def self.from_segment(p1 : Point, p2 : Point)
     dir = p2 - p1
+
+    # TODO: Will this work for scaled lights?
+    # (are those even allowed?)
     new(Ray.new(p1, dir.normalize, EPSILON, dir.length - EPSILON))
   end
 
@@ -23,8 +75,26 @@ class Light
     # bc/ this would cause errors
   end
 
-  def sample_l(point : Point) : {Vector, Color, VisibilityTester, Float64}
+  # Take a point in the scene and return:
+  #  * A vector from this point to the light
+  #  * The color emitted in this direction
+  #  * A VisibilityTester to check if the path to the light is unoccluded
+  #  * The pdf for that vector / ray
+  # TODO: return nil if there is no sample
+  def sample_l(normal : Normal, scene : Scene, point : Point) : {Vector, Color, VisibilityTester, Float64}
     {Vector.zero, Color::BLACK, VisibilityTester.new, 0.0}
+  end
+
+  def pdf(point : Point, wi : Vector)
+    0.0
+  end
+
+  # TODO: Is this needed anymore?
+  # Provide a way for lights w/o any geometry
+  # (infinite area light)
+  # to contribute radiance
+  def le(ray : Ray) : Color
+    Color::BLACK
   end
 
   def power : Color
@@ -34,10 +104,6 @@ class Light
   def is_delta_light?
     false
   end
-
-  def hit(ray) : HitRecord?
-    nil
-  end
 end
 
 class PointLight < Light
@@ -46,9 +112,9 @@ class PointLight < Light
   def initialize(@position : Point, @intensity : Color)
   end
 
-  def sample_l(point : Point) : {Vector, Color, VisibilityTester, Float64}
+  def sample_l(normal : Normal, scene : Scene, point : Point) : {Vector, Color, VisibilityTester, Float64}
     dist = (@position - point)
-    wi = dist.to_normal.to_vector
+    wi = dist.normalize
 
     tester = VisibilityTester.from_segment(point, @position)
 
@@ -64,50 +130,11 @@ class PointLight < Light
   end
 end
 
-class SpotLight < Light
-  getter cos_total_width : Float64
-  getter cos_falloff_start : Float64
-
-  def initialize(@position : Point, @intensity : Color, @width : Float64, @fall : Float64)
-    @cos_total_width = Math.cos(@width)
-    @cos_falloff_start = Math.cos(@fall)
-  end
-
-  def sample_l(point : Point) : {Vector, Color, VisibilityTester, Float64}
-    dist = (@position - point)
-    wi = dist.to_normal.to_vector
-    tester = VisibilityTester.from_segment(point, @position)
-
-    int = @intensity * falloff(-wi) / dist.squared_length
-    {wi, int, tester, 1.0}
-  end
-  
-  def falloff(w : Vector) : Float64
-    # TODO: Actually do some transformations
-    # TODO: This should be w.z
-    cos_theta = w.y.abs
-
-    return 0.0 if (cos_theta < cos_total_width)
-    return 1.0 if (cos_theta > cos_falloff_start)
-
-    delta = (cos_theta - cos_total_width) / (cos_falloff_start - cos_total_width)
-    delta ** 4
-  end
-
-  def power
-    @intensity * 2.0 * Math::PI * (1.0 - 0.5 * (cos_falloff_start + cos_total_width))
-  end
-
-  def is_delta_light?
-    true
-  end
-end
-
 class AreaLight < Light
   def initialize(@object : FiniteHitable, @intensity : Color)
   end
 
-  def sample_l(point : Point) : {Vector, Color, VisibilityTester, Float64}
+  def sample_l(normal : Normal, scene : Scene, point : Point) : {Vector, Color, VisibilityTester, Float64}
     point_s, normal_s = @object.sample(point)
 
     dist = point_s - point
@@ -116,6 +143,10 @@ class AreaLight < Light
     tester = VisibilityTester.from_segment(point, point_s)
     # {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
     {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
+  end
+
+  def pdf(point, wi)
+    @object.pdf(point, wi)
   end
 
   def power

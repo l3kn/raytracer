@@ -64,3 +64,23 @@ class Visualisation
     StumpyPNG.write(canvas, filename)
   end
 end
+
+class CameraCanvas
+  getter canvas : StumpyPNG::Canvas
+  getter camera : Camera
+
+  def initialize(@camera, @canvas)
+  end
+
+  def initialize(@camera, width, height)
+    @canvas = StumpyPNG::Canvas.new(width, height, StumpyPNG::RGBA.from_hex("#000000"))
+  end
+
+  def line(from : Point, to : Point, color = StumpyPNG::RGBA.from_hex("#00ff00"))
+    x0, y0 = @camera.corresponding(from)
+    x1, y1 = @camera.corresponding(to)
+    puts ({x0, y0})
+    puts ({x1, y1})
+    StumpyUtils.line(canvas, x0, y0, x1, y1, color)
+  end
+end

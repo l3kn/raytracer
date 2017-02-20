@@ -3,6 +3,8 @@ require "./helper"
 struct Vector < LA::AVector3
   define_class_methods
   define_dot(other_class: Normal)
+  define_vector_op(:*)
+  define_vector_op(:/)
 
   def to_normal
     inv = 1.0 / length

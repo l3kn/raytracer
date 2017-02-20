@@ -1,5 +1,8 @@
 require "./vector"
 
+macro pp(*args)
+end
+
 RADIANTS = (Math::PI / 180)
 INV_PI = 1.0 / Math::PI
 

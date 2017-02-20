@@ -37,6 +37,6 @@ struct Color
   end
 
   def black?
-    (@r < EPSILON) && (@g < EPSILON) && (@b < EPSILON)
+    @r == 0.0 && @g == 0.0 && @b == 0.0
   end
 end

@@ -1,5 +1,7 @@
 EPSILON = 0.0001
 
+require "../../linalg/src/linalg"
+
 require "stumpy_png"
 require "./vector"
 require "./normal"
@@ -21,6 +23,7 @@ require "./pdf"
 require "./light"
 require "./scene"
 require "./sample"
+require "./wireframe"
 
 require "../../stumpy_utils/src/stumpy_utils"
 
@@ -35,6 +38,139 @@ abstract class Raytracer
   end
 
   abstract def render(filename : String)
+
+  def specular(ray, hit, bsdf, recursion_depth, type)
+    wo = -ray.direction
+    point = hit.point
+    normal = hit.normal
+
+    sample = bsdf.sample_f(hit, wo, BxDFType::Specular | type)
+    return Color::BLACK if sample.nil?
+
+    color, wi, pdf, sampled_type = sample
+    return Color::BLACK if wi.dot(normal).abs == 0.0
+
+    new_ray = Ray.new(point, wi)
+    li = cast_ray(new_ray, recursion_depth - 1)
+    li * color * wi.dot(normal).abs / pdf
+  end
+
+  # TODO: remove point & normal params
+  def uniform_sample_one_light(hit, point, normal, wo, bsdf, background = true)
+    if background
+      index = rand(0..@scene.lights.size)
+      if index == 0
+        estimate_background(hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+      else
+        estimate_direct(@scene.lights[index - 1], hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+      end
+    else
+      estimate_direct(@scene.lights.sample, hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+    end
+  end
+
+  def uniform_sample_all_lights(hit, point, normal, wo, bsdf, background = true)
+    color = Color::BLACK
+
+    @scene.lights.each do |light|
+      color += estimate_direct(light, hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+    end
+
+    if background
+      color += estimate_background(hit, point, normal, wo, bsdf, BxDFType::All & ~BxDFType::Specular)
+      color / (@scene.lights.size + 1.0)
+    else
+      color / @scene.lights.size.to_f
+    end
+  end
+
+  def estimate_background(hit, point, normal, wo, bsdf, flags)
+    ld = Color::BLACK
+    sample = bsdf.sample_f(hit, wo, flags)
+
+    if sample
+      f, wi, bsdf_pdf, sampled_type = sample
+      weight = 1.0
+      unless sampled_type & BxDFType::Specular
+        light_pdf = 1.0 / Math::PI
+        return ld if light_pdf == 0.0
+        weight = power_heuristic(1, light_pdf, 1, bsdf_pdf)
+      end
+
+      ray = Ray.new(point, wi)
+      unless @scene.fast_hit(ray)
+        li = @scene.background.get(ray)
+        ld += f * li * wi.dot(normal).abs * weight / bsdf_pdf
+      end
+    end
+    ld
+  end
+
+  def estimate_direct(light, hit, point, normal, wo, bsdf, flags)
+    ld = Color::BLACK
+
+    # Sample light w/ multiple importance sampling
+    wi, li, visibility, light_pdf = light.sample_l(normal, scene, point)
+    pp wi, li, visibility, light_pdf
+
+    unless light_pdf == 0.0 # TODO: || li.black?
+      f = bsdf.f(hit, wo, wi, flags)
+      pp f
+      if visibility.unoccluded?(@scene)# && f > EPSILON
+        if light.is_delta_light?
+          ld += f * li * (wi.dot(normal).abs / light_pdf)
+        else
+          bsdf_pdf = bsdf.pdf(normal, wo, wi, flags)
+          pp bsdf_pdf
+          pp light_pdf
+          weight = power_heuristic(1, light_pdf, 1, bsdf_pdf)
+          pp weight
+          ld += f * li * (wi.dot(normal).abs * weight / light_pdf)
+        end
+      end
+    end
+
+    # Sample BSDF w/ multiple importance sampling
+    unless light.is_delta_light?
+      sample = bsdf.sample_f(hit, wo, flags)
+
+      if sample
+        f, wi, bsdf_pdf, sampled_type = sample
+        weight = 1.0
+        unless sampled_type & BxDFType::Specular
+          light_pdf = light.pdf(point, wi)
+          return ld if light_pdf == 0.0
+          weight = power_heuristic(1, bsdf_pdf, 1, light_pdf)
+        end
+
+        # Add weight contribution from BSDF sampling
+        li = Color::BLACK
+        ray = Ray.new(point, wi)
+        pp ray
+        hit = @scene.hit(ray)
+
+        if hit
+          pp hit.object
+          pp hit.object.area_light
+          pp light
+          if hit.object.area_light == light
+            li = hit.material.emitted(hit, -wi)
+          end
+        end
+
+        pp light_pdf
+        pp bsdf_pdf
+        pp weight
+        pp li
+
+        unless li.black?
+          ld += f * li * wi.dot(normal).abs * weight / bsdf_pdf
+        end
+      end
+    end
+
+    ld
+  end
 end
 
 class BaseRaytracer < Raytracer
@@ -56,7 +192,7 @@ class BaseRaytracer < Raytracer
     if mode == :truecolor
       print "\033[48;2;#{r};#{g};#{b}m \033[0m"
     else
-      chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+      chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ".reverse
       gray = 0.3 * r + 0.6 * g + 0.1 * b
       print chars[(gray / 256 * chars.size).to_i]
     end
@@ -78,7 +214,7 @@ class BaseRaytracer < Raytracer
     end
   end
 
-  def render(filename, adaptive = false)
+  def render_to_canvas(filename, adaptive = false)
     canvas = StumpyPNG::Canvas.new(@width, @height)
     vis = Visualisation.new(@width, @height)
     vis.add_layer(:variance)
@@ -95,10 +231,7 @@ class BaseRaytracer < Raytracer
         if adaptive
           sample_pixel(sample, x, y, samples / 2)
           var = sample.variance
-
-          if var.squared_length >= 0.1
-            sample_pixel(sample, x, y, samples * 2)
-          end
+          sample_pixel(sample, x, y, samples * 2) if var.squared_length >= 0.1
         else
           sample_pixel(sample, x, y, samples)
         end
@@ -118,9 +251,7 @@ class BaseRaytracer < Raytracer
 
         canvas[x, y] = rgba
 
-        if (x % pr_x) == 0 && (y % pr_y) == 0
-          print_pixel(rgba, mode: :grayscale)
-        end
+        print_pixel(rgba, mode: :grayscale) if (x % pr_x) == 0 && (y % pr_y) == 0
       end
       print "\n" if (y % pr_y) == 0
       # print "\rTraced line #{y} / #{@height}"
@@ -134,7 +265,12 @@ class BaseRaytracer < Raytracer
     puts "Rays / sec: #{((Ray.count.to_f / time.total_milliseconds) * 1000).round(3)}"
 
     vis.write(:variance, "variance_" + filename)
-    StumpyPNG.write(canvas, filename)
+
+    canvas
+  end
+
+  def render(filename, adaptive = false)
+    StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
   end
 
   def cast_ray(ray, recursion_depth = @recursion_depth)
@@ -143,7 +279,8 @@ class BaseRaytracer < Raytracer
   end
 
   def color(ray : Ray, hit : HitRecord, recursion_depth : Int32) : Color
-    Color::BLACK
+    p hit.t
+    Color.new(hit.t / 2000.0)
   end
 end
 
@@ -158,24 +295,18 @@ class SimpleRaytracer < BaseRaytracer
 
     wo = -ray.direction
 
-
     # TODO: Only emit light to one side
 
     sample = bsdf.sample_f(hit, wo, BxDFType::All)
     return bsdf.emitted if sample.nil?
 
-    color, wi, pdf = sample
+    color, wi, pdf, sampled_type = sample
     return Color::BLACK if wi.dot(normal).abs == 0.0
 
     color += bsdf.emitted
 
     new_ray = Ray.new(point, wi)
-    new_hit = @scene.hit(new_ray)
-    if new_hit
-      li = color(new_ray, new_hit, recursion_depth - 1)
-    else
-      li = @scene.background.get(new_ray)
-    end
+    li = cast_ray(new_ray, recursion_depth - 1)
 
     color * li * wi.dot(normal).abs / pdf
   end
@@ -197,84 +328,149 @@ class WhittedRaytracer < BaseRaytracer
 
     # Sample each light
     @scene.lights.each do |light|
-      wi, li, visibility, pdf = light.sample_l(point)
-      if pdf == 0.0
+      wi, li, visibility, pdf = light.sample_l(normal, scene, point)
+      if pdf == 0.0 || li.black?
         next
       else
         f = bsdf.f(hit, wo, wi, BxDFType::All)
-        if visibility.unoccluded?(@scene)
+        if visibility.unoccluded?(@scene)# && f > EPSILON
           color += f * li * wi.dot(normal).abs / pdf
         end
       end
     end
 
-    # Background lighting
-    background = false
-    if background
-      onb = ONB.from_w(normal)
-      wi = onb.local(random_cosine_direction)
-      foo = Ray.new(point, wi)
+    color += specular(ray, hit, bsdf, recursion_depth, BxDFType::Reflection)
+    color += specular(ray, hit, bsdf, recursion_depth, BxDFType::Transmission)
 
-      unless @scene.fast_hit(foo)
-        f = bsdf.f(hit, wo, wi, BxDFType::All)
-        # TODO: Bad try at calculating a pdf for the infinite background light
-        color += @scene.background.get(foo) * f * Math::PI  # * wi.dot(normal).abs * (2.0 * Math::PI)
+    # Sample the background
+    sample = bsdf.sample_f(hit, wo, BxDFType::All & ~BxDFType::Specular)
+    if sample
+      f, wi, bsdf_pdf, sampled_type = sample
+      weight = 1.0
+      unless sampled_type & BxDFType::Specular
+        light_pdf = 1.0 / Math::PI
+        return color if light_pdf == 0.0
+        weight = power_heuristic(1, light_pdf, 1, bsdf_pdf)
       end
+
+      ray = Ray.new(point, wi)
+      unless @scene.fast_hit(ray)
+        li = @scene.background.get(ray)
+        color += f * li * wi.dot(normal).abs * weight / bsdf_pdf
+      end
+    end
+
+    color
+  end
+end
+
+class DirectLightingRaytracer < BaseRaytracer
+  def initialize(width, height, camera, samples, scene,
+                 @strategy = :sample_one, @light_samples = 1)
+    super(width, height, camera, samples, scene)
+  end
+
+  def color(ray, hit, recursion_depth)
+    color = Color::BLACK
+    return color if recursion_depth <= 0
+
+    # Compute emitted and reflected light at intersection
+    bsdf = hit.material
+    point = hit.point
+    normal = hit.normal
+    wo = -ray.direction
+
+    color += bsdf.emitted(hit, wo)
+
+    # Sample each light + the background
+    case @strategy
+    when :sample_all
+      @light_samples.times do
+        color += uniform_sample_all_lights(hit, point, normal, wo, bsdf) / @light_samples.to_f
+      end
+    when :sample_one
+      @light_samples.times do
+        color += uniform_sample_one_light(hit, point, normal, wo, bsdf) / @light_samples.to_f
+      end
+    else
+      raise "Unknown strategy for direct lighting integrator: #{@strategy}"
     end
 
     color += specular(ray, hit, bsdf, recursion_depth, BxDFType::Reflection)
     color += specular(ray, hit, bsdf, recursion_depth, BxDFType::Transmission)
     color
   end
-
-  def specular(ray, hit, bsdf, recursion_depth, type)
-    wo = -ray.direction
-    point = hit.point
-    normal = hit.normal
-
-    sample = bsdf.sample_f(hit, wo, BxDFType::Specular | type)
-    return Color::BLACK if sample.nil?
-
-    color, wi, pdf = sample
-    return Color::BLACK if wi.dot(normal).abs == 0.0
-
-    new_ray = Ray.new(point, wi)
-    new_hit = @scene.hit(new_ray)
-    if new_hit
-      li = color(new_ray, new_hit, recursion_depth - 1)
-    else
-      li = @scene.background.get(new_ray)
-    end
-    li * color * wi.dot(normal).abs / pdf
-  end
 end
 
-# class Raytracer < BaseRaytracer
-#   property focus_hitables : Hitable
+class PathRaytracer < BaseRaytracer
+  def initialize(width, height, camera, samples, scene)
+    super(width, height, camera, samples, scene)
+  end
 
-#   def initialize(width, height, hitables, camera, samples, @focus_hitables, background = nil)
-#     super(width, height, hitables, camera, samples, background)
-#   end
+  def color(ray, hit, recursion_depth)
+    # Declare common path integration variables
 
-#   def color(ray, hit, recursion_depth)
-#     scatter = hit.material.scatter(ray, hit)
-#     emitted = hit.material.emitted(ray, hit)
-#     if scatter && recursion_depth > 0
-#       pdf_or_ray = scatter.pdf_or_ray
+    l = Color::BLACK
+    path_throughput = Color::WHITE
+    specular_bounce = false
 
-#       if pdf_or_ray.is_a? Ray
-#         scatter.albedo * cast_ray(pdf_or_ray, recursion_depth - 1)
-#       else
-#         p1 = HitablePDF.new(@focus_hitables, hit.point)
-#         p = MixturePDF.new(p1, pdf_or_ray)
-#         scattered = Ray.new(hit.point, p.generate, @t_min, @t_max)
-#         pdf_val = p.value(scattered.direction)
+    bounces = 0
+    loop do 
+      bsdf = hit.material
+      p = hit.point
+      n = hit.normal
 
-#         pdf = hit.material.scattering_pdf(ray, hit, scattered) / pdf_val
-#         emitted + scatter.albedo * cast_ray(scattered, recursion_depth - 1) * pdf
-#       end
-#     else
-#       emitted
-#     end
-#   end
-# end
+      wo = -ray.direction
+
+      # Possibly add emitted light
+      if bounces == 0 || specular_bounce
+        l += path_throughput * bsdf.emitted(hit, wo)
+      end
+
+      # sample illumination from lights
+      # DEBUGGING
+      # TODO: background is set to false here to see if the result will look more
+      # like the reference image
+      l += path_throughput * uniform_sample_one_light(hit, p, n, wo, bsdf, false)
+
+      # sample bsdf to get new path dir
+      sample = bsdf.sample_f(hit, wo, BxDFType::All)
+      break if sample.nil?
+
+      f, wi, pdf, sampled_type = sample
+      break if pdf == 0.0
+
+      specular_bounce = (sampled_type & BxDFType::Specular) != 0
+      path_throughput *= f * wi.dot(n).abs / pdf
+
+      ray = Ray.new(p, wi)
+
+      # possibliy terminate the path
+      # break if bounces == @max_bounces
+      break if bounces == @recursion_depth
+      if bounces > 3
+        # use a "random" component of path_throughput
+        # to terminate "dark" rays with a higher probability
+        continue_probability = min(0.5, path_throughput.g)
+        break if rand > continue_probability
+
+        # scale the throughput accordingly
+        path_throughput /= continue_probability
+      end
+
+      # find next vertex of path
+      hit = @scene.hit(ray)
+      if hit.nil?
+        if specular_bounce
+          # TODO: This is a little bit different in PBRT
+          l += path_throughput * @scene.background.get(ray)
+        end
+        break
+      end
+
+      bounces += 1
+    end
+
+    l
+  end
+end

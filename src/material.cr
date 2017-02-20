@@ -1,3 +1,6 @@
+# TODO: Evaluate the performance impact
+# of creating a new Material on each hit
+
 abstract class Material
   property emitted : Color
   @emitted = Color::BLACK
@@ -6,12 +9,17 @@ abstract class Material
     Color::BLACK
   end
 
-  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64)?
+  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
     nil
   end
 
   def emitted(hit : HitRecord, wo_world) : Color
-    Color::BLACK
+    # TODO: do something useful here
+    @emitted
+  end
+
+  def pdf(normal : Normal, wo : Vector, wi : Vector, flags = BxDFType::All) : Float64
+    0.0
   end
 end
 
@@ -24,12 +32,8 @@ class MultiMaterial < Material
   def f(hit : HitRecord, wo_world : Vector, wi_world : Vector, flags : Int32) : Color
     normal = hit.normal
     onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world)
-    wi = onb.world_to_local(wi_world)
-
-    # TODO: Are these already normalized?
-    wo = wo / wo.length
-    wi = wi / wi.length
+    wo = onb.world_to_local(wo_world).normalize
+    wi = onb.world_to_local(wi_world).normalize
 
     # If both vectors are outside of the object, ignore the BTDFs,
     # otherwise ignore the BRDFs ("~" = bitwise negate)
@@ -48,7 +52,7 @@ class MultiMaterial < Material
     color
   end
 
-  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64)?
+  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
     matching = @bxdfs.select(&.matches_flags(flags))
     return nil if matching.size == 0
 
@@ -57,10 +61,7 @@ class MultiMaterial < Material
 
     normal = hit.normal
     onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world)
-
-    # TODO: Are these already normalized?
-    wo = wo / wo.length
+    wo = onb.world_to_local(wo_world).normalize
 
     color, wi, pdf = bxdf.sample_f(wo)
     return nil if pdf == 0.0
@@ -89,7 +90,7 @@ class MultiMaterial < Material
     # but bc/ the mapped directions are already known,
     # this saves some time
     if (bxdf.type & BxDFType::Specular)
-      {color, wi_world, pdf}
+      {color, wi_world, pdf, bxdf.type}
     else
       if wi_world.dot(normal) * wo_world.dot(normal) > 0
         flags = flags & ~BxDFType::Transmission
@@ -102,13 +103,17 @@ class MultiMaterial < Material
         color += bxdf_.f(wo, wi) if bxdf_.matches_flags(flags) && bxdf != bxdf_
       end
 
-      {color, wi_world, pdf}
+      {color, wi_world, pdf, bxdf.type}
     end
   end
 
-  def pdf(wo : Vector, wi : Vector, flags = BxDFType::All)
+  def pdf(normal : Normal, wo_world : Vector, wi_world : Vector, flags = BxDFType::All) : Float64
+    onb = ONB.from_w(normal)
+    wo = onb.world_to_local(wo_world).normalize
+    wi = onb.world_to_local(wi_world).normalize
+
     pdf = 0.0
-    matching = @bxdfs.filter(&.matches_flags(flags))
+    matching = @bxdfs.select(&.matches_flags(flags))
     matching.each do |bxdf|
       pdf += bxdf.pdf(wo, wi)
     end
@@ -126,12 +131,8 @@ class SingleMaterial < Material
   def f(hit : HitRecord, wo_world : Vector, wi_world : Vector, flags : Int32) : Color
     normal = hit.normal
     onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world)
-    wi = onb.world_to_local(wi_world)
-
-    # TODO: Are these already normalized?
-    wo = wo / wo.length
-    wi = wi / wi.length
+    wo = onb.world_to_local(wo_world).normalize
+    wi = onb.world_to_local(wi_world).normalize
 
     # If both vectors are outside of the object,
     # ignore the BTDFs,
@@ -150,24 +151,25 @@ class SingleMaterial < Material
     end
   end
 
-  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64)?
+  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
     return nil unless @bxdf.matches_flags(flags)
 
     normal = hit.normal
     onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world)
-
-    # TODO: Are these already normalized?
-    wo = wo / wo.length
+    wo = onb.world_to_local(wo_world).normalize
 
     color, wi, pdf = @bxdf.sample_f(wo)
     return nil if pdf == 0.0
 
     wi_world = onb.local_to_world(wi)
-    {color, wi_world, pdf}
+    # TODO: would it be a good idea to normalize wi_world here?
+    {color, wi_world, pdf, @bxdf.type}
   end
 
-  def pdf(wo : Vector, wi : Vector, flags = BxDFType::All)
+  def pdf(normal : Normal, wo_world : Vector, wi_world : Vector, flags = BxDFType::All)
+    onb = ONB.from_w(normal)
+    wo = onb.world_to_local(wo_world).normalize
+    wi = onb.world_to_local(wi_world).normalize
     return 0.0 unless @bxdf.matches_flags(flags)
     @bxdf.pdf(wo, wi)
   end
@@ -199,9 +201,6 @@ class MirrorMaterial < SingleMaterial
     super(SpecularReflection.new(color, FresnelNoOp.new).as(BxDF))
   end
 end
-
-# require "../material"
-# require "../texture"
 
 class DiffuseLightMaterial < Material
   def initialize(@emitted : Color)
