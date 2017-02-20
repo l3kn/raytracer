@@ -7,7 +7,7 @@ class AORaytracer < NormalRaytracer
       count = 0
 
       ao_samples.times do
-        dir = uvw.local(random_cosine_direction)
+        dir = uvw.local_to_world(random_cosine_direction)
         point = hit.point + dir * @t_min * 2
         unless @hitables.hit(Ray.new(point, dir, @t_min, @t_max))
           count += 1

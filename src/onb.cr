@@ -6,10 +6,6 @@ struct ONB
   def initialize(@u, @v, @w)
   end
 
-  def local(vec)
-    u * vec.x + v * vec.y + w * vec.z
-  end
-
   def world_to_local(vec)
     Vector.new(
       vec.dot(@u),
