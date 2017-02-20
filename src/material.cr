@@ -134,21 +134,15 @@ class SingleMaterial < Material
     wo = onb.world_to_local(wo_world).normalize
     wi = onb.world_to_local(wi_world).normalize
 
-    # If both vectors are outside of the object,
-    # ignore the BTDFs,
-    # otherwise ignore the BRDFs
-    # "~" = complement
+    # Both vectors outside of the object ? ingnore BTDFs : ignore BRDFs
+    # NOTE: "~" = complement
     if wi_world.dot(normal) * wo_world.dot(normal) > 0
       flags = flags & ~BxDFType::Transmission
     else
       flags = flags & ~BxDFType::Reflection
     end
 
-    if @bxdf.matches_flags(flags)
-      @bxdf.f(wo, wi)
-    else
-      Color::BLACK
-    end
+    @bxdf.matches_flags(flags) ? @bxdf.f(wo, wi) : Color::BLACK
   end
 
   def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
@@ -167,10 +161,11 @@ class SingleMaterial < Material
   end
 
   def pdf(normal : Normal, wo_world : Vector, wi_world : Vector, flags = BxDFType::All)
+    return 0.0 unless @bxdf.matches_flags(flags)
+
     onb = ONB.from_w(normal)
     wo = onb.world_to_local(wo_world).normalize
     wi = onb.world_to_local(wi_world).normalize
-    return 0.0 unless @bxdf.matches_flags(flags)
     @bxdf.pdf(wo, wi)
   end
 end

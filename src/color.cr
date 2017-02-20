@@ -1,6 +1,8 @@
 struct Color
   COMPONENTS = [:r, :g, :b]
   define_vector
+  define_op(:**)
+  define_vector_op(:*)
 
   WHITE = self.new(1.0)
   BLACK = self.new(0.0)
@@ -20,9 +22,6 @@ struct Color
       mix(@b, other.b, t),
     )
   end
-
-  define_op(:**)
-  define_vector_op(:*)
 
   def de_nan
     (@r.nan? || @g.nan? || @b.nan?) ? Color::BLACK : self

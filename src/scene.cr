@@ -25,7 +25,7 @@ class Scene
     end
   end
 
-  def hit(ray : Ray) : (HitRecord | Nil)
+  def hit(ray : Ray) : HitRecord?
     @hitable.hit(ray)
   end
 

@@ -8,9 +8,9 @@ record HitRecord,
   v : Float64
 
 abstract class Hitable
-  abstract def hit(ray : Ray) : (HitRecord | Nil)
+  abstract def hit(ray : Ray) : HitRecord?
 
-  def hit(ray : ExtendedRay) : (HitRecord | Nil)
+  def hit(ray : ExtendedRay) : HitRecord?
     hit(Ray.new(ray.origin, ray.direction, ray.t_min, ray.t_max))
   end
 
@@ -62,6 +62,7 @@ end
 abstract class FiniteHitable < Hitable
   property bounding_box : AABB
 
+  # TODO: Would removing this break anything?
   def initialize
     @bounding_box = AABB.new(Point.new(-Float64::MAX), Point.new(Float64::MAX))
   end

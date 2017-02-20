@@ -5,7 +5,6 @@ module DE
 
   abstract class BruteForceDistanceEstimatable
     abstract def inside?(pos : Point) : Boolean
-
     abstract def normal(pos : Point) : Vector
   end
 end

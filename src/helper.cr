@@ -102,7 +102,7 @@ def mix(a, b, t)
   a*t + b*(1 - t)
 end
 
-def solve_quadratic(a, b, c) : Tuple(Float64, Float64) | Nil
+def solve_quadratic(a, b, c) : {Float64, Float64}?
   discriminant = b * b - 4.0 * a * c
   return nil if discriminant <= 0.0
 
@@ -116,11 +116,7 @@ def solve_quadratic(a, b, c) : Tuple(Float64, Float64) | Nil
   t0 = q / a
   t1 = c / q
   
-  if t0 < t1
-    {t0, t1}
-  else
-    {t1, t0}
-  end
+  t0 < t1 ? {t0, t1} : {t1, t0}
 end
 
 # Monte Carlo heuristics
