@@ -1,203 +1,71 @@
-# TODO: Evaluate the performance impact
-# of creating a new Material on each hit
-
 abstract class Material
-  property emitted : Color
-  @emitted = Color::BLACK
-
-  def f(hit : HitRecord, wo_world : Vector, wi_world : Vector, flags : Int32) : Color
-    Color::BLACK
-  end
-
-  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
-    nil
-  end
-
-  def emitted(hit : HitRecord, wo_world) : Color
-    # TODO: do something useful here
-    @emitted
-  end
-
-  def pdf(normal : Normal, wo : Vector, wi : Vector, flags = BxDFType::All) : Float64
-    0.0
-  end
+  abstract def bsdf(hit : HitRecord) : BSDF
 end
 
-class MultiMaterial < Material
-  property bxdfs : Array(BxDF)
-
-  def initialize(@bxdfs)
+class GlassMaterial < Material
+  def initialize(@color_reflected : Color, @color_transmitted : Color, @ior : Float64)
   end
 
-  def f(hit : HitRecord, wo_world : Vector, wi_world : Vector, flags : Int32) : Color
-    normal = hit.normal
-    onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world).normalize
-    wi = onb.world_to_local(wi_world).normalize
-
-    # If both vectors are outside of the object, ignore the BTDFs,
-    # otherwise ignore the BRDFs ("~" = bitwise negate)
-    if wi_world.dot(normal) * wo_world.dot(normal) > 0
-      flags = flags & ~BxDFType::Transmission
-    else
-      flags = flags & ~BxDFType::Reflection
-    end
-
-    color = Color::BLACK
-
-    @bxdfs.each do |bxdf|
-      color += bxdf.f(wo, wi) if bxdf.matches_flags(flags)
-    end
-
-    color
-  end
-
-  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
-    matching = @bxdfs.select(&.matches_flags(flags))
-    return nil if matching.size == 0
-
-    # Sample a random matching BxDF
-    bxdf = matching.sample
-
-    normal = hit.normal
-    onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world).normalize
-
-    color, wi, pdf = bxdf.sample_f(wo)
-    return nil if pdf == 0.0
-
-    wi_world = onb.local_to_world(wi)
-
-    # Compute the overall pdf of all matching BxDFs
-    # 
-    # If the sampled bxdf is specular,
-    # it means that its pdf is a delta distribution => pdf = 1.0
-    # and it would be incorrect to add other pdfs onto it
-    if !(bxdf.type & BxDFType::Specular) && matching.size > 1
-      matching.each do |bxdf_|
-        pdf += bxdf_.pdf(wo, wi) if bxdf_ != bxdf
-      end
-    end
-
-    pdf /= matching.size
-
-    # Compute the value of the sampled bxdf for the sampled directions.
-    #
-    # If the sampled bxdf is specular,
-    # just return the results we got from sample_f
-    # because f would just return black (delta distribution!).
-    # This is pretty much a copy of BSDF.f(...)
-    # but bc/ the mapped directions are already known,
-    # this saves some time
-    if (bxdf.type & BxDFType::Specular)
-      {color, wi_world, pdf, bxdf.type}
-    else
-      if wi_world.dot(normal) * wo_world.dot(normal) > 0
-        flags = flags & ~BxDFType::Transmission
-      else
-        flags = flags & ~BxDFType::Reflection
-      end
-
-      color = Color::BLACK
-      @bxdfs.each do |bxdf_|
-        color += bxdf_.f(wo, wi) if bxdf_.matches_flags(flags) && bxdf != bxdf_
-      end
-
-      {color, wi_world, pdf, bxdf.type}
-    end
-  end
-
-  def pdf(normal : Normal, wo_world : Vector, wi_world : Vector, flags = BxDFType::All) : Float64
-    onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world).normalize
-    wi = onb.world_to_local(wi_world).normalize
-
-    pdf = 0.0
-    matching = @bxdfs.select(&.matches_flags(flags))
-    matching.each do |bxdf|
-      pdf += bxdf.pdf(wo, wi)
-    end
-
-    matching.size == 0 ? 0.0 : pdf / matching.size
-  end
-end
-
-class SingleMaterial < Material
-  property bxdf : BxDF
-
-  def initialize(@bxdf)
-  end
-
-  def f(hit : HitRecord, wo_world : Vector, wi_world : Vector, flags : Int32) : Color
-    normal = hit.normal
-    onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world).normalize
-    wi = onb.world_to_local(wi_world).normalize
-
-    # Both vectors outside of the object ? ingnore BTDFs : ignore BRDFs
-    # NOTE: "~" = complement
-    if wi_world.dot(normal) * wo_world.dot(normal) > 0
-      flags = flags & ~BxDFType::Transmission
-    else
-      flags = flags & ~BxDFType::Reflection
-    end
-
-    @bxdf.matches_flags(flags) ? @bxdf.f(wo, wi) : Color::BLACK
-  end
-
-  def sample_f(hit : HitRecord, wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
-    return nil unless @bxdf.matches_flags(flags)
-
-    normal = hit.normal
-    onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world).normalize
-
-    color, wi, pdf = @bxdf.sample_f(wo)
-    return nil if pdf == 0.0
-
-    wi_world = onb.local_to_world(wi)
-    # TODO: would it be a good idea to normalize wi_world here?
-    {color, wi_world, pdf, @bxdf.type}
-  end
-
-  def pdf(normal : Normal, wo_world : Vector, wi_world : Vector, flags = BxDFType::All)
-    return 0.0 unless @bxdf.matches_flags(flags)
-
-    onb = ONB.from_w(normal)
-    wo = onb.world_to_local(wo_world).normalize
-    wi = onb.world_to_local(wi_world).normalize
-    @bxdf.pdf(wo, wi)
-  end
-end
-
-class GlassMaterial < MultiMaterial
-  def initialize(color_reflected, color_transmitted, ior)
-    @bxdfs = [
-      SpecularReflection.new(color_reflected, FresnelDielectric.new(1.0, ior)).as(BxDF),
-      SpecularTransmission.new(color_transmitted, 1.0, ior).as(BxDF)
+  def bsdf(hit)
+    bxdfs = [
+      SpecularReflection.new(@color_reflected, FresnelDielectric.new(1.0, @ior)).as(BxDF),
+      SpecularTransmission.new(@color_transmitted, 1.0, @ior).as(BxDF)
     ]
+    MultiBSDF.new(bxdfs, hit.normal)
   end
 end
 
-class MatteMaterial < SingleMaterial
-  def initialize(color)
-    super(LambertianReflection.new(color).as(BxDF))
+class CheckerMaterial < Material
+  def initialize(@m1 : Material, @m2 : Material, @size = 10)
+  end
+
+  def bsdf(hit)
+    u = (hit.u * @size).to_i % 2
+    v = (hit.v * @size).to_i % 2
+
+    if (u + v).even?
+      @m1.bsdf(hit)
+    else
+      @m2.bsdf(hit)
+    end
   end
 end
 
-class OrenNayarMaterial < SingleMaterial
-  def initialize(color, sig)
-    super(OrenNayarReflection.new(color, sig).as(BxDF))
+class MatteMaterial < Material
+  def initialize(@color : Color)
+  end
+
+  def bsdf(hit)
+    bxdf = LambertianReflection.new(@color).as(BxDF)
+    SingleBSDF.new(bxdf, hit.normal)
   end
 end
 
-class MirrorMaterial < SingleMaterial
-  def initialize(color)
-    super(SpecularReflection.new(color, FresnelNoOp.new).as(BxDF))
+class OrenNayarBSDF < Material
+  def initialize(@color : Color, @sig : Float64)
+  end
+
+  def bsdf(hit)
+    bxdf = OrenNayarReflection.new(@color, @sig).as(BxDF)
+    SingleBSDF.new(bxdf, hit.normal)
+  end
+end
+
+class MirrorMaterial < Material
+  def initialize(@color : Color)
+  end
+
+  def bsdf(hit)
+    bxdf = SpecularReflection.new(@color, FresnelNoOp.new).as(BxDF)
+    SingleBSDF.new(bxdf, hit.normal)
   end
 end
 
 class DiffuseLightMaterial < Material
-  def initialize(@emitted : Color)
+  def initialize(@color : Color)
+  end
+
+  def bsdf(hit)
+    EmissiveBSDF.new(@color, hit.normal)
   end
 end

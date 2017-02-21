@@ -1,4 +1,4 @@
-class OrenNayarReflection < BxDF
+struct OrenNayarReflection < BxDF
   @a : Float64
   @b : Float64
 

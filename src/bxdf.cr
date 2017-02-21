@@ -13,7 +13,7 @@ module BxDFType
   All = AllReflection | AllTransmission
 end
 
-abstract class BxDF
+abstract struct BxDF
   getter type : Int32
   @type = 0
 
@@ -60,7 +60,7 @@ abstract class BxDF
   end
 end
 
-class BRDFtoBTDFAdapter < BxDF
+abstract struct BRDFtoBTDFAdapter < BxDF
   def initialize(@brdf : BxDF)
     # Switch the Reflection and Transmission flags
     @type = @brdf.type ^ (BxDFType::Reflection | BxDFType::Transmission)
@@ -83,7 +83,7 @@ class BRDFtoBTDFAdapter < BxDF
   end
 end
 
-class ScaledBxDF < BxDF
+abstract struct ScaledBxDF < BxDF
   def initialize(@bxdf : BxDF, @scale : Float64)
     @type = @bxdf.type
   end

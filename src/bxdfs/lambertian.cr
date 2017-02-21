@@ -1,4 +1,4 @@
-class LambertianReflection < BxDF
+struct LambertianReflection < BxDF
   def initialize(@color : Color)
     @type = BxDFType::Reflection | BxDFType::Diffuse
   end

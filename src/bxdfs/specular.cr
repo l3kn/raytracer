@@ -1,6 +1,6 @@
 require "../fresnel"
 
-class SpecularReflection < BxDF
+struct SpecularReflection < BxDF
   def initialize(@color : Color, @fresnel : Fresnel)
     @type = BxDFType::Reflection | BxDFType::Specular
   end
@@ -20,7 +20,7 @@ class SpecularReflection < BxDF
   end
 end
 
-class SpecularTransmission < BxDF
+struct SpecularTransmission < BxDF
   def initialize(@color : Color, @eta_i : Float64, @eta_t : Float64)
     @type = BxDFType::Transmission | BxDFType::Specular
     @fresnel = FresnelDielectric.new(@eta_i, @eta_t)
