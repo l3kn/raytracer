@@ -162,9 +162,10 @@ class BaseRaytracer < Raytracer
   property t_max : Float64
   property gamma_correction : Float64
   property recursion_depth : Int32
+  property filter : Filter
 
-  def initialize(width, height, camera, samples, scene)
-    super
+  def initialize(width, height, camera, samples, scene, @filter = BoxFilter.new(0.5))
+    super(width, height, camera, samples, scene)
     @t_min = EPSILON
     @t_max = Float64::MAX
     @gamma_correction = 1.0/2.2
@@ -183,17 +184,17 @@ class BaseRaytracer < Raytracer
   end
 
   def sample_pixel(sample, x, y, samples)
+    # Box filter, size 1.0
+    size = 4.0
     samples_sqrt = Math.sqrt(samples).ceil
     (0...samples_sqrt).each do |i|
       (0...samples_sqrt).each do |j|
-        off_x = (i + rand) / samples_sqrt
-        off_y = (j + rand) / samples_sqrt
+        off_x = (((i + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_x
+        off_y = (((j + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_y
 
-        x_ = (x + off_x).to_f
-        y_ = (y + off_y).to_f
-
-        ray = @camera.generate_ray(x_, y_, @t_min, @t_max)
-        sample.add(cast_ray(ray).de_nan)
+        ray = @camera.generate_ray(x + off_x, y + off_y, @t_min, @t_max)
+        # sample.add(cast_ray(ray).de_nan, triangle_filter(off_x, off_y))
+        sample.add(cast_ray(ray).de_nan, @filter.evaluate(off_x, off_y))
       end
     end
   end
@@ -348,8 +349,8 @@ class WhittedRaytracer < BaseRaytracer
 end
 
 class DirectLightingRaytracer < BaseRaytracer
-  def initialize(width, height, camera, samples, scene, @sample_background = true,
-                 @strategy = :sample_one, @light_samples = 1)
+  def initialize(width, height, camera, samples, scene, filter = BoxFilter.new(0.5),
+                 @sample_background = true, @strategy = :sample_one, @light_samples = 1)
     super(width, height, camera, samples, scene)
   end
 
@@ -386,8 +387,9 @@ class DirectLightingRaytracer < BaseRaytracer
 end
 
 class PathRaytracer < BaseRaytracer
-  def initialize(width, height, camera, samples, scene, @sample_background = true)
-    super(width, height, camera, samples, scene)
+  def initialize(width, height, camera, samples, scene, filter = BoxFilter.new(0.5),
+                 @sample_background = true)
+    super(width, height, camera, samples, scene, filter)
   end
 
   def color(ray, hit, recursion_depth)
