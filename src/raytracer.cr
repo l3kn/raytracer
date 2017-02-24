@@ -27,7 +27,9 @@ require "./backgrounds/*"
 require "./light"
 require "./onb"
 require "./scene"
+require "./debugging"
 require "./sample"
+require "./filter"
 require "./wireframe"
 
 abstract class Raytracer
