@@ -1,9 +1,10 @@
 struct OrenNayarReflection < BxDF
+  @type : Int32 # For some reason crystal 0.21.0 needs this
   @a : Float64
   @b : Float64
 
   def initialize(@color : Color, sig : Float64)
-    @type = BxDFType::Reflection | BxDFType::Diffuse
+    @type = BxDFType::REFLECTION | BxDFType::DIFFUSE
     sigma = radiants(sig)
     sigma2 = sigma * sigma
 

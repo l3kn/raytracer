@@ -1,21 +1,20 @@
 module BxDFType
-  Reflection = 1
-  Transmission = 2
+  REFLECTION = 1
+  TRANSMISSION = 2
 
-  Diffuse = 4
-  Glossy = 8
-  Specular = 16
-  AllTypes = Diffuse | Glossy | Specular
+  DIFFUSE = 4
+  GLOSSY = 8
+  SPECULAR = 16
+  ALLTYPES = DIFFUSE | GLOSSY | SPECULAR
 
-  AllReflection = Reflection | AllTypes
-  AllTransmission = Transmission | AllTypes
+  ALLREFLECTION = REFLECTION | ALLTYPES
+  ALLTRANSMISSION = TRANSMISSION | ALLTYPES
 
-  All = AllReflection | AllTransmission
+  ALL = ALLREFLECTION | ALLTRANSMISSION
 end
 
 abstract struct BxDF
-  getter type : Int32
-  @type = 0
+  getter type : Int32 = 0
 
   def matches_flags(other : Int32)
     (@type & other) == @type

@@ -1,6 +1,8 @@
 struct LambertianReflection < BxDF
+  @type : Int32 # For some reason crystal 0.21.0 needs this
+
   def initialize(@color : Color)
-    @type = BxDFType::Reflection | BxDFType::Diffuse
+    @type = BxDFType::REFLECTION | BxDFType::DIFFUSE
   end
 
   def f(wo : Vector, wi : Vector)
