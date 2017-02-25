@@ -26,6 +26,10 @@ class Scene
     # TODO: actually implement a fast hit method for some hitables
     !hit(ray).nil?
   end
+
+  def light_sampling_CDF
+    Distribution1D.new(@lights.map(&.power.length))
+  end
 end
 
 class VisibilityTester

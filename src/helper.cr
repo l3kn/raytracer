@@ -1,10 +1,21 @@
 require "./vector"
 
-macro pp(*args)
-end
-
 RADIANTS = (Math::PI / 180)
+
+# TODO: Use these constants everywhere
+TWOPI = 2.0 * Math::PI
+FOURPI = 4.0 * Math::PI
+
 INV_PI = 1.0 / Math::PI
+INV_TWOPI = 1.0 / TWOPI
+INV_FOURPI = 1.0 / FOURPI
+
+PI_OVER_TWO = Math::PI / 2
+PI_OVER_FOUR = Math::PI / 4
+
+# TODO: Create a class Point2
+# to use instead of u1, u2
+# and for all 2D sampling methods
 
 def radiants(n)
   n * RADIANTS
@@ -35,6 +46,67 @@ def random_vec
   Vector.new(pos_random, pos_random, pos_random)
 end
 
+# TODO: this is a litte bit different in pbrt
+def stratified_sample_1D(nx : Int32, jitter = true)
+  dx = 1.0 / nx
+  res = Array(Float64).new(nx, 0.0)
+  
+  (0...nx).each do |x| 
+    jx = jitter ? rand : 0.5
+    res[x] = (x + jx) * dx
+  end
+
+  res
+end
+
+# TODO: this is a litte bit different in pbrt
+def stratified_sample_2D(nx : Int32, ny : Int32, jitter = true)
+  dx = 1.0 / nx
+  dy = 1.0 / ny
+
+  res = Array({Float64, Float64}).new(nx * ny, {0.0, 0.0})
+
+  (0...ny).each do |y|
+    (0...nx).each do |x|
+      jx = jitter ? rand : 0.5
+      jy = jitter ? rand : 0.5
+      res[y * nx + x] = {(x + jx) * dx, (y + jy) * dy}
+    end
+  end
+
+  res
+end
+
+def uniform_sample_hemisphere(u1 : Float64 = rand, u2 : Float64 = rand)
+  z = u1
+  r = Math.sqrt(1.0 - z*z)
+  phi = TWOPI * u2
+
+  x = r * Math.cos(phi)
+  y = r * Math.sin(phi)
+
+  Vector.new(x, y, z)
+end
+
+def uniform_hemisphere_pdf
+  INV_TWOPI
+end
+
+def uniform_sample_sphere(u1 : Float64 = rand, u2 : Float64 = rand)
+  z = 1.0 - 2.0 * u1
+  r = Math.sqrt(1.0 - z*z)
+  phi = TWOPI * u2
+  
+  x = r * Math.cos(phi)
+  y = r * Math.sin(phi)
+
+  Vector.new(x, y, z)
+end
+
+def uniform_sphere_pdf
+  INV_FOURPI
+end
+
 def random_in_unit_sphere
   point = Vector.one
   while point.squared_length >= 1.0
@@ -53,12 +125,54 @@ def random_in_unit_circle
   point
 end
 
+def uniform_sample_disk(u1 : Float64 = rand, u2 : Float64 = rand) : {Float64, Float64}
+  r = Math.sqrt(u1)
+  theta = TWOPI * u2
+  {
+    r * Math.cos(theta),
+    r * Math.sin(theta)
+  }
+end
+
+def concentric_sample_disk(u1 : Float64 = rand, u2 : Float64 = rand) : {Float64, Float64}
+  sx = 2.0 * u1 - 1.0
+  sy = 2.0 * u2 - 1.0
+
+  return {0.0, 0.0} if sx == 0.0 && sy == 0.0
+
+  r = 0.0
+  theta = 0.0
+
+  if sx.abs > sy.abs
+    r = sx
+    theta = PI_OVER_FOUR * (sy / sx)
+  else
+    r = sy
+    theta = PI_OVER_TWO - PI_OVER_FOUR * (sx / sy)
+  end
+
+  {
+    r * Math.cos(theta),
+    r * Math.sin(theta)
+  }
+end
+
+def cosine_sample_hemisphere(u1 : Float64 = rand, u2 : Float64 = rand) : Vector
+  x, y = concentric_sample_disk(u1, u2)
+  Vector.new(
+    x,
+    y,
+    Math.sqrt(1.0 - x*x - y*y)
+  )
+end
+
+# TODO: Deprecate this
 def random_cosine_direction
   r1 = pos_random
   r2 = pos_random
 
   z = Math.sqrt(1 - r2)
-  phi = 2*Math::PI*r1
+  phi = TWOPI*r1
 
   sqrt = Math.sqrt(r2)
   x = Math.cos(phi) * 2 * sqrt
@@ -72,7 +186,7 @@ def random_to_sphere(radius, distance_squared)
   r2 = pos_random
 
   z = 1.0 + r2 * (Math.sqrt(1 - radius*radius / distance_squared) - 1.0)
-  phi = 2 * Math::PI * r1
+  phi = TWOPI * r1
 
   sqrt = Math.sqrt(1 - z*z)
   x = Math.cos(phi) * sqrt

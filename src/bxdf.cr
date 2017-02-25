@@ -16,6 +16,7 @@ end
 abstract struct BxDF
   getter type : Int32 = 0
 
+  # TODO: This should end w/ "?"
   def matches_flags(other : Int32)
     (@type & other) == @type
   end
@@ -27,8 +28,10 @@ abstract struct BxDF
 
   # used for BxDFs where the usage of f(wo, wi)
   # is not practicable, e.g. for perfectly specular surfaces
-  def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
-    wi = random_cosine_direction
+  def sample_f(wo : Vector, u1 : Float64 = rand, u2 : Float64 = rand) : Tuple(Color, Vector, Float64)
+    wi = cosine_sample_hemisphere(u1, u2)
+    wi.z *= 1 if wo.z < 0.0 # Flip the direction if necessary
+
     {f(wo, wi), wi, pdf(wo, wi)} 
   end
 
@@ -56,6 +59,27 @@ abstract struct BxDF
   def sin_phi(w : Vector)
     st = sin_theta(w)
     st == 0.0 ? 1.0 : clamp(w.y / st, -1.0, 1.0)
+  end
+
+  # TODO: Are there ways to simplyfy this for some bxdfs?
+  def rho(samples1, samples2) : Color
+    res = Color::BLACK
+
+    (0...samples1.size).each do |i|
+      sample1 = samples1[i]
+      wo = uniform_sample_hemisphere(sample1[0], sample1[1])
+
+      pdf_o = uniform_hemisphere_pdf
+
+      sample2 = samples2[i]
+      f, wi, pdf_i = sample_f(wo, sample2[0], sample2[1])
+
+      if pdf_i > 0.0
+        res += f * cos_theta(wi).abs * cos_theta(wo).abs / (pdf_o * pdf_i)
+      end
+    end
+
+    res / (Math::PI * samples1.size)
   end
 end
 

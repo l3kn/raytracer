@@ -1,4 +1,9 @@
 abstract struct BSDF
+  # Number of components matching the given flag
+  def num_components(flags = BxDFType::ALL)
+    0
+  end
+
   def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
     Color::BLACK
   end
@@ -14,6 +19,10 @@ abstract struct BSDF
   def pdf(wo : Vector, wi : Vector, flags = BxDFType::ALL) : Float64
     0.0
   end
+
+  def rho(flags : Int32, samples_sqrt = 6) : Color
+    Color::BLACK
+  end
 end
 
 struct MultiBSDF < BSDF
@@ -21,6 +30,10 @@ struct MultiBSDF < BSDF
 
   def initialize(@bxdfs, @normal : Normal)
     @world_to_local = ONB.from_w(@normal)
+  end
+
+  def num_components(flags = BxDFType::ALL)
+    @bxdfs.count(&.matches_flags(flags))
   end
 
   def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
@@ -42,6 +55,17 @@ struct MultiBSDF < BSDF
     end
 
     color
+  end
+
+  def rho(flags : Int32, samples_sqrt = 6) : Color
+    s1 = stratified_sample_2D(samples_sqrt, samples_sqrt)
+    s2 = stratified_sample_2D(samples_sqrt, samples_sqrt)
+
+    res = Color::BLACK
+    @bxdfs.each do |bxdf|
+      res += bxdf.rho(s1, s2) if bxdf.matches_flags(flags)
+    end
+    res
   end
 
   def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
@@ -118,6 +142,10 @@ struct SingleBSDF < BSDF
     @world_to_local = ONB.from_w(@normal)
   end
 
+  def num_components(flags = BxDFType::ALL)
+    @bxdf.matches_flags(flags) ? 1 : 0
+  end
+
   def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
@@ -151,6 +179,15 @@ struct SingleBSDF < BSDF
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
     @bxdf.pdf(wo, wi)
+  end
+
+  def rho(flags : Int32, samples_sqrt = 6) : Color
+    s1 = stratified_sample_2D(samples_sqrt, samples_sqrt)
+    s2 = stratified_sample_2D(samples_sqrt, samples_sqrt)
+
+    res = Color::BLACK
+    res += @bxdf.rho(s1, s2) if @bxdf.matches_flags(flags)
+    res
   end
 end
 

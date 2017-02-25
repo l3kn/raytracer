@@ -9,6 +9,7 @@ require "./src/normal"
 require "./src/color"
 require "./src/point"
 require "./src/quaternion"
+require "./src/distribution"
 require "./src/ray"
 require "./src/hitable"
 # TODO: This needs to be required first, bc/ Cuboid < FiniteHitableList

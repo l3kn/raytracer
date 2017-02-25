@@ -1,7 +1,7 @@
 class DirectLightingRaytracer < BaseRaytracer
   def initialize(width, height, camera, samples, scene, filter = BoxFilter.new(0.5),
                  @sample_background = true, @strategy = :sample_one, @light_samples = 1)
-    super(width, height, camera, samples, scene)
+    super(width, height, camera, samples, scene, filter)
   end
 
   def color(ray, hit, recursion_depth)
