@@ -35,17 +35,9 @@ abstract class Hitable
   # hits the object
   def pdf(point : Point, wi : Vector) : Float64
     hit = hit(Ray.new(point, wi))
-    if hit && hit.normal.dot(wi) < 0.0
-      pdf(hit.point)
-    else
-      0.0
-    end
-    # if hit
-    #   puts (point - hit.point).squared_length / hit.normal.dot(-wi).abs * area
-    #   (hit.point - point).squared_length / hit.normal.dot(-wi).abs * area
-    # else
-    #   0.0
-    # end
+    return 0.0 if hit.nil?
+
+    point.squared_distance(hit.point) / (hit.normal.dot(-wi).abs * area)
   end
 
   # TODO: This only makes sense for finite objects

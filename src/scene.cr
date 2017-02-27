@@ -27,6 +27,7 @@ class Scene
     !hit(ray).nil?
   end
 
+  # TODO: Use this for uniform_sample_*_light(s) ?
   def light_sampling_CDF
     Distribution1D.new(@lights.map(&.power.length))
   end

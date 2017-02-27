@@ -1,5 +1,17 @@
 require "./vector"
 
+macro assert(pred)
+  {% if !flag?(:release) %}
+    raise "Assertion failed: {{pred}}" unless {{pred}}
+  {% end %}
+end
+
+macro assert(pred, message)
+  {% if !flag?(:release) %}
+    raise {{message}} unless {{pred}}
+  {% end %}
+end
+
 RADIANTS = (Math::PI / 180)
 
 # TODO: Use these constants everywhere
@@ -159,12 +171,13 @@ end
 
 def cosine_sample_hemisphere(u1 : Float64 = rand, u2 : Float64 = rand) : Vector
   x, y = concentric_sample_disk(u1, u2)
-  Vector.new(
-    x,
-    y,
-    Math.sqrt(1.0 - x*x - y*y)
-  )
+  Vector.new(x, y, Math.sqrt(1.0 - x*x - y*y))
 end
+
+def cosine_hemisphere_pdf(cos_theta : Float64)
+  cos_theta * INV_PI
+end
+
 
 # TODO: Deprecate this
 def random_cosine_direction
@@ -243,4 +256,44 @@ def power_heuristic(nf : Int32, f_pdf : Float64, ng : Int32, g_pdf : Float64)
   f = nf * f_pdf
   g = ng * g_pdf
   (f*f) / (f*f + g*g)
+end
+
+struct Range2
+  @min : {Int32, Int32}
+  @max : {Int32, Int32}
+
+  def initialize(@max)
+    @min = {0, 0}
+  end
+
+  def initialize(@min, @max); end
+
+  def each
+    (@min[1]..@max[1]).each do |y|
+      (@min[0]..@max[0]).each do |x|
+        yield x, y
+      end
+    end
+  end
+end
+
+struct Range3
+  @min : {Int32, Int32, Int32}
+  @max : {Int32, Int32, Int32}
+
+  def initialize(@max)
+    @min = {0, 0, 0}
+  end
+
+  def initialize(@min, @max); end
+
+  def each
+    (@min[2]..@max[2]).each do |z|
+      (@min[1]..@max[1]).each do |y|
+        (@min[0]..@max[0]).each do |x|
+          yield x, y, z
+        end
+      end
+    end
+  end
 end

@@ -28,4 +28,12 @@ struct Vector < LA::AVector3
   def max(other : Float64)
     Vector.new(max(@x, other), max(@y, other), max(@z, other))
   end
+
+  def max_component
+    max(@x, max(@y, @z))
+  end
+
+  def [](axis)
+    {@x, @y, @z}[axis]
+  end
 end

@@ -9,6 +9,11 @@ struct AABB
     @max = min.max(max)
   end
 
+  def initialize
+    @min = Point.new(Float64::MAX)
+    @max = Point.new(-Float64::MAX)
+  end
+
   def fast_hit(ray : ExtendedRay)
     if ray.pos_x
       min = (@min.x - ray.origin.x) * ray.inv_x
@@ -56,6 +61,13 @@ struct AABB
     )
   end
 
+  def merge(other : Point)
+    AABB.new(
+      @min.min(other),
+      @max.max(other)
+    )
+  end
+
   def centroid
     Point.new(
       @min.x * 0.5 + @max.x * 0.5,
@@ -69,6 +81,20 @@ struct AABB
     BoundingSphere.new(center, center.distance(@max))
   end
 
+  def max_axis
+    {0, 1, 2}.max_by { |axis| @max[axis] - @min[axis] }
+  end
+
+  def diagonal : Vector
+    @max - @min
+  end
+
+  def offset(point : Point) : Point
+    extent = diagonal
+    offset = point - @min
+    Point.new(offset.x / extent.x, offset.y / extent.y, offset.z / extent.z)
+  end
+
   def self.from_points(points : Array(Point))
     min = points[0]
     max = points[0]
@@ -79,6 +105,13 @@ struct AABB
     end
 
     self.new(min, max)
+  end
+
+  def self.around(point : Point, radius : Float64)
+    self.new(
+      Point.new(point.x - radius, point.y - radius, point.z - radius),
+      Point.new(point.x + radius, point.y + radius, point.z + radius)
+    )
   end
 end
 

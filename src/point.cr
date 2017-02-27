@@ -32,6 +32,10 @@ struct Point < LA::AVector3
     Point.new(@x.abs, @y.abs, @z.abs)
   end
 
+  def squared_distance(other : Point)
+    (self - other).squared_length
+  end
+
   def to_tuple; {@x, @y, @z}; end
   def to_vector; Vector.new(@x, @y, @z); end
 

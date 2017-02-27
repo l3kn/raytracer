@@ -60,27 +60,6 @@ abstract struct BxDF
     st = sin_theta(w)
     st == 0.0 ? 1.0 : clamp(w.y / st, -1.0, 1.0)
   end
-
-  # TODO: Are there ways to simplyfy this for some bxdfs?
-  def rho(samples1, samples2) : Color
-    res = Color::BLACK
-
-    (0...samples1.size).each do |i|
-      sample1 = samples1[i]
-      wo = uniform_sample_hemisphere(sample1[0], sample1[1])
-
-      pdf_o = uniform_hemisphere_pdf
-
-      sample2 = samples2[i]
-      f, wi, pdf_i = sample_f(wo, sample2[0], sample2[1])
-
-      if pdf_i > 0.0
-        res += f * cos_theta(wi).abs * cos_theta(wo).abs / (pdf_o * pdf_i)
-      end
-    end
-
-    res / (Math::PI * samples1.size)
-  end
 end
 
 abstract struct BRDFtoBTDFAdapter < BxDF

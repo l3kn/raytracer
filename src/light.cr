@@ -77,21 +77,25 @@ class AreaLight < Light
     wi = dist.normalize
 
     tester = VisibilityTester.from_segment(point, point_s)
-    {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
+
+    # TODO: which version is the right one?
+    # {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
+    {wi, @intensity, tester, @object.pdf(point, wi)}
   end
 
   def sample_l : {Color, Ray, Normal, Float64}
     origin, normal = @object.sample
-    dir = uniform_sample_sphere
+    wi = cosine_sample_hemisphere
+    dir_pdf = cosine_hemisphere_pdf(wi.z)
 
-    # Flip direction to the correct hemisphere
-    dir = -dir if dir.dot(normal) < 0.0
+    onb = ONB.from_w(normal)
+    wi_world = onb.local_to_world(wi) 
 
     {
       @intensity,
-      Ray.new(origin, dir),
-      dir.to_normal,
-      @object.pdf(origin) * uniform_hemisphere_pdf
+      Ray.new(origin, wi_world),
+      normal,
+      @object.pdf(origin) * dir_pdf
     }
   end
 

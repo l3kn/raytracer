@@ -41,10 +41,7 @@ class PathRaytracer < BaseRaytracer
       # break if bounces == @max_bounces
       break if bounces == @recursion_depth
       if bounces > 3
-        # use a "random" component of path_throughput
-        # to terminate "dark" rays with a higher probability
-        # TODO: use maximum of path_throughput here
-        continue_probability = min(0.5, path_throughput.g)
+        continue_probability = min(0.5, path_throughput.max)
         break if rand > continue_probability
 
         # scale the throughput accordingly

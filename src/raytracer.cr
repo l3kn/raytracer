@@ -8,7 +8,11 @@ abstract class Raytracer
   def initialize(@width, @height, @camera, @samples, @scene)
   end
 
-  abstract def render(filename : String)
+  def render(filename, adaptive = false)
+    StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
+  end
+
+  abstract def render_to_canvas(filename : String, adaptive = false)
 
   def specular(ray, hit, bsdf, recursion_depth, type)
     wo = -ray.direction
@@ -26,17 +30,21 @@ abstract class Raytracer
     li * color * wi.dot(normal).abs / pdf
   end
 
-  # TODO: remove point & normal params
+  # TODO: now that light_pdf is fixed,
+  # is there still a need to keep background = Bool around?
   def uniform_sample_one_light(hit, wo, background = true)
     if background
       index = rand(0..@scene.lights.size)
+      light_pdf = 1.0 / (@scene.lights.size + 1)
       if index == 0
-        estimate_background(hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
+        estimate_background(hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
       else
-        estimate_direct(@scene.lights[index - 1], hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
+        estimate_direct(@scene.lights[index - 1], hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
       end
     else
-      estimate_direct(@scene.lights.sample, hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
+      light_pdf = 1.0 / (@scene.lights.size)
+      return Color::BLACK if @scene.lights.size == 0
+      estimate_direct(@scene.lights.sample, hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
     end
   end
 
@@ -86,7 +94,7 @@ abstract class Raytracer
 
     unless light_pdf == 0.0 || li.black?
       f = bsdf.f(wo, wi, flags)
-      if visibility.unoccluded?(@scene)# && f > EPSILON
+      if visibility.unoccluded?(@scene) && !f.black?
         if light.delta_light?
           ld += f * li * (wi.dot(hit.normal).abs / light_pdf)
         else
@@ -104,7 +112,9 @@ abstract class Raytracer
       if sample
         f, wi, bsdf_pdf, sampled_type = sample
         weight = 1.0
-        unless sampled_type & BxDFType::SPECULAR
+        return ld if f.black? || bsdf_pdf == 0.0
+
+        if (sampled_type & BxDFType::SPECULAR) == 0
           light_pdf = light.pdf(hit.point, wi)
           return ld if light_pdf == 0.0
           weight = power_heuristic(1, bsdf_pdf, 1, light_pdf)
@@ -112,10 +122,10 @@ abstract class Raytracer
 
         # Add weight contribution from BSDF sampling
         ray = Ray.new(hit.point, wi)
-        hit = @scene.hit(ray)
+        light_hit = @scene.hit(ray)
 
-        if hit && hit.object.area_light == light
-          li = hit.material.bsdf(hit).emitted(-wi)
+        if light_hit && light_hit.object.area_light == light
+          li = light_hit.material.bsdf(light_hit).emitted(-wi)
           ld += f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf unless li.black?
         end
       end
@@ -189,19 +199,8 @@ class BaseRaytracer < Raytracer
           sample_pixel(sample, x, y, samples)
         end
 
-        col = sample.mean
         vis.set(:variance, x, y, sample.variance.length)
-
-        col = col.min(1.0)
-        col **= @gamma_correction # Gamma Correction
-
-        rgba = StumpyPNG::RGBA.new(
-          (UInt16::MAX * col.r).to_u16,
-          (UInt16::MAX * col.g).to_u16,
-          (UInt16::MAX * col.b).to_u16,
-          UInt16::MAX
-        )
-
+        rgba = sample.mean.to_rgba(@gamma_correction)
         canvas[x, y] = rgba
 
         print_pixel(rgba, mode: :grayscale) if (x % pr_x) == 0 && (y % pr_y) == 0
@@ -212,18 +211,13 @@ class BaseRaytracer < Raytracer
 
     time = Time.now - start
 
-    puts ""
-    puts "Time: #{(time.total_milliseconds / 1000).round(3)}s"
+    puts "\nTime: #{(time.total_milliseconds / 1000).round(3)}s"
     puts "Total rays: #{Ray.count}"
     puts "Rays / sec: #{((Ray.count.to_f / time.total_milliseconds) * 1000).round(3)}"
 
     vis.write(:variance, "variance_" + filename)
 
     canvas
-  end
-
-  def render(filename, adaptive = false)
-    StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
   end
 
   def cast_ray(ray, recursion_depth = @recursion_depth)

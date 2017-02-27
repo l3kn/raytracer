@@ -4,11 +4,7 @@ struct Normal < LA::AVector3
   define_vector_op(:-, other_class: Normal, result_class: LA::Vector3)
 
   def initialize(@x : Float64, @y : Float64, @z : Float64)
-    {% if !flag?(:release) %}
-      if (self.dot(self) - 1.0).abs > EPSILON
-        raise "Error, length of normal is != 1: #{self}"
-      end
-    {% end %}
+    assert((self.dot(self) - 1.0).abs < EPSILON)
   end
 
   def *(other : Float64)

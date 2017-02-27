@@ -4,6 +4,18 @@ abstract struct BSDF
     0
   end
 
+  def diffuse?
+    num_components(
+      BxDFType::DIFFUSE | BxDFType::REFLECTION | BxDFType::TRANSMISSION
+    ) > 0
+  end
+
+  def glossy?
+    num_components(
+      BxDFType::GLOSSY | BxDFType::REFLECTION | BxDFType::TRANSMISSION
+    ) > 0
+  end
+
   def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
     Color::BLACK
   end
@@ -18,10 +30,6 @@ abstract struct BSDF
 
   def pdf(wo : Vector, wi : Vector, flags = BxDFType::ALL) : Float64
     0.0
-  end
-
-  def rho(flags : Int32, samples_sqrt = 6) : Color
-    Color::BLACK
   end
 end
 
@@ -43,9 +51,9 @@ struct MultiBSDF < BSDF
     # If both vectors are outside of the object, ignore the BTDFs,
     # otherwise ignore the BRDFs ("~" = bitwise negate)
     if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
-      flags = flags & ~BxDFType::TRANSMISSION
+      flags &= ~BxDFType::TRANSMISSION
     else
-      flags = flags & ~BxDFType::REFLECTION
+      flags &= ~BxDFType::REFLECTION
     end
 
     color = Color::BLACK
@@ -55,17 +63,6 @@ struct MultiBSDF < BSDF
     end
 
     color
-  end
-
-  def rho(flags : Int32, samples_sqrt = 6) : Color
-    s1 = stratified_sample_2D(samples_sqrt, samples_sqrt)
-    s2 = stratified_sample_2D(samples_sqrt, samples_sqrt)
-
-    res = Color::BLACK
-    @bxdfs.each do |bxdf|
-      res += bxdf.rho(s1, s2) if bxdf.matches_flags(flags)
-    end
-    res
   end
 
   def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
@@ -153,9 +150,9 @@ struct SingleBSDF < BSDF
     # Both vectors outside of the object ? ingnore BTDFs : ignore BRDFs
     # NOTE: "~" = complement
     if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
-      flags = flags & ~BxDFType::TRANSMISSION
+      flags &= ~BxDFType::TRANSMISSION
     else
-      flags = flags & ~BxDFType::REFLECTION
+      flags &= ~BxDFType::REFLECTION
     end
 
     @bxdf.matches_flags(flags) ? @bxdf.f(wo, wi) : Color::BLACK
@@ -180,15 +177,6 @@ struct SingleBSDF < BSDF
     wi = @world_to_local.world_to_local(wi_world).normalize
     @bxdf.pdf(wo, wi)
   end
-
-  def rho(flags : Int32, samples_sqrt = 6) : Color
-    s1 = stratified_sample_2D(samples_sqrt, samples_sqrt)
-    s2 = stratified_sample_2D(samples_sqrt, samples_sqrt)
-
-    res = Color::BLACK
-    res += @bxdf.rho(s1, s2) if @bxdf.matches_flags(flags)
-    res
-  end
 end
 
 struct EmissiveBSDF < BSDF
@@ -197,7 +185,7 @@ struct EmissiveBSDF < BSDF
   end
 
   def emitted(wo_world) : Color
-    # TODO: maybe make the light only emit to one side
-    @emitted
+    # Only emit light on one side
+    @normal.dot(wo_world) > 0.0 ? @emitted : Color::BLACK
   end
 end
