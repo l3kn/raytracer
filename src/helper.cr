@@ -46,16 +46,12 @@ def smoothstep(x)
   x * x * (3.0 - 2.0 * x)
 end
 
-def pos_random
-  rand
-end
-
 def random
   rand * 2 - 1.0
 end
 
 def random_vec
-  Vector.new(pos_random, pos_random, pos_random)
+  Vector.new(rand, rand, rand)
 end
 
 # TODO: this is a litte bit different in pbrt
@@ -181,8 +177,8 @@ end
 
 # TODO: Deprecate this
 def random_cosine_direction
-  r1 = pos_random
-  r2 = pos_random
+  r1 = rand
+  r2 = rand
 
   z = Math.sqrt(1 - r2)
   phi = TWOPI*r1
@@ -195,8 +191,8 @@ def random_cosine_direction
 end
 
 def random_to_sphere(radius, distance_squared)
-  r1 = pos_random
-  r2 = pos_random
+  r1 = rand
+  r2 = rand
 
   z = 1.0 + r2 * (Math.sqrt(1 - radius*radius / distance_squared) - 1.0)
   phi = TWOPI * r1

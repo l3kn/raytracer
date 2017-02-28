@@ -68,7 +68,7 @@ class BruteForceDistanceEstimator < Hitable
     closest = @maximum
 
     steps.times do
-      t = closest * pos_random
+      t = closest * rand
       point = ray.point_at_parameter(t)
       if object.inside?(point)
         closest = t

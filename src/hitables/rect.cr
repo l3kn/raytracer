@@ -43,8 +43,8 @@ class XYRect < Rect
   def sample
     {
       Point.new(
-        @bot.x + pos_random * (@top.x - @bot.x),
-        @bot.y + pos_random * (@top.y - @bot.y),
+        @bot.x + rand * (@top.x - @bot.x),
+        @bot.y + rand * (@top.y - @bot.y),
         @bot.z
       ),
       @normal
@@ -78,9 +78,9 @@ class XZRect < Rect
   def sample
     {
       Point.new(
-        @bot.x + pos_random * (@top.x - @bot.x),
+        @bot.x + rand * (@top.x - @bot.x),
         @bot.y,
-        @bot.z + pos_random * (@top.z - @bot.z)
+        @bot.z + rand * (@top.z - @bot.z)
       ),
       @normal
     }
@@ -114,8 +114,8 @@ class YZRect < Rect
     {
       Point.new(
         @bot.x,
-        @bot.y + pos_random * (@top.y - @bot.y),
-        @bot.z + pos_random * (@top.z - @bot.z)
+        @bot.y + rand * (@top.y - @bot.y),
+        @bot.z + rand * (@top.z - @bot.z)
       ),
       @normal
     }
