@@ -24,7 +24,7 @@ abstract struct BxDF
   # used for BxDFs where the usage of f(wo, wi)
   # is not practicable, e.g. for perfectly specular surfaces
   abstract def sample_f(wo : Vector, u1 : Float64 = rand, u2 : Float64 = rand) : Tuple(Color, Vector, Float64)
-  abstract def def pdf(wo : Vector, wi : Vector) : Color
+  abstract def pdf(wo : Vector, wi : Vector) : Color
 
   def cos_theta(w : Vector)
     w.z

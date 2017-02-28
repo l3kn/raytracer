@@ -13,7 +13,7 @@ struct SpecularReflection < BxDF
     { ft / cos_theta(wi).abs, wi, 1.0 }
   end
 
-  def pdf
+  def pdf(wo, wi)
     0.0
   end
 
@@ -44,7 +44,7 @@ struct SpecularTransmission < BxDF
     end
   end
 
-  def pdf
+  def pdf(wo, wi)
     0.0
   end
 

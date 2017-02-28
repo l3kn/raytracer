@@ -98,6 +98,7 @@ class PerspectiveCamera < Camera
   def generate_ray(s, t, t_min, t_max)
     s = (s / @size_x * 2.0) - 1.0
     t = -((t / @size_y * 2.0) - 1.0)
+    # TODO: Add this back in
     # rd = random_in_unit_circle * @lens_radius
     # offset = @u * rd.x + @v * rd.y
 

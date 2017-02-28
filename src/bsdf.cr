@@ -1,35 +1,21 @@
 abstract struct BSDF
   # Number of components matching the given flag
-  def num_components(flags = BxDFType::ALL)
-    0
+  abstract def num_components(flags = BxDFType::ALL) : Int32
+  abstract def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
+  abstract def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
+  abstract def pdf(wo : Vector, wi : Vector, flags = BxDFType::ALL) : Float64
+  abstract def emitted(wo_world) : Color
+
+  def matches_flags?(flags : Int32)
+    num_components(flags) > 0
   end
 
   def diffuse?
-    num_components(
-      BxDFType::DIFFUSE | BxDFType::REFLECTION | BxDFType::TRANSMISSION
-    ) > 0
+    matches_flags?(BxDFType::DIFFUSE | BxDFType::REFLECTION | BxDFType::TRANSMISSION)
   end
 
   def glossy?
-    num_components(
-      BxDFType::GLOSSY | BxDFType::REFLECTION | BxDFType::TRANSMISSION
-    ) > 0
-  end
-
-  def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
-    Color::BLACK
-  end
-
-  def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
-    nil
-  end
-
-  def emitted(wo_world) : Color
-    Color::BLACK
-  end
-
-  def pdf(wo : Vector, wi : Vector, flags = BxDFType::ALL) : Float64
-    0.0
+    matches_flags?(BxDFType::GLOSSY | BxDFType::REFLECTION | BxDFType::TRANSMISSION)
   end
 end
 
@@ -130,6 +116,8 @@ struct MultiBSDF < BSDF
 
     matching.size == 0 ? 0.0 : pdf / matching.size
   end
+
+  def emitted(wo_world); Color::BLACK; end
 end
 
 struct SingleBSDF < BSDF
@@ -177,12 +165,19 @@ struct SingleBSDF < BSDF
     wi = @world_to_local.world_to_local(wi_world).normalize
     @bxdf.pdf(wo, wi)
   end
+
+  def emitted(wo_world); Color::BLACK; end
 end
 
 struct EmissiveBSDF < BSDF
   def initialize(@emitted : Color, @normal : Normal)
     @world_to_local = ONB.from_w(@normal)
   end
+
+  def num_components(flags = BxDFType::ALL); 0; end
+  def f(wo_world, wi_world, flags); Color::BLACK; end
+  def pdf(wo, wi, flags = BxDFType::ALL); 0.0; end
+  def sample_f(wo_world, flags); nil; end
 
   def emitted(wo_world) : Color
     # Only emit light on one side
