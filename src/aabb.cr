@@ -1,8 +1,7 @@
 require "./vector"
 
 struct AABB
-  getter min : Point
-  getter max : Point
+  getter min : Point, max : Point
 
   def initialize(min, max)
     @min = min.min(max)
@@ -48,45 +47,30 @@ struct AABB
     max = z_max if z_max < max
 
     # TODO: check against t_min and t_max
-
     # tmin = max(max(x_min, y_min), z_min)
     # tmax = min(min(x_max, y_max), z_max)
+
     max > 0 && min <= max
   end
 
   def merge(other : AABB)
-    AABB.new(
-      @min.min(other.min),
-      @max.max(other.max)
-    )
+    AABB.new(@min.min(other.min), @max.max(other.max))
   end
 
   def merge(other : Point)
-    AABB.new(
-      @min.min(other),
-      @max.max(other)
-    )
+    AABB.new(@min.min(other), @max.max(other))
   end
 
   def centroid
-    Point.new(
-      @min.x * 0.5 + @max.x * 0.5,
-      @min.y * 0.5 + @max.y * 0.5,
-      @min.z * 0.5 + @max.z * 0.5,
-    )
-  end
-
-  def bounding_sphere
-    center = centroid
-    BoundingSphere.new(center, center.distance(@max))
-  end
-
-  def max_axis
-    {0, 1, 2}.max_by { |axis| @max[axis] - @min[axis] }
+    (@min + @max) / 2.0
   end
 
   def diagonal : Vector
     @max - @min
+  end
+
+  def max_axis
+    diagonal.max_component
   end
 
   def offset(point : Point) : Point
@@ -96,8 +80,7 @@ struct AABB
   end
 
   def self.from_points(points : Array(Point))
-    min = points[0]
-    max = points[0]
+    min = max = points[0]
 
     points[1..-1].each do |point|
       min = min.min(point)
@@ -112,13 +95,5 @@ struct AABB
       Point.new(point.x - radius, point.y - radius, point.z - radius),
       Point.new(point.x + radius, point.y + radius, point.z + radius)
     )
-  end
-end
-
-struct BoundingSphere
-  getter center : Point
-  getter radius : Float64
-
-  def initialize(@center, @radius)
   end
 end
