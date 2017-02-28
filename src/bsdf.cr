@@ -34,8 +34,8 @@ struct MultiBSDF < BSDF
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
 
-    # If both vectors are outside of the object, ignore the BTDFs,
-    # otherwise ignore the BRDFs ("~" = bitwise negate)
+    # Both vectors outside of the object ? ingnore BTDFs : ignore BRDFs
+    # NOTE: "~" = complement
     if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
       flags &= ~BxDFType::TRANSMISSION
     else
@@ -135,8 +135,6 @@ struct SingleBSDF < BSDF
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
 
-    # Both vectors outside of the object ? ingnore BTDFs : ignore BRDFs
-    # NOTE: "~" = complement
     if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
       flags &= ~BxDFType::TRANSMISSION
     else
@@ -155,7 +153,6 @@ struct SingleBSDF < BSDF
     return nil if pdf == 0.0
 
     wi_world = @world_to_local.local_to_world(wi)
-    # TODO: would it be a good idea to normalize wi_world here?
     {color, wi_world, pdf, @bxdf.type}
   end
 
