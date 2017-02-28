@@ -35,4 +35,15 @@ struct OrenNayarReflection < BxDF
 
     @color * INV_PI * (@a + @b * max_cos * sin_a + tan_b)
   end
+
+  def sample_f(wo : Vector, u1 : Float64 = rand, u2 : Float64 = rand) : Tuple(Color, Vector, Float64)
+    wi = cosine_sample_hemisphere(u1, u2)
+    wi.z *= 1 if wo.z < 0.0 # Flip the direction if necessary
+
+    {f(wo, wi), wi, pdf(wo, wi)} 
+  end
+
+  def pdf(wo, wi)
+    same_hemisphere?(wo, wi) ? cos_theta(wi).abs * INV_PI : 0.0
+  end
 end

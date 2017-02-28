@@ -41,7 +41,7 @@ struct MultiBSDF < BSDF
   end
 
   def num_components(flags = BxDFType::ALL)
-    @bxdfs.count(&.matches_flags(flags))
+    @bxdfs.count(&.matches_flags?(flags))
   end
 
   def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
@@ -59,14 +59,14 @@ struct MultiBSDF < BSDF
     color = Color::BLACK
 
     @bxdfs.each do |bxdf|
-      color += bxdf.f(wo, wi) if bxdf.matches_flags(flags)
+      color += bxdf.f(wo, wi) if bxdf.matches_flags?(flags)
     end
 
     color
   end
 
   def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
-    matching = @bxdfs.select(&.matches_flags(flags))
+    matching = @bxdfs.select(&.matches_flags?(flags))
     return nil if matching.size == 0
 
     # Sample a random matching BxDF
@@ -111,7 +111,7 @@ struct MultiBSDF < BSDF
 
       color = Color::BLACK
       @bxdfs.each do |bxdf_|
-        color += bxdf_.f(wo, wi) if bxdf_.matches_flags(flags) && bxdf != bxdf_
+        color += bxdf_.f(wo, wi) if bxdf_.matches_flags?(flags) && bxdf != bxdf_
       end
 
       {color, wi_world, pdf, bxdf.type}
@@ -123,7 +123,7 @@ struct MultiBSDF < BSDF
     wi = @world_to_local.world_to_local(wi_world).normalize
 
     pdf = 0.0
-    matching = @bxdfs.select(&.matches_flags(flags))
+    matching = @bxdfs.select(&.matches_flags?(flags))
     matching.each do |bxdf|
       pdf += bxdf.pdf(wo, wi)
     end
@@ -140,7 +140,7 @@ struct SingleBSDF < BSDF
   end
 
   def num_components(flags = BxDFType::ALL)
-    @bxdf.matches_flags(flags) ? 1 : 0
+    @bxdf.matches_flags?(flags) ? 1 : 0
   end
 
   def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
@@ -155,11 +155,11 @@ struct SingleBSDF < BSDF
       flags &= ~BxDFType::REFLECTION
     end
 
-    @bxdf.matches_flags(flags) ? @bxdf.f(wo, wi) : Color::BLACK
+    @bxdf.matches_flags?(flags) ? @bxdf.f(wo, wi) : Color::BLACK
   end
 
   def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
-    return nil unless @bxdf.matches_flags(flags)
+    return nil unless @bxdf.matches_flags?(flags)
 
     wo = @world_to_local.world_to_local(wo_world).normalize
 
@@ -172,7 +172,7 @@ struct SingleBSDF < BSDF
   end
 
   def pdf(wo_world : Vector, wi_world : Vector, flags = BxDFType::ALL)
-    return 0.0 unless @bxdf.matches_flags(flags)
+    return 0.0 unless @bxdf.matches_flags?(flags)
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
     @bxdf.pdf(wo, wi)
