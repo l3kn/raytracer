@@ -50,10 +50,6 @@ def random
   rand * 2 - 1.0
 end
 
-def random_vec
-  Vector.new(rand, rand, rand)
-end
-
 # TODO: this is a litte bit different in pbrt
 def stratified_sample_1D(nx : Int32, jitter = true)
   dx = 1.0 / nx
@@ -115,24 +111,6 @@ def uniform_sphere_pdf
   INV_FOURPI
 end
 
-def random_in_unit_sphere
-  point = Vector.one
-  while point.squared_length >= 1.0
-    point = Vector.new(random, random, random)
-  end
-
-  point
-end
-
-def random_in_unit_circle
-  point = Point.new(1.0)
-  while point.squared_length >= 1.0
-    point = Point.new(random, random, 0.0)
-  end
-
-  point
-end
-
 def uniform_sample_disk(u1 : Float64 = rand, u2 : Float64 = rand) : {Float64, Float64}
   r = Math.sqrt(u1)
   theta = TWOPI * u2
@@ -159,10 +137,7 @@ def concentric_sample_disk(u1 : Float64 = rand, u2 : Float64 = rand) : {Float64,
     theta = PI_OVER_TWO - PI_OVER_FOUR * (sx / sy)
   end
 
-  {
-    r * Math.cos(theta),
-    r * Math.sin(theta)
-  }
+  {r * Math.cos(theta), r * Math.sin(theta)}
 end
 
 def cosine_sample_hemisphere(u1 : Float64 = rand, u2 : Float64 = rand) : Vector
@@ -172,36 +147,6 @@ end
 
 def cosine_hemisphere_pdf(cos_theta : Float64)
   cos_theta * INV_PI
-end
-
-
-# TODO: Deprecate this
-def random_cosine_direction
-  r1 = rand
-  r2 = rand
-
-  z = Math.sqrt(1 - r2)
-  phi = TWOPI*r1
-
-  sqrt = Math.sqrt(r2)
-  x = Math.cos(phi) * 2 * sqrt
-  y = Math.sin(phi) * 2 * sqrt
-
-  Vector.new(x, y, z)
-end
-
-def random_to_sphere(radius, distance_squared)
-  r1 = rand
-  r2 = rand
-
-  z = 1.0 + r2 * (Math.sqrt(1 - radius*radius / distance_squared) - 1.0)
-  phi = TWOPI * r1
-
-  sqrt = Math.sqrt(1 - z*z)
-  x = Math.cos(phi) * sqrt
-  y = Math.sin(phi) * sqrt
-
-  Vector.new(x, y, z)
 end
 
 def schlick(cosine, reflection_index)
