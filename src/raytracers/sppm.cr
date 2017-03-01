@@ -38,7 +38,7 @@ class SPPMPixel
   end
 end
 
-class SPPMRaytracer < BaseRaytracer
+class SPPMRaytracer < Raytracer
   @photons_per_iteration : Int32
 
   def initialize(width, height, camera, samples, scene,
@@ -80,6 +80,7 @@ class SPPMRaytracer < BaseRaytracer
         pixel = pixels[x + y * @width]
         path_throughput = Color::WHITE
         specular_bounce = false
+
         # TODO: use some better sampling method
         ray = @camera.generate_ray(x + rand, y + rand, @t_min, @t_max)
 
@@ -167,8 +168,6 @@ class SPPMRaytracer < BaseRaytracer
         Range3.new(p_min, p_max).each do |x, y, z|
           h = hash([x, y, z], n_pixels)
           grid[h].push(pixel)
-          # grid[h].push(pixel) unless grid[h].includes?(pixel)
-          # grid[h].push(pixel) if grid[h].empty? || grid[h][-1] != pixel
         end
       end
 

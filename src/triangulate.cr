@@ -1,21 +1,16 @@
 class Triangulate
   def self.isocahedron(mat, iterations = 0)
-    triangles = [] of Triangle
-
     t = (1.0 + Math.sqrt(5.0)) / 2.0
-
     inv = 1.0 / Math.sqrt(1.0 + t*t)
     points = [
       Point.new(-1.0,  t, 0.0) * inv,
       Point.new( 1.0,  t, 0.0) * inv,
       Point.new(-1.0, -t, 0.0) * inv,
       Point.new( 1.0, -t, 0.0) * inv,
-
       Point.new( 0.0, -1.0,  t) * inv,
       Point.new( 0.0,  1.0,  t) * inv,
       Point.new( 0.0, -1.0, -t) * inv,
       Point.new( 0.0,  1.0, -t) * inv,
-
       Point.new( t, 0.0, -1.0) * inv,
       Point.new( t, 0.0,  1.0) * inv,
       Point.new(-t, 0.0, -1.0) * inv,
@@ -28,19 +23,16 @@ class Triangulate
       Triangle.new(points[0], points[1],  points[7], mat),
       Triangle.new(points[0], points[7],  points[10], mat),
       Triangle.new(points[0], points[10], points[11], mat),
-
       Triangle.new(points[1], points[5], points[9], mat),
       Triangle.new(points[5], points[11], points[4], mat),
       Triangle.new(points[11], points[10], points[2], mat),
       Triangle.new(points[10], points[7], points[6], mat),
       Triangle.new(points[7], points[1], points[8], mat),
-
       Triangle.new(points[3], points[9], points[4], mat),
       Triangle.new(points[3], points[4], points[2], mat),
       Triangle.new(points[3], points[2], points[6], mat),
       Triangle.new(points[3], points[6], points[8], mat),
       Triangle.new(points[3], points[8], points[9], mat),
-
       Triangle.new(points[4], points[9], points[5], mat),
       Triangle.new(points[2], points[4], points[11], mat),
       Triangle.new(points[6], points[2], points[10], mat),
@@ -57,10 +49,7 @@ class Triangulate
 
   def self.divide_all(triangles)
     res = [] of Triangle
-    triangles.each do |triangle|
-      res += divide(triangle)
-    end
-
+    triangles.each { |triangle| res += divide(triangle) }
     res
   end
 

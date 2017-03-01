@@ -1,37 +1,31 @@
 abstract class Raytracer
-  property width : Int32
-  property height : Int32
+  property width : Int32, height : Int32, samples : Int32
   property camera : Camera
-  property samples : Int32
   property scene : Scene
 
-  def initialize(@width, @height, @camera, @samples, @scene)
-  end
+  def initialize(@width, @height, @camera, @samples, @scene); end
+
+  abstract def render_to_canvas(filename : String, adaptive = false)
 
   def render(filename, adaptive = false)
     StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
   end
 
-  abstract def render_to_canvas(filename : String, adaptive = false)
-
   def specular(ray, hit, bsdf, recursion_depth, type)
-    wo = -ray.direction
-    point = hit.point
-    normal = hit.normal
-
-    sample = bsdf.sample_f(wo, BxDFType::SPECULAR | type)
+    sample = bsdf.sample_f(-ray.direction, BxDFType::SPECULAR | type)
     return Color::BLACK if sample.nil?
 
     color, wi, pdf, sampled_type = sample
-    return Color::BLACK if wi.dot(normal).abs == 0.0
 
-    new_ray = Ray.new(point, wi)
+    wi_dot_n = wi.dot(hit.normal).abs
+    return Color::BLACK if wi_dot_n == 0.0
+
+    new_ray = Ray.new(hit.point, wi)
     li = cast_ray(new_ray, recursion_depth - 1)
-    li * color * wi.dot(normal).abs / pdf
+    li * color * wi_dot_n / pdf
   end
 
-  # TODO: now that light_pdf is fixed,
-  # is there still a need to keep background = Bool around?
+  # TODO: Is there a cleaner way to deal w/ sampling the background?
   def uniform_sample_one_light(hit, bsdf, wo, background = true)
     if background
       index = rand(0..@scene.lights.size)
@@ -52,11 +46,11 @@ abstract class Raytracer
     color = Color::BLACK
 
     @scene.lights.each do |light|
-      color += estimate_direct(light, hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
+      color += estimate_direct(light, hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
     end
 
     if background
-      color += estimate_background(hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
+      color += estimate_background(hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
       color / (@scene.lights.size + 1.0)
     else
       color / @scene.lights.size.to_f
@@ -64,25 +58,20 @@ abstract class Raytracer
   end
 
   def estimate_background(hit, bsdf, wo, flags)
-    ld = Color::BLACK
     sample = bsdf.sample_f(wo, flags)
+    return Color::BLACK if sample.nil?
 
-    if sample
-      f, wi, bsdf_pdf, sampled_type = sample
-      weight = 1.0
-      unless sampled_type & BxDFType::SPECULAR
-        light_pdf = 1.0 / Math::PI
-        return ld if light_pdf == 0.0
-        weight = power_heuristic(1, light_pdf, 1, bsdf_pdf)
-      end
-
-      ray = Ray.new(hit.point, wi)
-      unless @scene.fast_hit(ray)
-        li = @scene.background.get(ray)
-        ld += f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf
-      end
+    f, wi, bsdf_pdf, sampled_type = sample
+    weight = 1.0
+    unless sampled_type & BxDFType::SPECULAR
+      weight = power_heuristic(1, INV_PI, 1, bsdf_pdf)
     end
-    ld
+
+    ray = Ray.new(hit.point, wi)
+    return Color::BLACK if @scene.fast_hit(ray)
+
+    li = @scene.background.get(ray)
+    f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf
   end
 
   def estimate_direct(light, hit, bsdf, wo, flags)
@@ -134,17 +123,13 @@ abstract class Raytracer
   end
 end
 
-class BaseRaytracer < Raytracer
-  property t_min : Float64
-  property t_max : Float64
+abstract class BaseRaytracer < Raytracer
   property gamma_correction : Float64
   property recursion_depth : Int32
   property filter : Filter
 
   def initialize(width, height, camera, samples, scene, @filter = BoxFilter.new(0.5))
     super(width, height, camera, samples, scene)
-    @t_min = EPSILON
-    @t_max = Float64::MAX
     @gamma_correction = 1.0/2.2
     @recursion_depth = 10
   end
@@ -169,7 +154,7 @@ class BaseRaytracer < Raytracer
         off_x = (((i + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_x
         off_y = (((j + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_y
 
-        ray = @camera.generate_ray(x + off_x, y + off_y, @t_min, @t_max)
+        ray = @camera.generate_ray(x + off_x, y + off_y, EPSILON, Float64::MAX)
         # sample.add(cast_ray(ray).de_nan, triangle_filter(off_x, off_y))
         sample.add(cast_ray(ray).de_nan, @filter.evaluate(off_x, off_y))
       end
@@ -215,7 +200,6 @@ class BaseRaytracer < Raytracer
     puts "Rays / sec: #{((Ray.count.to_f / time.total_milliseconds) * 1000).round(3)}"
 
     vis.write(:variance, "variance_" + filename)
-
     canvas
   end
 
@@ -224,7 +208,5 @@ class BaseRaytracer < Raytracer
     hit ? color(ray, hit, recursion_depth) : @scene.background.get(ray)
   end
 
-  def color(ray : Ray, hit : HitRecord, recursion_depth : Int32) : Color
-    Color::BLACK
-  end
+  abstract def color(ray : Ray, hit : HitRecord, recursion_depth : Int32) : Color
 end

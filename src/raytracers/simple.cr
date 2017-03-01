@@ -4,7 +4,6 @@ class SimpleRaytracer < BaseRaytracer
 
     # Compute emitted and reflected light at intersection
     bsdf = hit.material.bsdf(hit)
-    point = hit.point
     normal = hit.normal
 
     wo = -ray.direction
@@ -19,7 +18,7 @@ class SimpleRaytracer < BaseRaytracer
 
     color += bsdf.emitted(wo)
 
-    new_ray = Ray.new(point, wi)
+    new_ray = Ray.new(hit.point, wi)
     li = cast_ray(new_ray, recursion_depth - 1)
 
     color * li * wi.dot(normal).abs / pdf
