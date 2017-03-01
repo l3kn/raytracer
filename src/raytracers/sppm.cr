@@ -95,7 +95,7 @@ class SPPMRaytracer < BaseRaytracer
           # Accumulate direct illumination at SPPM camera ray intersection
           wo = -ray.direction
           pixel.ld += path_throughput * bsdf.emitted(wo) if depth == 0 || specular_bounce
-          pixel.ld += path_throughput * uniform_sample_one_light(hit, wo, @sample_background)
+          pixel.ld += path_throughput * uniform_sample_one_light(hit, bsdf, wo, @sample_background)
 
           if bsdf.diffuse? || (bsdf.glossy? && depth == @recursion_depth - 1)
             pixel.vp = VisiblePoint.new(hit.point, wo, bsdf, path_throughput)
@@ -115,8 +115,8 @@ class SPPMRaytracer < BaseRaytracer
 
             # TODO: change the equivalent code in
             # path integrator to look more like this
-            if path_throughput.max < 0.25
-              continue_probability = path_throughput.max
+            if path_throughput.max_component < 0.25
+              continue_probability = path_throughput.max_component
               break if rand > continue_probability
               path_throughput /= continue_probability
             end
@@ -224,7 +224,7 @@ class SPPMRaytracer < BaseRaytracer
           new_throughput = path_throughput * fr * wi.dot(hit.normal).abs / pdf
 
           ## Possibly terminate photon path w/ russian roulette
-          q = max(0.0, 1.0 - new_throughput.max / path_throughput.max)
+          q = max(0.0, 1.0 - new_throughput.max_component / path_throughput.max_component)
           break if rand < q
 
           path_throughput = new_throughput / (1.0 - q)

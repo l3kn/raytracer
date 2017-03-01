@@ -20,11 +20,11 @@ class DirectLightingRaytracer < BaseRaytracer
     case @strategy
     when :sample_all
       @light_samples.times do
-        color += uniform_sample_all_lights(hit, wo, @sample_background) / @light_samples.to_f
+        color += uniform_sample_all_lights(hit, bsdf, wo, @sample_background) / @light_samples.to_f
       end
     when :sample_one
       @light_samples.times do
-        color += uniform_sample_one_light(hit, wo, @sample_background) / @light_samples.to_f
+        color += uniform_sample_one_light(hit, bsdf, wo, @sample_background) / @light_samples.to_f
       end
     else
       raise "Unknown strategy for direct lighting integrator: #{@strategy}"

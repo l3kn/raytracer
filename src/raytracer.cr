@@ -32,23 +32,23 @@ abstract class Raytracer
 
   # TODO: now that light_pdf is fixed,
   # is there still a need to keep background = Bool around?
-  def uniform_sample_one_light(hit, wo, background = true)
+  def uniform_sample_one_light(hit, bsdf, wo, background = true)
     if background
       index = rand(0..@scene.lights.size)
       light_pdf = 1.0 / (@scene.lights.size + 1)
       if index == 0
-        estimate_background(hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
+        estimate_background(hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
       else
-        estimate_direct(@scene.lights[index - 1], hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
+        estimate_direct(@scene.lights[index - 1], hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
       end
     else
       light_pdf = 1.0 / (@scene.lights.size)
       return Color::BLACK if @scene.lights.size == 0
-      estimate_direct(@scene.lights.sample, hit, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
+      estimate_direct(@scene.lights.sample, hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
     end
   end
 
-  def uniform_sample_all_lights(hit, wo, background = true)
+  def uniform_sample_all_lights(hit, bsdf, wo, background = true)
     color = Color::BLACK
 
     @scene.lights.each do |light|
@@ -63,9 +63,9 @@ abstract class Raytracer
     end
   end
 
-  def estimate_background(hit, wo, flags)
+  def estimate_background(hit, bsdf, wo, flags)
     ld = Color::BLACK
-    sample = hit.material.bsdf(hit).sample_f(wo, flags)
+    sample = bsdf.sample_f(wo, flags)
 
     if sample
       f, wi, bsdf_pdf, sampled_type = sample
@@ -85,12 +85,11 @@ abstract class Raytracer
     ld
   end
 
-  def estimate_direct(light, hit, wo, flags)
+  def estimate_direct(light, hit, bsdf, wo, flags)
     ld = Color::BLACK
 
     # Sample light w/ multiple importance sampling
     wi, li, visibility, light_pdf = light.sample_l(hit.normal, scene, hit.point)
-    bsdf = hit.material.bsdf(hit)
 
     unless light_pdf == 0.0 || li.black?
       f = bsdf.f(wo, wi, flags)

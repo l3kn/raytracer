@@ -3,13 +3,10 @@ struct HitRecord
   getter point : Point
   getter normal : Normal
   getter material : Material
-  getter bsdf : BSDF do material.bsdf(point, normal, u, v) end
   getter object : Hitable
   getter u : Float64, v : Float64
 
-  def initialize(@t, @point, @normal, @material : Material, @object, @u, @v)
-    # @bsdf = material.bsdf(@point, @normal, @u, @v)
-  end
+  def initialize(@t, @point, @normal, @material, @object, @u, @v); end
 end
 
 

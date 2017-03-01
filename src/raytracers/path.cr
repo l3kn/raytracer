@@ -23,7 +23,7 @@ class PathRaytracer < BaseRaytracer
       l += path_throughput * bsdf.emitted(wo) if bounces == 0 || specular_bounce
 
       # sample illumination from lights
-      l += path_throughput * uniform_sample_one_light(hit, wo, @sample_background)
+      l += path_throughput * uniform_sample_one_light(hit, bsdf, wo, @sample_background)
 
       # sample bsdf to get new path dir
       sample = bsdf.sample_f(wo, BxDFType::ALL)

@@ -1,5 +1,5 @@
 abstract class Material
-  abstract def bsdf(point : Point, normal : Normal, u : Float64, v : Float64) : BSDF
+  abstract def bsdf(hit : HitRecord) : BSDF
 end
 
 class GlassMaterial < Material
@@ -11,24 +11,24 @@ class GlassMaterial < Material
     @texture_transmitted = ConstantTexture.new(color_transmitted)
   end
 
-  def bsdf(point, normal, u, v)
+  def bsdf(hit)
     bxdfs = [
-      SpecularReflection.new(@texture_reflected.value(point, normal, u, v),
+      SpecularReflection.new(@texture_reflected.value(hit),
                              FresnelDielectric.new(1.0, @ior)).as(BxDF),
-      SpecularTransmission.new(@texture_transmitted.value(point, normal, u, v),
+      SpecularTransmission.new(@texture_transmitted.value(hit),
                                1.0, @ior).as(BxDF)
     ]
-    MultiBSDF.new(bxdfs, normal)
+    MultiBSDF.new(bxdfs, hit.normal)
   end
 end
 
 class CheckerMaterial < Material
   def initialize(@m1 : Material, @m2 : Material, @size = 10); end
 
-  def bsdf(point, normal, u, v)
-    ui = (u * @size).to_i % 2
-    vi = (v * @size).to_i % 2
-    (ui + vi).even? ? @m1.bsdf(point, normal, u, v) : @m2.bsdf(point, normal, u, v)
+  def bsdf(hit)
+    u = (hit.u * @size).to_i % 2
+    v = (hit.v * @size).to_i % 2
+    (u + v).even? ? @m1.bsdf(hit) : @m2.bsdf(hit)
   end
 end
 
@@ -39,9 +39,9 @@ class MatteMaterial < Material
     @texture = ConstantTexture.new(color)
   end
 
-  def bsdf(point, normal, u, v)
-    bxdf = LambertianReflection.new(@texture.value(point, normal, u, v)).as(BxDF)
-    SingleBSDF.new(bxdf, normal)
+  def bsdf(hit)
+    bxdf = LambertianReflection.new(@texture.value(hit)).as(BxDF)
+    SingleBSDF.new(bxdf, hit.normal)
   end
 end
 
@@ -52,9 +52,9 @@ class OrenNayarMaterial < Material
     @texture = ConstantTexture.new(color)
   end
 
-  def bsdf(point, normal, u, v)
-    bxdf = OrenNayarReflection.new(@texture.value(point, normal, u, v), @sig).as(BxDF)
-    SingleBSDF.new(bxdf, normal)
+  def bsdf(hit)
+    bxdf = OrenNayarReflection.new(@texture.value(hit), @sig).as(BxDF)
+    SingleBSDF.new(bxdf, hit.normal)
   end
 end
 
@@ -65,9 +65,9 @@ class MirrorMaterial < Material
     @texture = ConstantTexture.new(color)
   end
 
-  def bsdf(point, normal, u, v)
-    bxdf = SpecularReflection.new(@texture.value(point, normal, u, v), FresnelNoOp.new).as(BxDF)
-    SingleBSDF.new(bxdf, normal)
+  def bsdf(hit)
+    bxdf = SpecularReflection.new(@texture.value(hit), FresnelNoOp.new).as(BxDF)
+    SingleBSDF.new(bxdf, hit.normal)
   end
 end
 
@@ -78,7 +78,7 @@ class DiffuseLightMaterial < Material
     @texture = ConstantTexture.new(color)
   end
 
-  def bsdf(point, normal, u, v)
-    EmissiveBSDF.new(@texture.value(point, normal, u, v), normal)
+  def bsdf(hit)
+    EmissiveBSDF.new(@texture.value(hit), hit.normal)
   end
 end
