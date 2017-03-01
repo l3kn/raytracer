@@ -10,26 +10,17 @@ class Cuboid < FiniteHitableList
     flt = Point.new(p1.x, p2.y, p1.z)
     flb = Point.new(p1.x, p1.y, p1.z)
 
-    rect_front = XYRect.new(flb, frt, front)
-    rect_back = XYRect.new(blb, brt, back)
-
-    rect_left = YZRect.new(flb, blt, left)
-    rect_right = YZRect.new(frb, brt, right)
-
-    rect_bottom = XZRect.new(flb, brb, bottom)
-    rect_top = XZRect.new(flt, brt, top)
-
-    rect_front.flip!
-    rect_left.flip!
-    rect_bottom.flip!
-
-    super([rect_front, rect_back,
-           rect_left, rect_right,
-           rect_bottom, rect_top])
+    super([
+      XYRect.new(flb, frt, front).flip!,
+      XYRect.new(blb, brt, back),
+      XZRect.new(flb, brb, bottom).flip!,
+      XZRect.new(flt, brt, top),
+      YZRect.new(flb, blt, left).flip!,
+      YZRect.new(frb, brt, right)
+    ])
   end
 
   def initialize(p1, p2, mat)
-    # Use the same material for all 6 sides
     initialize(p1, p2, mat, mat, mat, mat, mat, mat)
   end
 end

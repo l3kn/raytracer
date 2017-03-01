@@ -1,56 +1,47 @@
-require "stumpy_png"
 require "./perlin"
 
 abstract class Texture
-  abstract def value(hit : HitRecord) : Color
+  abstract def value(point : Point, normal : Normal, u : Float64, v : Float64) : Color
 end
 
 abstract class Texture1D
-  abstract def value(hit : HitRecord) : Float64
+  abstract def value(point : Point, normal : Normal, u : Float64, v : Float64) : Float64
 end
 
 class NormalTexture < Texture
-  def value(hit)
+  def value(point, normal, u, v)
     Color.new(
-      (1.0 + hit.normal.x) * 0.5,
-      (1.0 + hit.normal.y) * 0.5,
-      (1.0 + hit.normal.z) * 0.5,
+      (1.0 + normal.x) * 0.5,
+      (1.0 + normal.y) * 0.5,
+      (1.0 + normal.z) * 0.5,
     )
   end
 end
 
 class ConstantTexture < Texture
-  def initialize(@color : Color)
-  end
-
-  def value(_hit)
-    @color
-  end
+  def initialize(@color : Color); end
+  def value(point, normal, u, v); @color; end
 end
 
 class CheckerTexture < Texture
-  def initialize(@even : Texture, @odd : Texture)
-  end
+  def initialize(@even : Texture, @odd : Texture); end
 
   # TODO: Use uv values instead
-  def value(hit)
-    point = hit.point
+  def value(point, normal, u, v)
     sines = Math.sin(10*point.x)*Math.sin(10*point.y)*Math.sin(10*point.z)
     if sines < 0
-      @odd.value(hit)
+      @odd.value(point, normal, u, v)
     else
-      @even.value(hit)
+      @even.value(point, normal, u, v)
     end
   end
 end
 
 class NoiseTexture1D < Texture1D
-  def initialize(@scale = 10.0)
-    @noise = Perlin.new(100)
-  end
+  def initialize(@scale = 10.0, @noise = Perlin.new(100)); end
 
-  def value(hit)
-    @noise.perlin(hit.point * @scale)
+  def value(point, normal, u, v)
+    @noise.perlin(point * @scale)
   end
 end
 
@@ -59,8 +50,8 @@ class NoiseTexture < Texture
     @tex1D = NoiseTexture1D.new(scale)
   end
 
-  def value(hit)
-    Color.new(@tex1D.value(hit))
+  def value(point, normal, u, v)
+    Color.new(@tex1D.value(point, normal, u, v))
   end
 end
 
@@ -71,9 +62,9 @@ class ImageTexture < Texture
     @canvas = StumpyPNG.read(path)
   end
 
-  def value(hit)
-    x = (1 - (hit.u % 1.0)) * (@canvas.width - 1)
-    y = (1 - (hit.v % 1.0)) * (@canvas.height - 1)
+  def value(point, normal, u, v)
+    x = (1 - (u % 1.0)) * (@canvas.width - 1)
+    y = (1 - (v % 1.0)) * (@canvas.height - 1)
 
     color = @canvas[x.to_i, y.to_i]
     Color.new(
@@ -85,10 +76,9 @@ class ImageTexture < Texture
 end
 
 class UTexture < Texture
-  def initialize(@factor = 1.0)
-  end
+  def initialize(@factor = 1.0); end
 
-  def value(hit)
-    Color.new((1 - hit.u) ** @factor)
+  def value(point, normal, u, v)
+    Color.new((1 - u) ** @factor)
   end
 end

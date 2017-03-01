@@ -5,8 +5,7 @@ module DE
   class Twist < DistanceEstimatable
     property object : DistanceEstimatable
 
-    def initialize(@object)
-    end
+    def initialize(@object); end
 
     def distance_estimate(pos)
       c = Math.cos(0.5*pos.y)

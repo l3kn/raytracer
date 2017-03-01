@@ -1,8 +1,7 @@
 require "../hitable"
 
 class Cylinder < FiniteHitable
-  property y_min : Float64, y_max : Float64, radius
-  @phi_max : Float64
+  property y_min : Float64, y_max : Float64, radius : Float64
   @inv_phi_max : Float64
   @inv_length : Float64
 
@@ -14,7 +13,7 @@ class Cylinder < FiniteHitable
     p2 = Point.new( @radius,  @radius, @y_max)
     @bounding_box = AABB.new(p1, p2)
 
-    @phi_max = 360.0 * RADIANTS
+    @phi_max : Float64 = radiants(360.0)
     @inv_phi_max = 1.0 / @phi_max
     @inv_length = 1.0 / (@y_max - @y_min)
   end

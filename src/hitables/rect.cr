@@ -1,5 +1,3 @@
-require "../hitable"
-
 abstract class Rect < FiniteHitable
   getter bot : Point
   getter top : Point
@@ -12,8 +10,10 @@ abstract class Rect < FiniteHitable
     @area = 0.0
   end
 
+  # NOTE: (Rect.new(...).flip!) should return a Hitable, not a Normal
   def flip!
-    @normal = @normal.flip
+    @normal = -@normal
+    self
   end
 end
 

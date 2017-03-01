@@ -1,7 +1,3 @@
-require "stumpy_png"
-require "../vector"
-require "../background"
-
 class CubeMap < Background
   getter right : StumpyPNG::Canvas
   getter left : StumpyPNG::Canvas

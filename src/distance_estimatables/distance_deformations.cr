@@ -2,11 +2,9 @@ require "../distance_estimatable"
 
 module DE
   class Blend < DistanceEstimatable
-    property a : DistanceEstimatable
-    property b : DistanceEstimatable
+    property a : DistanceEstimatable, b : DistanceEstimatable
 
-    def initialize(@a, @b, @k = 50.0)
-    end
+    def initialize(@a, @b, @k = 50.0); end
 
     def distance_estimate(pos)
       smin(@a.distance_estimate(pos), @b.distance_estimate(pos))

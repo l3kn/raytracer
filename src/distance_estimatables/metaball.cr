@@ -1,22 +1,12 @@
-require "../vector"
-require "../distance_estimatable"
-require "../point"
-
 module DE
   class Metaball < DE::BruteForceDistanceEstimatable
-    getter points : Array(Tuple(Point, Float64))
-    getter threshold : Float64
-
-    def initialize(@points, @threshold)
-    end
+    def initialize(@points : Array(Tuple(Point, Float64)), @threshold : Float64); end
 
     def inside?(pos)
       potential = 0.0
-
       @points.each do |p_i, r_i|
         potential += r_i / (pos - p_i).squared_length
       end
-
       potential > @threshold
     end
 

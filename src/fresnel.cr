@@ -3,8 +3,7 @@ abstract class Fresnel
 end
 
 class FresnelConductor < Fresnel
-  def initialize(@eta : Float64, @k : Float64)
-  end
+  def initialize(@eta : Float64, @k : Float64); end
 
   def evaluate(cos_i : Float64)
     cos_i = cos_i.abs
@@ -20,8 +19,7 @@ class FresnelConductor < Fresnel
 end
 
 class FresnelDielectric < Fresnel
-  def initialize(@eta_i : Float64, @eta_t : Float64)
-  end
+  def initialize(@eta_i : Float64, @eta_t : Float64); end
 
   def evaluate(cos_i : Float64)
     cos_i = clamp(cos_i, -1.0, 1.0)
@@ -32,7 +30,7 @@ class FresnelDielectric < Fresnel
     # Snells law
     sin_t = eta_i / eta_t * Math.sqrt(max(0.0, 1.0 - cos_i * cos_i))
 
-    if (sin_t >= 1.0) # Total internal reflection
+    if sin_t >= 1.0 # Total internal reflection
       1.0
     else
       cos_t = Math.sqrt(max(0.0, 1.0 - sin_t * sin_t))
@@ -49,7 +47,5 @@ class FresnelDielectric < Fresnel
 end
 
 class FresnelNoOp < Fresnel
-  def evaluate(cos_i : Float64)
-    1.0
-  end
+  def evaluate(cos_i); 1.0; end
 end

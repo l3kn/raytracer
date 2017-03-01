@@ -20,19 +20,16 @@ class TransformationWrapper < FiniteHitable
   def hit(ray : Ray)
     new_ray = @transformation.world_to_object(ray)
     hit = @object.hit(new_ray)
+    return nil if hit.nil?
 
-    if hit
-      HitRecord.new(
-        hit.t,
-        @transformation.object_to_world(hit.point),
-        @transformation.object_to_world(hit.normal),
-        hit.material,
-        hit.object,
-        hit.u, hit.v
-      )
-    else
-      nil
-    end
+    HitRecord.new(
+      hit.t,
+      @transformation.object_to_world(hit.point),
+      @transformation.object_to_world(hit.normal),
+      hit.material,
+      hit.object,
+      hit.u, hit.v
+    )
   end
 end
 
@@ -40,8 +37,7 @@ class VS < Transformation
   @inv_scale : Float64
 
   # TODO: Make this code less messy
-  def initialize(@translation = Vector.new(0.0),
-                 @scale = 1.0)
+  def initialize(@translation = Vector.new(0.0), @scale = 1.0)
     @inv_scale = 1.0 / @scale
   end
 
@@ -61,13 +57,8 @@ class VS < Transformation
     point * @scale
   end
 
-  def world_to_object(n : Normal) : Normal
-    n
-  end
-
-  def object_to_world(n : Normal) : Normal
-    n
-  end
+  def world_to_object(n : Normal) : Normal; n; end
+  def object_to_world(n : Normal) : Normal; n; end
 
   def world_to_object(ray : Ray)
     Ray.new(world_to_object(ray.origin), world_to_object(ray.direction), ray.t_min, ray.t_max)

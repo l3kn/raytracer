@@ -2,6 +2,7 @@ class Scene
   property hitable : Hitable
   property lights : Array(Light)
   property background : Background
+  property light_sampling_CDF do Distribution1D.new(lights.map(&.power.length)) end
 
   def initialize(hitables, @lights, @background)
     if hitables.size < 500
@@ -26,16 +27,10 @@ class Scene
     # TODO: actually implement a fast hit method for some hitables
     !hit(ray).nil?
   end
-
-  # TODO: Use this for uniform_sample_*_light(s) ?
-  def light_sampling_CDF
-    Distribution1D.new(@lights.map(&.power.length))
-  end
 end
 
 class VisibilityTester
-  def initialize(@ray = Ray.new(Point.zero, Vector.x))
-  end
+  def initialize(@ray : Ray); end
 
   def self.from_segment(p1 : Point, p2 : Point)
     dir = p2 - p1

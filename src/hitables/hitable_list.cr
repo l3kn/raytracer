@@ -4,10 +4,10 @@ module HitableListMethods
     closest_so_far = ray.t_max
 
     @objects.each do |object|
-      rec = object.hit(Ray.new(ray.origin, ray.direction, ray.t_min, closest_so_far))
-      if rec
-        closest_so_far = rec.t
-        result = rec
+      hit = object.hit(Ray.new(ray.origin, ray.direction, ray.t_min, closest_so_far))
+      if hit
+        closest_so_far = hit.t
+        result = hit
       end
     end
 
@@ -15,19 +15,11 @@ module HitableListMethods
   end
 
   def area
-    res = 0.0
-    @objects.each do |object|
-      res += object.area
-    end
-    res
+    @objects.reduce(0.0) { |acc, obj| acc + obj.area }
   end
 
   def pdf(point, wi)
-    res = 0.0
-    @objects.each do |obj|
-      res += obj.pdf(point, wi)
-    end
-    res / @objects.size
+    @objects.reduce(0.0) { |acc, obj| acc + obj.pdf(point, wi) } / @objects.size
   end
 
   def sample
@@ -41,9 +33,7 @@ end
 
 class HitableList < Hitable
   include HitableListMethods
-
-  def initialize(@objects : Array(Hitable))
-  end
+  def initialize(@objects : Array(Hitable)); end
 end
 
 # TODO: find a way to do this with less code duplication

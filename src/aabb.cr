@@ -69,14 +69,15 @@ struct AABB
     @max - @min
   end
 
-  def max_axis
-    diagonal.max_component
-  end
-
   def offset(point : Point) : Point
     extent = diagonal
     offset = point - @min
     Point.new(offset.x / extent.x, offset.y / extent.y, offset.z / extent.z)
+  end
+
+  def area : Float64
+    delta = diagonal
+    (delta.x * delta.y + delta.x * delta.z + delta.y * delta.z) * 2.0
   end
 
   def self.from_points(points : Array(Point))

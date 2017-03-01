@@ -1,6 +1,3 @@
-require "./vector"
-require "./transformation"
-
 abstract class Camera
   abstract def generate_ray(x : Float64, y : Float64,
                             t_min : Float64, t_max : Float64) : Ray

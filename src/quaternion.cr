@@ -1,8 +1,8 @@
 struct Quaternion < LA::AQuaternion
+  # TODO: Include these functions in 'linalg'
   define_vector_swizzling(3, target: Vector, signed: true)
 
-  def initialize(@x, @y, @z, @w)
-  end
+  def initialize(@x, @y, @z, @w); end
 
   def initialize(@x : Float64, yzw : (Point | Vector))
     @y, @z, @w = yzw.to_tuple

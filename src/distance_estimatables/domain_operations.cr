@@ -1,13 +1,6 @@
-require "../distance_estimatable"
-require "../vector"
-
 module DE
   class Repeat < DistanceEstimatable
-    property object : DistanceEstimatable
-    property mod : Vector
-
-    def initialize(@object, @mod)
-    end
+    def initialize(@object : DistanceEstimatable, @mod : Vector); end
 
     def distance_estimate(pos)
       pos += @mod / 2.0
@@ -22,11 +15,7 @@ module DE
   end
 
   class Translate < DistanceEstimatable
-    property object : DistanceEstimatable
-    property offset : Vector
-
-    def initialize(@object, @offset)
-    end
+    def initialize(@object : DistanceEstimatable, @offset : Vector); end
 
     def distance_estimate(pos)
       @object.distance_estimate(pos - @offset)
@@ -34,11 +23,7 @@ module DE
   end
 
   class Scale < DistanceEstimatable
-    property object : DistanceEstimatable
-    property factor : Float64
-
-    def initialize(@object, @factor)
-    end
+    def initialize(@object : DistanceEstimatable, @factor : Float64); end
 
     def distance_estimate(pos)
       @object.distance_estimate(pos * @factor) / @factor
@@ -46,35 +31,17 @@ module DE
   end
 
   class SwapXY < DistanceEstimatable
-    property object : DistanceEstimatable
-
-    def initialize(@object)
-    end
-
-    def distance_estimate(pos)
-      @object.distance_estimate(Point.new(pos.y, pos.x, pos.z))
-    end
+    def initialize(@object : DistanceEstimatable); end
+    def distance_estimate(pos); @object.distance_estimate(pos.yxz); end
   end
 
   class SwapXZ < DistanceEstimatable
-    property object : DistanceEstimatable
-
-    def initialize(@object)
-    end
-
-    def distance_estimate(pos)
-      @object.distance_estimate(Point.new(pos.z, pos.y, pos.x))
-    end
+    def initialize(@object : DistanceEstimatable); end
+    def distance_estimate(pos); @object.distance_estimate(poz.zyx); end
   end
 
   class SwapYZ < DistanceEstimatable
-    property object : DistanceEstimatable
-
-    def initialize(@object)
-    end
-
-    def distance_estimate(pos)
-      @object.distance_estimate(Point.new(pos.x, pos.z, pos.y))
-    end
+    def initialize(@object : DistanceEstimatable); end
+    def distance_estimate(pos); @object.distance_estimate(pos.xzy), end
   end
 end

@@ -1,15 +1,9 @@
 struct ONB
   getter u : Vector, v : Vector, w : Vector
-
-  def initialize(@u, @v, @w)
-  end
+  def initialize(@u, @v, @w); end
 
   def world_to_local(vec)
-    Vector.new(
-      vec.dot(@u),
-      vec.dot(@v),
-      vec.dot(@w)
-    )
+    Vector.new(vec.dot(@u), vec.dot(@v), vec.dot(@w))
   end
 
   def local_to_world(vec)
@@ -20,8 +14,8 @@ struct ONB
     )
   end
 
-  def self.from_w(n)
-    w = n.normalize.to_vector
+  def self.from_w(n : Normal)
+    w = n.to_vector
     a = w.x.abs > 0.9 ? Vector.y : Vector.x
 
     v = w.cross(a).normalize

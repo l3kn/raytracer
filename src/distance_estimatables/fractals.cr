@@ -1,11 +1,6 @@
-require "../vector"
-require "../distance_estimatable"
-require "../transformation"
-
 module DE
   class Mandelbulb < DistanceEstimatable
-    def initialize(@iterations = 10, @power = 8)
-    end
+    def initialize(@iterations = 10, @power = 8); end
 
     def distance_estimate(pos)
       z = pos
@@ -14,7 +9,6 @@ module DE
 
       @iterations.times do
         r = z.length
-
         break if r > 1000.0
 
         theta = Math.acos(z.z / r)

@@ -2,15 +2,10 @@ require "../distance_estimatable"
 
 module DE
   class DistanceOperation < DistanceEstimatable
-    property a : DistanceEstimatable
-    property b : DistanceEstimatable
+    property a : DistanceEstimatable, b : DistanceEstimatable
 
-    def initialize(@a, @b)
-    end
-
-    def distance_estimate(pos)
-      0.0
-    end
+    def initialize(@a, @b); end
+    def distance_estimate(pos); 0.0; end
   end
 
   class Union < DistanceOperation

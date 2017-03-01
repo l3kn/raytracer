@@ -1,14 +1,6 @@
-require "../distance_estimatable"
-require "../vector"
-require "../point"
-require "../normal"
-
 module DE
   class Sphere < DistanceEstimatable
-    property radius : Float64
-
-    def initialize(@radius)
-    end
+    def initialize(@radius : Float64); end
 
     def distance_estimate(pos)
       pos.length - @radius
@@ -16,10 +8,7 @@ module DE
   end
 
   class Box < DistanceEstimatable
-    property dimensions : Point
-
-    def initialize(@dimensions, @radius = 0.0)
-    end
+    def initialize(@dimensions : Point, @radius = 0.0); end
 
     def distance_estimate(pos)
       (pos.abs - @dimensions).max(0.0).length - @radius
@@ -27,26 +16,18 @@ module DE
   end
 
   class Torus < DistanceEstimatable
-    property radius : Float64
-    property width : Float64
-
-    def initialize(@radius, @width)
-    end
+    def initialize(@radius : Float64, @width : Float64); end
 
     def distance_estimate(pos)
-      qx = Math.sqrt(pos.x * pos.x + pos.z * pos.z) - radius
+      qx = Math.sqrt(pos.x * pos.x + pos.z * pos.z) - @radius
       qy = pos.y
 
-      Math.sqrt(qx * qx + qy * qy) - width
+      Math.sqrt(qx * qx + qy * qy) - @width
     end
   end
 
   class Prism < DistanceEstimatable
-    property height : Float64
-    property length : Float64
-
-    def initialize(@height, @length)
-    end
+    def initialize(@height : Float64, @length : Float64); end
 
     def distance_estimate(pos)
       q = pos.abs
@@ -55,11 +36,7 @@ module DE
   end
 
   class Cylinder < DistanceEstimatable
-    property radius : Float64
-    property length : Float64
-
-    def initialize(@radius, @length)
-    end
+    def initialize(@radius : Float64, @length : Float64); end
 
     def distance_estimate(pos)
       dx = Math.sqrt(pos.x * pos.x + pos.z * pos.z).abs - @radius
@@ -73,11 +50,7 @@ module DE
   end
 
   class Plane < DistanceEstimatable
-    property normal : Normal
-    property w : Float64
-
-    def initialize(@normal, @w)
-    end
+    def initialize(@normal : Normal, @w : Float64); end
 
     def distance_estimate(pos)
       pos.dot(@normal) + @w

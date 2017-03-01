@@ -1,19 +1,13 @@
 require "../aabb"
 require "../hitable"
 
+# NOTE: This is used for AABB.fast_hit
 struct ExtendedRay
-  getter inv_x : Float64
-  getter inv_y : Float64
-  getter inv_z : Float64
-  getter pos_x : Bool
-  getter pos_y : Bool
-  getter pos_z : Bool
-
+  getter inv_x : Float64, inv_y : Float64, inv_z : Float64
+  getter pos_x : Bool, pos_y : Bool, pos_z : Bool
+  getter t_min : Float64, t_max : Float64
   getter origin : Point
   getter direction : Vector
-
-  getter t_min : Float64
-  getter t_max : Float64
 
   def initialize(ray)
     @origin = ray.origin
@@ -36,8 +30,7 @@ struct ExtendedRay
 end
 
 class BVHNode < FiniteHitable
-  getter left : FiniteHitable
-  getter right : FiniteHitable
+  getter left : FiniteHitable, right : FiniteHitable
   getter bounding_box : AABB
 
   @@hit_both = 0_u32
@@ -45,30 +38,16 @@ class BVHNode < FiniteHitable
   @@hit_overall = 0_u32
 
   def initialize(list : Array(FiniteHitable))
-    raise "Error, trying to construct an empty BVHNode" if list.empty?
-
     n = list.size
-    if n == 1
-      # This should never happen
-      @left = @right = list[0]
-    elsif n == 2
-      @left = list[0]
-      @right = list[1]
+    assert(n > 1, "BVHNode should have at least 2 elements")
+
+    if n == 2
+      @left, @right = list[0], list[1]
     else
       # Split on the axis where the range of centroids is the largest
       centroids = list.map { |obj| obj.bounding_box.centroid }
-
-      min = centroids.reduce(Point.new(Float64::MAX)) { |centroid, min| centroid.min(min) }
-      max = centroids.reduce(Point.new(-Float64::MAX)) { |centroid, max| centroid.max(max) }
-      delta = max - min
-
-      if delta.x >= delta.y && delta.x >= delta.z
-        axis = 0
-      elsif delta.y >= delta.x && delta.y >= delta.z
-        axis = 1
-      else
-        axis = 2
-      end
+      bb = AABB.from_points(centroids)
+      axis = bb.diagonal.max_axis
 
       sorted = list.sort_by { |h| h.bounding_box.centroid[axis] }
       half = n / 2

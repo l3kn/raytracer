@@ -1,24 +1,13 @@
-require "../hitable"
-
 class Triangle < FiniteHitable
-  getter a : Point
-  getter b : Point
-  getter c : Point
+  getter a : Point, b : Point, c : Point
+  getter edge1 : Vector, edge2 : Vector
+  getter normal : Normal
   property material : Material
 
-  getter edge1 : Vector
-  getter edge2 : Vector
-  getter normal : Normal
-
   def initialize(@a, @b, @c, @material)
-    min = @a.min(@b).min(@c)
-    max = @a.max(@b).max(@c)
-
-    @bounding_box = AABB.new(min, max)
-
+    @bounding_box = AABB.from_points([@a, @b, @c])
     @edge1 = @b - @a
     @edge2 = @c - @a
-
     @normal = edge1.cross(edge2).to_normal
   end
 
@@ -46,7 +35,7 @@ class Triangle < FiniteHitable
 
     t = @edge2.dot(q) * inv_det
 
-    if (t < ray.t_max && t > ray.t_min)
+    if t < ray.t_max && t > ray.t_min
       point = ray.point_at_parameter(t)
       u, v = get_uv(ray, point, u, v)
       normal = get_normal(ray, point, u, v)
@@ -57,16 +46,9 @@ class Triangle < FiniteHitable
   end
 
   def get_normal(ray, point, u, v)
-    if @normal.dot(ray.direction) < 0.0
-      @normal
-    else
-      @normal.flip
-    end
+    @normal.dot(ray.direction) < 0.0 ? @normal : -@normal
   end
-
-  def get_uv(ray, point, u, v)
-    {u, v}
-  end
+  def get_uv(ray, point, u, v); {u, v}; end
 
   def barycentric_coordinates(p)
     v0 = @b - @a
@@ -91,9 +73,7 @@ end
 
 class InterpolatedTriangle < Triangle
   # Vertex normals
-  getter na : Normal
-  getter nb : Normal
-  getter nc : Normal
+  getter na : Normal, nb : Normal, nc : Normal
 
   def initialize(@a, @b, @c, @na, @nb, @nc, @material)
     super(@a, @b, @c, @material)
@@ -111,9 +91,7 @@ end
 
 class TexturedTriangle < InterpolatedTriangle
   # Texture coordinates
-  getter ta : Vector
-  getter tb : Vector
-  getter tc : Vector
+  getter ta : Vector, tb : Vector, tc : Vector
 
   def initialize(@a, @b, @c, @na, @nb, @nc, @ta, @tb, @tc, @material)
     super(@a, @b, @c, @na, @nb, @nc, @material)

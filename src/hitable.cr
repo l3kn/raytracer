@@ -1,17 +1,22 @@
-record HitRecord,
-  t : Float64, # Ray parameter of the hitpoint
-  point : Point,
-  normal : Normal,
-  material : Material,
-  object : Hitable,
-  u : Float64, # Vars for texture mapping
-  v : Float64
+struct HitRecord
+  getter t : Float64
+  getter point : Point
+  getter normal : Normal
+  getter material : Material
+  getter bsdf : BSDF do material.bsdf(point, normal, u, v) end
+  getter object : Hitable
+  getter u : Float64, v : Float64
+
+  def initialize(@t, @point, @normal, @material : Material, @object, @u, @v)
+    # @bsdf = material.bsdf(@point, @normal, @u, @v)
+  end
+end
+
 
 abstract class Hitable
-  property area_light : Light?
+  property area_light : Light? = nil
   @area_light = nil
 
-  # TODO: Should area be a getter instead of a function?
   abstract def hit(ray : Ray) : HitRecord?
 
   def hit(ray : ExtendedRay) : HitRecord?
@@ -26,7 +31,6 @@ abstract class Hitable
     sample
   end
 
-  # What is the probability that the object was hit in point?
   def pdf(point : Point) : Float64
     1.0 / area
   end
@@ -50,8 +54,7 @@ end
 abstract class FiniteHitable < Hitable
   property bounding_box : AABB
 
-  # TODO: Would removing this break anything?
   def initialize
-    @bounding_box = AABB.new(Point.new(-Float64::MAX), Point.new(Float64::MAX))
+    @bounding_box = AABB.new
   end
 end

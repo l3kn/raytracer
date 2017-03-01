@@ -28,19 +28,15 @@ struct Color
   end
 
   def min(other : Float64)
-    Color.new(
-      min(@r, other),
-      min(@g, other),
-      min(@b, other)
-    )
+    Color.new(min(@r, other), min(@g, other), min(@b, other))
   end
 
   def black?
     @r == 0.0 && @g == 0.0 && @b == 0.0
   end
 
-  def max
-    {@r, @g, @b}.max
+  def max_component
+    max(@r, max(@g, @b))
   end
 
   def inspect

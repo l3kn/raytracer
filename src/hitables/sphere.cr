@@ -2,19 +2,20 @@ require "../hitable"
 
 class Sphere < FiniteHitable
   property material
+  getter area : Float64
 
   def initialize(@material : Material)
     @bounding_box = AABB.new(Point.new(-1.0), Point.new(1.0))
+    @area = FOURPI
   end
 
   def hit(ray)
-    oc = ray.origin
-
-    a = ray.direction.squared_length
-    b = 2.0 * oc.dot(ray.direction)
-    c = oc.squared_length - 1.0
-
-    ts = solve_quadratic(a, b, c)
+    # NOTE: The sphere is always centered at (0, 0, 0) and has a radius of 1.0
+    ts = solve_quadratic(
+      ray.direction.squared_length,
+      2.0 * ray.origin.dot(ray.direction),
+      ray.origin.squared_length - 1.0
+    )
     return nil if ts.nil?
 
     t0, t1 = ts
@@ -31,22 +32,15 @@ class Sphere < FiniteHitable
     # This only works bc/ radius = 1.0
     normal = Normal.new(point.x, point.y, point.z)
 
-    u = 0.5 + Math.atan2(-normal.z, -normal.x) * 0.5 * INV_PI
+    u = 0.5 + Math.atan2(-normal.z, -normal.x) * INV_TWOPI
     v = 0.5 - Math.asin(-normal.y) * INV_PI
 
     return HitRecord.new(t_hit, point, normal, @material, self, u, v)
   end
 
-  def area
-    4.0 * Math::PI
-  end
-
   def sample : {Point, Normal}
+    # NOTE: Constructing the normal by hand is a little bit faster
     point_s = Point.new(rand, rand, rand).normalize
     { point_s, Normal.new(point_s.x, point_s.y, point_s.z) }
   end
-
-  # TODO: implement some efficient version of this
-  # def sample(point) : {Point, Normal}
-  # end
 end

@@ -15,36 +15,26 @@ end
 # trying to minimize the overlap of the left and right bounding boxes.
 # Construction takes longer but the resulting BVH is (probably) faster
 class SAHBVHNode < BVHNode
+  BUCKETS = 12
+
   def initialize(list)
     n = list.size
-    if n == 1
-      # This should never happen
-      @left = @right = list[0]
-    elsif n == 2
-      @left = list[0]
-      @right = list[1]
+    assert(n > 1, "BVHNode should have at least 2 elements")
+
+    if n == 2
+      @left, @right = list[0], list[1]
     else
       centroids = list.map { |obj| obj.bounding_box.centroid }
-      min = centroids.reduce(Point.new(Float64::MAX)) { |centroid, min| centroid.min(min) }
-      max = centroids.reduce(Point.new(-Float64::MAX)) { |centroid, max| centroid.max(max) }
-      delta = max - min
-
-      if delta.x >= delta.y && delta.x >= delta.z
-        axis = 0
-      elsif delta.y >= delta.x && delta.y >= delta.z
-        axis = 1
-      else
-        axis = 2
-      end
-
-      n_buckets = 12
-      buckets = Array.new(n_buckets) { BucketInfo.new }
+      bb = AABB.from_points(centroids)
+      min, max = bb.min, bb.max
+      axis = (max - min).max_axis
+      buckets = Array.new(BUCKETS) { BucketInfo.new }
 
       # Generate buckets
       sorted = list.sort_by { |h| h.bounding_box.centroid[axis] }
       sorted.each do |object|
-        b = (n_buckets * (object.bounding_box.centroid[axis] - min[axis]) / (max[axis] - min[axis])).to_i
-        b = n_buckets - 1 if b == n_buckets
+        b = (BUCKETS * (object.bounding_box.centroid[axis] - min[axis]) / (max[axis] - min[axis])).to_i
+        b = BUCKETS - 1 if b == BUCKETS
 
         buckets[b].count += 1
         if buckets[b].count == 1
@@ -54,10 +44,10 @@ class SAHBVHNode < BVHNode
         end
       end
 
-      cost = Array.new(n_buckets - 1, 0.0)
+      cost = Array.new(BUCKETS - 1, 0.0)
 
       # Rate buckets
-      (0...(n_buckets - 1)).each do |i|
+      (0...(BUCKETS - 1)).each do |i|
         count0 = 0
         count1 = 1
 
@@ -68,12 +58,13 @@ class SAHBVHNode < BVHNode
         end
 
         b1 = buckets[i+1].bounds
-        ((i+1)...n_buckets).each do |j|
+        ((i+1)...BUCKETS).each do |j|
           b1 = b1.merge(buckets[j].bounds)
           count1 += buckets[j].count
         end
 
-        cost[i] = 0.125 + (count0*area(b0.min, b0.max) + count1*area(b1.min, b1.max)) / area(min, max)
+        # TODO: is using bb.area here correct?
+        cost[i] = 0.125 + (count0*b0.area + count1*b1.area) / bb.area
       end
 
       min_cost = cost[0]
@@ -92,34 +83,15 @@ class SAHBVHNode < BVHNode
 
       # Perform split
       sorted.each do |obj|
-        b = (n_buckets * (obj.bounding_box.centroid[axis] - min[axis]) / (max[axis] - min[axis])).to_i
-        b = n_buckets - 1 if b == n_buckets
+        b = (BUCKETS * (obj.bounding_box.centroid[axis] - min[axis]) / (max[axis] - min[axis])).to_i
+        b = BUCKETS - 1 if b == BUCKETS
 
-        if b <= min_cost_split
-          left_ << obj
-        else
-          right_ << obj
-        end
+        b <= min_cost_split ? left_ << obj : right_ << obj
       end
 
-      if left_.size == 1
-        @left = left_[0]
-      else
-        @left = SAHBVHNode.new(left_)
-      end
-
-      if right_.size == 1
-        @right = right_[0]
-      else
-        @right = SAHBVHNode.new(right_)
-      end
+      @left  = left_.size  == 1 ? left_[0]  : SAHBVHNode.new(left_)
+      @right = right_.size == 1 ? right_[0] : SAHBVHNode.new(right_)
     end
-
     @bounding_box = @left.bounding_box.merge(@right.bounding_box)
-  end
-
-  def area(min, max)
-    delta = max - min
-    (delta.x * delta.y + delta.x * delta.z + delta.y * delta.z) * 2.0
   end
 end

@@ -1,5 +1,5 @@
 abstract class Background
-  abstract def get(ray)
+  abstract def get(ray : Ray) : Color
 end
 
 class SkyBackground < Background
@@ -10,10 +10,6 @@ class SkyBackground < Background
 end
 
 class ConstantBackground < Background
-  def initialize(@color : Color)
-  end
-
-  def get(ray)
-    @color
-  end
+  def initialize(@color : Color); end
+  def get(ray); @color; end
 end
