@@ -6,7 +6,7 @@ class SimpleRaytracer < BaseRaytracer
     (0...@recursion_depth).each do |depth|
       hit = @scene.hit(ray)
       if hit.nil?
-        l += path_throughput * @scene.background.get(ray)
+        l += path_throughput * @scene.get_background(ray)
         break
       end
 

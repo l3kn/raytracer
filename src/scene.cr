@@ -1,10 +1,10 @@
 class Scene
   property hitable : Hitable
   property lights : Array(Light)
-  property background : Background
+  property background : Background?
   property light_sampling_CDF do Distribution1D.new(lights.map(&.power.length)) end
 
-  def initialize(hitables, @lights, @background = ConstantBackground.new(Color::BLACK))
+  def initialize(hitables, @lights, @background = nil)
     if hitables.size < 500
       @hitable = HitableList.new(hitables)
     else
@@ -17,6 +17,11 @@ class Scene
         @hitable = SAHBVHNode.new(finite)
       end
     end
+  end
+
+  def get_background(ray)
+    background = @background
+    background.nil? ? Color::BLACK : background.get(ray)
   end
 
   def hit(ray : Ray) : HitRecord?

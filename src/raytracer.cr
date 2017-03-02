@@ -15,39 +15,27 @@ abstract class Raytracer
     StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
   end
 
-  # TODO: Is there a cleaner way to deal w/ sampling the background?
-  def uniform_sample_one_light(hit, bsdf, wo, background = true)
-    if background
-      index = rand(0..@scene.lights.size)
-      light_pdf = 1.0 / (@scene.lights.size + 1)
-      if index == 0
-        estimate_background(hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
-      else
-        estimate_direct(@scene.lights[index - 1], hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
-      end
-    else
-      light_pdf = 1.0 / (@scene.lights.size)
+  def uniform_sample_one_light(hit, bsdf, wo)
       return Color::BLACK if @scene.lights.size == 0
-      estimate_direct(@scene.lights.sample, hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR) / light_pdf
-    end
+
+      light_pdf = 1.0 / (@scene.lights.size)
+      estimate_direct(@scene.lights.sample, hit, bsdf, wo) / light_pdf
   end
 
-  def uniform_sample_all_lights(hit, bsdf, wo, background = true)
+  def uniform_sample_all_lights(hit, bsdf, wo)
     color = Color::BLACK
+    return color if @scene.lights.size == 0
 
+    light_pdf = 1.0 / @scene.lights.size
     @scene.lights.each do |light|
-      color += estimate_direct(light, hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
-    end
-
-    if background
-      color += estimate_background(hit, bsdf, wo, BxDFType::ALL & ~BxDFType::SPECULAR)
-      color / (@scene.lights.size + 1.0)
-    else
-      color / @scene.lights.size.to_f
+      color += estimate_direct(light, hit, bsdf, wo) / light_pdf
     end
   end
 
-  def estimate_background(hit, bsdf, wo, flags)
+  def estimate_background(hit, bsdf, wo, flags = BxDFType::NOTSPECULAR)
+    background = @scene.background
+    return Color::BLACK if background.nil?
+
     sample = bsdf.sample_f(wo, flags)
     return Color::BLACK if sample.nil?
 
@@ -60,11 +48,11 @@ abstract class Raytracer
     ray = Ray.new(hit.point, wi)
     return Color::BLACK if @scene.fast_hit(ray)
 
-    li = @scene.background.get(ray)
+    li = background.get(ray)
     f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf
   end
 
-  def estimate_direct(light, hit, bsdf, wo, flags)
+  def estimate_direct(light, hit, bsdf, wo, flags = BxDFType::NOTSPECULAR)
     ld = Color::BLACK
 
     # Sample light w/ multiple importance sampling

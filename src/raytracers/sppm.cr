@@ -44,8 +44,7 @@ class SPPMRaytracer < Raytracer
   property recursion_depth : Int32
   property iterations : Int32
 
-  def initialize(dimensions, camera, samples, scene,
-                 @sample_background = false)
+  def initialize(dimensions, camera, samples, scene)
     @photons_per_iteration = dimensions[0] * dimensions[1]
     @initial_search_radius = 1.0
     @iterations = 1024
@@ -90,7 +89,7 @@ class SPPMRaytracer < Raytracer
         (0...@recursion_depth).each do |depth|
           hit = @scene.hit(ray)
           if hit.nil?
-            pixel.ld += path_throughput * @scene.background.get(ray)
+            pixel.ld += path_throughput * @scene.get_background(ray)
             break
           end
 
@@ -99,7 +98,8 @@ class SPPMRaytracer < Raytracer
           # Accumulate direct illumination at SPPM camera ray intersection
           wo = -ray.direction
           pixel.ld += path_throughput * bsdf.emitted(wo) if depth == 0 || specular_bounce
-          pixel.ld += path_throughput * uniform_sample_one_light(hit, bsdf, wo, @sample_background)
+          pixel.ld += path_throughput * uniform_sample_one_light(hit, bsdf, wo)
+          pixel.ld += path_throughput * estimate_background(hit, bsdf, wo)
 
           if bsdf.diffuse? || (bsdf.glossy? && depth == @recursion_depth - 1)
             pixel.vp = VisiblePoint.new(hit.point, wo, bsdf, path_throughput)

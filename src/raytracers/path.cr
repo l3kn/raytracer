@@ -13,7 +13,7 @@ class PathRaytracer < BaseRaytracer
     (0...@recursion_depth).each do |depth|
       hit = @scene.hit(ray)
       if hit.nil?
-        l += path_throughput * @scene.background.get(ray) if specular_bounce
+        l += path_throughput * @scene.get_background(ray) if specular_bounce
         break
       end
 
@@ -21,7 +21,8 @@ class PathRaytracer < BaseRaytracer
       wo = -ray.direction
 
       l += path_throughput * bsdf.emitted(wo) if depth == 0 || specular_bounce
-      l += path_throughput * uniform_sample_one_light(hit, bsdf, wo, @sample_background)
+      l += path_throughput * uniform_sample_one_light(hit, bsdf, wo)
+      l += path_throughput * estimate_background(hit, bsdf, wo)
 
       # sample bsdf to get new path dir
       sample = bsdf.sample_f(wo, BxDFType::ALL)

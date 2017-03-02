@@ -2,7 +2,7 @@ class NormalRaytracer < BaseRaytracer
   def cast_ray(ray)
     hit = @scene.hit(ray)
     if hit.nil?
-      @scene.background.get(ray)
+      @scene.get_background(ray)
     else
       Color.new(
         (1.0 + hit.normal.x) * 0.5,
