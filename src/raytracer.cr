@@ -2,27 +2,17 @@ abstract class Raytracer
   property width : Int32, height : Int32, samples : Int32
   property camera : Camera
   property scene : Scene
+  property gamma_correction : Float64
 
-  def initialize(@width, @height, @camera, @samples, @scene); end
+  def initialize(dimensions, @camera, @samples, @scene)
+    @width, @height = dimensions
+    @gamma_correction = 1.0 / 2.2
+  end
 
   abstract def render_to_canvas(filename : String, adaptive = false)
 
   def render(filename, adaptive = false)
     StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
-  end
-
-  def specular(ray, hit, bsdf, recursion_depth, type)
-    sample = bsdf.sample_f(-ray.direction, BxDFType::SPECULAR | type)
-    return Color::BLACK if sample.nil?
-
-    color, wi, pdf, sampled_type = sample
-
-    wi_dot_n = wi.dot(hit.normal).abs
-    return Color::BLACK if wi_dot_n == 0.0
-
-    new_ray = Ray.new(hit.point, wi)
-    li = cast_ray(new_ray, recursion_depth - 1)
-    li * color * wi_dot_n / pdf
   end
 
   # TODO: Is there a cleaner way to deal w/ sampling the background?
@@ -124,13 +114,11 @@ abstract class Raytracer
 end
 
 abstract class BaseRaytracer < Raytracer
-  property gamma_correction : Float64
   property recursion_depth : Int32
   property filter : Filter
 
-  def initialize(width, height, camera, samples, scene, @filter = BoxFilter.new(0.5))
-    super(width, height, camera, samples, scene)
-    @gamma_correction = 1.0/2.2
+  def initialize(dimensions, camera, samples, scene, @filter = BoxFilter.new(0.5))
+    super(dimensions, camera, samples, scene)
     @recursion_depth = 10
   end
 
@@ -203,10 +191,5 @@ abstract class BaseRaytracer < Raytracer
     canvas
   end
 
-  def cast_ray(ray, recursion_depth = @recursion_depth)
-    hit = @scene.hit(ray)
-    hit ? color(ray, hit, recursion_depth) : @scene.background.get(ray)
-  end
-
-  abstract def color(ray : Ray, hit : HitRecord, recursion_depth : Int32) : Color
+  abstract def cast_ray(ray)
 end

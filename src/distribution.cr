@@ -17,14 +17,13 @@ class Distribution1D
     end
 
     @func_integral = @cdf[@count]
+    assert(@func_integral > 0.0)
 
     @cdf.map!(&./(@func_integral))
   end
 
-  # returns a sample point + its pdf
-  def sample : {Float64, Float64}
+  def sample_discrete : {Int32, Float64}
     u = rand
-
     offset = @cdf.size - 1
 
     while @cdf[offset] > u
@@ -32,9 +31,7 @@ class Distribution1D
       break if offset == 0
     end
 
-    du = (u - @cdf[offset]) / (@cdf[offset+1] - @cdf[offset])
-    pdf = @func[offset] / @func_integral
-
-    {(offset + du) / @count, pdf}
+    pdf = @func[offset] / (@func_integral * @count)
+    {offset, pdf}
   end
 end

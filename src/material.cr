@@ -3,10 +3,10 @@ abstract class Material
 end
 
 class GlassMaterial < Material
-  def initialize(@texture_reflected : Texture, @texture_transmitted : Texture, @ior : Float64)
+  def initialize(@ior : Float64, @texture_reflected : Texture, @texture_transmitted : Texture)
   end
 
-  def initialize(color_reflected : Color, color_transmitted : Color, @ior : Float64)
+  def initialize(@ior : Float64, color_reflected = Color::WHITE, color_transmitted = Color::WHITE)
     @texture_reflected = ConstantTexture.new(color_reflected)
     @texture_transmitted = ConstantTexture.new(color_transmitted)
   end

@@ -1,17 +1,22 @@
 class PathRaytracer < BaseRaytracer
-  def initialize(width, height, camera, samples, scene, filter = BoxFilter.new(0.5),
+  def initialize(dimensions, camera, samples, scene, filter = BoxFilter.new(0.5),
                  @sample_background = true)
-    super(width, height, camera, samples, scene, filter)
+    super(dimensions, camera, samples, scene, filter)
   end
 
-  # TODO: convert this to be recursive or merge w/ cast_ray
-  def color(ray, hit, recursion_depth)
+  def cast_ray(ray)
     # Declare common path integration variables
     l = Color::BLACK
     path_throughput = Color::WHITE
     specular_bounce = false
 
     (0...@recursion_depth).each do |depth|
+      hit = @scene.hit(ray)
+      if hit.nil?
+        l += path_throughput * @scene.background.get(ray) if specular_bounce
+        break
+      end
+
       bsdf = hit.material.bsdf(hit)
       wo = -ray.direction
 
@@ -30,20 +35,14 @@ class PathRaytracer < BaseRaytracer
 
       # possibliy terminate the path
       if depth > 3
-        continue_probability = min(0.5, path_throughput.max)
+        continue_probability = min(0.5, path_throughput.max_component)
         break if rand > continue_probability
 
         # scale the throughput accordingly
         path_throughput /= continue_probability
       end
 
-      new_ray = Ray.new(hit.point, wi)
-
-      hit = @scene.fast_hit(ray)
-      if hit.nil?
-        l += path_throughput * @scene.background.get(new_ray) if specular_bounce
-        break
-      end
+      ray = Ray.new(hit.point, wi)
     end
 
     l

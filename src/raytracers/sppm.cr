@@ -39,15 +39,18 @@ class SPPMPixel
 end
 
 class SPPMRaytracer < Raytracer
-  @photons_per_iteration : Int32
+  property photons_per_iteration : Int32
+  property initial_search_radius : Float64
+  property recursion_depth : Int32
+  property iterations : Int32
 
-  def initialize(width, height, camera, samples, scene,
-                 filter = BoxFilter.new(0.5), @sample_background = false)
-    @photons_per_iteration = width * height
+  def initialize(dimensions, camera, samples, scene,
+                 @sample_background = false)
+    @photons_per_iteration = dimensions[0] * dimensions[1]
     @initial_search_radius = 1.0
-    @n_iterations = 1024
+    @iterations = 1024
     @recursion_depth = 5
-    super(width, height, camera, samples, scene, filter)
+    super(dimensions, camera, samples, scene)
   end
 
   def hash(p, size)
@@ -74,15 +77,15 @@ class SPPMRaytracer < Raytracer
     pixels = Array.new(n_pixels) { SPPMPixel.new(@initial_search_radius) }
     light_distribution = @scene.light_sampling_CDF
 
-    @n_iterations.times do |iter|
-      puts "Iteration #{iter + 1} / #{@n_iterations}"
+    @iterations.times do |iter|
+      puts "Iteration #{iter + 1} / #{@iterations}"
       Range2.new({@width - 1, @height - 1}).each do |x, y|
         pixel = pixels[x + y * @width]
         path_throughput = Color::WHITE
         specular_bounce = false
 
         # TODO: use some better sampling method
-        ray = @camera.generate_ray(x + rand, y + rand, @t_min, @t_max)
+        ray = @camera.generate_ray(x + rand, y + rand, EPSILON, Float64::MAX)
 
         (0...@recursion_depth).each do |depth|
           hit = @scene.hit(ray)
@@ -177,8 +180,8 @@ class SPPMRaytracer < Raytracer
         #   print "\rTracing photon #{photon_index + 1} of #{@photons_per_iteration}"
         # end
         # Choose light to shoot photon from
-        light_n, light_pdf = light_distribution.sample
-        light = @scene.lights[light_n.to_i]
+        light_n, light_pdf = light_distribution.sample_discrete
+        light = @scene.lights[light_n]
 
         # generate photon_ray from light source & initialize alpha
         le, photon_ray, light_normal, pdf = light.sample_l
@@ -249,7 +252,7 @@ class SPPMRaytracer < Raytracer
     write_to_canvas(pixels)
   end
 
-  def write_to_canvas(pixels, n = @n_iterations)
+  def write_to_canvas(pixels, n = @iterations)
     np = (n + 1) * @photons_per_iteration
 
     StumpyPNG::Canvas.new(@width, @height) do |x, y|

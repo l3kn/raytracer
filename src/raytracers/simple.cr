@@ -1,27 +1,33 @@
 class SimpleRaytracer < BaseRaytracer
-  def color(ray, hit, recursion_depth)
-    return Color::BLACK if recursion_depth <= 0
+  def cast_ray(ray)
+    l = Color::BLACK
+    path_throughput = Color::WHITE
 
-    # Compute emitted and reflected light at intersection
-    bsdf = hit.material.bsdf(hit)
-    normal = hit.normal
+    (0...@recursion_depth).each do |depth|
+      hit = @scene.hit(ray)
+      if hit.nil?
+        l += path_throughput * @scene.background.get(ray)
+        break
+      end
 
-    wo = -ray.direction
+      # Compute emitted and reflected light at intersection
+      bsdf = hit.material.bsdf(hit)
+      wo = -ray.direction
 
-    # TODO: Only emit light to one side
+      l += path_throughput * bsdf.emitted(wo)
 
-    sample = bsdf.sample_f(wo, BxDFType::ALL)
-    return bsdf.emitted(wo) if sample.nil?
+      sample = bsdf.sample_f(wo, BxDFType::ALL)
+      break if sample.nil?
 
-    color, wi, pdf, sampled_type = sample
-    return Color::BLACK if wi.dot(normal).abs == 0.0
+      f, wi, pdf, sampled_type = sample
+      break if pdf == 0.0
 
-    color += bsdf.emitted(wo)
+      path_throughput *= f * wi.dot(hit.normal).abs / pdf
 
-    new_ray = Ray.new(hit.point, wi)
-    li = cast_ray(new_ray, recursion_depth - 1)
+      ray = Ray.new(hit.point, wi)
+    end
 
-    color * li * wi.dot(normal).abs / pdf
+    l
   end
 end
 

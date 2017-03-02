@@ -4,7 +4,7 @@ class Scene
   property background : Background
   property light_sampling_CDF do Distribution1D.new(lights.map(&.power.length)) end
 
-  def initialize(hitables, @lights, @background)
+  def initialize(hitables, @lights, @background = ConstantBackground.new(Color::BLACK))
     if hitables.size < 500
       @hitable = HitableList.new(hitables)
     else
