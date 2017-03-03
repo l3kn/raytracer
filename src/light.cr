@@ -87,4 +87,10 @@ class AreaLight < Light
   def power
     @intensity * @object.area * Math::PI
   end
+
+  def self.with_object(object : Hitable, intensity : Color)
+    light = self.new(object, intensity)
+    object.area_light = light
+    { object, light }
+  end
 end
