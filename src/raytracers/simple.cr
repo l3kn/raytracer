@@ -16,7 +16,7 @@ class SimpleRaytracer < BaseRaytracer
 
       l += path_throughput * bsdf.emitted(wo)
 
-      sample = bsdf.sample_f(wo, BxDFType::ALL)
+      sample = bsdf.sample_f(wo, BxDFType::All)
       break if sample.nil?
 
       f, wi, pdf, sampled_type = sample

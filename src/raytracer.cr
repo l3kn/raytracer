@@ -32,7 +32,7 @@ abstract class Raytracer
     end
   end
 
-  def estimate_background(hit, bsdf, wo, flags = BxDFType::NOTSPECULAR)
+  def estimate_background(hit, bsdf, wo, flags = ~BxDFType::Specular)
     background = @scene.background
     return Color::BLACK if background.nil?
 
@@ -41,7 +41,7 @@ abstract class Raytracer
 
     f, wi, bsdf_pdf, sampled_type = sample
     weight = 1.0
-    unless sampled_type & BxDFType::SPECULAR
+    unless sampled_type.specular?
       weight = power_heuristic(1, INV_PI, 1, bsdf_pdf)
     end
 
@@ -52,7 +52,7 @@ abstract class Raytracer
     f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf
   end
 
-  def estimate_direct(light, hit, bsdf, wo, flags = BxDFType::NOTSPECULAR)
+  def estimate_direct(light, hit, bsdf, wo, flags = ~BxDFType::Specular)
     ld = Color::BLACK
 
     # Sample light w/ multiple importance sampling
@@ -80,7 +80,7 @@ abstract class Raytracer
         weight = 1.0
         return ld if f.black? || bsdf_pdf == 0.0
 
-        if (sampled_type & BxDFType::SPECULAR) == 0
+        unless sampled_type.specular?
           light_pdf = light.pdf(hit.point, wi)
           return ld if light_pdf == 0.0
           weight = power_heuristic(1, bsdf_pdf, 1, light_pdf)

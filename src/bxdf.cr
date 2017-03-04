@@ -1,24 +1,17 @@
-module BxDFType
-  REFLECTION = 1
-  TRANSMISSION = 2
+@[Flags]
+enum BxDFType
+  Reflection
+  Transmission
 
-  DIFFUSE = 4
-  GLOSSY = 8
-  SPECULAR = 16
-  ALLTYPES = DIFFUSE | GLOSSY | SPECULAR
-
-  ALLREFLECTION = REFLECTION | ALLTYPES
-  ALLTRANSMISSION = TRANSMISSION | ALLTYPES
-
-  ALL = ALLREFLECTION | ALLTRANSMISSION
-
-  NOTSPECULAR = ALL & ~BxDFType::SPECULAR
+  Diffuse
+  Glossy
+  Specular
 end
 
 abstract struct BxDF
-  getter type : Int32 = 0
+  getter type : BxDFType = BxDFType::None
 
-  def matches_flags?(other : Int32)
+  def matches_flags?(other : BxDFType)
     (@type & other) == @type
   end
 

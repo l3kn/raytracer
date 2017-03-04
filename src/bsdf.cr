@@ -1,21 +1,21 @@
 abstract struct BSDF
   # Number of components matching the given flag
-  abstract def num_components(flags = BxDFType::ALL) : Int32
-  abstract def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
-  abstract def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
-  abstract def pdf(wo : Vector, wi : Vector, flags = BxDFType::ALL) : Float64
+  abstract def num_components(flags = BxDFType::All) : Int32
+  abstract def f(wo_world : Vector, wi_world : Vector, flags : BxDFType) : Color
+  abstract def sample_f(wo_world : Vector, flags : BxDFType) : Tuple(Color, Vector, Float64, Int32)?
+  abstract def pdf(wo : Vector, wi : Vector, flags = BxDFType::All) : Float64
   abstract def emitted(wo_world) : Color
 
-  def matches_flags?(flags : Int32)
+  def matches_flags?(flags : BxDFType)
     num_components(flags) > 0
   end
 
   def diffuse?
-    matches_flags?(BxDFType::DIFFUSE | BxDFType::REFLECTION | BxDFType::TRANSMISSION)
+    matches_flags?(BxDFType::Diffuse | BxDFType::Reflection | BxDFType::Transmission)
   end
 
   def glossy?
-    matches_flags?(BxDFType::GLOSSY | BxDFType::REFLECTION | BxDFType::TRANSMISSION)
+    matches_flags?(BxDFType::Glossy | BxDFType::Reflection | BxDFType::Transmission)
   end
 end
 
@@ -26,20 +26,20 @@ struct MultiBSDF < BSDF
     @world_to_local = ONB.from_w(@normal)
   end
 
-  def num_components(flags = BxDFType::ALL)
+  def num_components(flags = BxDFType::All)
     @bxdfs.count(&.matches_flags?(flags))
   end
 
-  def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
+  def f(wo_world : Vector, wi_world : Vector, flags : BxDFType) : Color
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
 
     # Both vectors outside of the object ? ingnore BTDFs : ignore BRDFs
     # NOTE: "~" = complement
     if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
-      flags &= ~BxDFType::TRANSMISSION
+      flags &= ~BxDFType::Transmission
     else
-      flags &= ~BxDFType::REFLECTION
+      flags &= ~BxDFType::Reflection
     end
 
     color = Color::BLACK
@@ -51,7 +51,7 @@ struct MultiBSDF < BSDF
     color
   end
 
-  def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
+  def sample_f(wo_world : Vector, flags : BxDFType) : Tuple(Color, Vector, Float64, BxDFType)?
     matching = @bxdfs.select(&.matches_flags?(flags))
     return nil if matching.size == 0
 
@@ -70,7 +70,7 @@ struct MultiBSDF < BSDF
     # If the sampled bxdf is specular,
     # it means that its pdf is a delta distribution => pdf = 1.0
     # and it would be incorrect to add other pdfs onto it
-    if !(bxdf.type & BxDFType::SPECULAR) && matching.size > 1
+    if !(bxdf.type.specular?) && matching.size > 1
       matching.each do |bxdf_|
         pdf += bxdf_.pdf(wo, wi) if bxdf_ != bxdf
       end
@@ -86,13 +86,13 @@ struct MultiBSDF < BSDF
     # This is pretty much a copy of BSDF.f(...)
     # but bc/ the mapped directions are already known,
     # this saves some time
-    if (bxdf.type & BxDFType::SPECULAR)
+    if bxdf.type.specular?
       {color, wi_world, pdf, bxdf.type}
     else
       if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
-        flags = flags & ~BxDFType::TRANSMISSION
+        flags = flags & ~BxDFType::Transmission
       else
-        flags = flags & ~BxDFType::REFLECTION
+        flags = flags & ~BxDFType::Reflection
       end
 
       color = Color::BLACK
@@ -104,7 +104,7 @@ struct MultiBSDF < BSDF
     end
   end
 
-  def pdf(wo_world : Vector, wi_world : Vector, flags = BxDFType::ALL) : Float64
+  def pdf(wo_world : Vector, wi_world : Vector, flags = BxDFType::All) : Float64
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
 
@@ -127,24 +127,24 @@ struct SingleBSDF < BSDF
     @world_to_local = ONB.from_w(@normal)
   end
 
-  def num_components(flags = BxDFType::ALL)
+  def num_components(flags = BxDFType::All)
     @bxdf.matches_flags?(flags) ? 1 : 0
   end
 
-  def f(wo_world : Vector, wi_world : Vector, flags : Int32) : Color
+  def f(wo_world : Vector, wi_world : Vector, flags : BxDFType) : Color
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
 
     if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
-      flags &= ~BxDFType::TRANSMISSION
+      flags &= ~BxDFType::Transmission
     else
-      flags &= ~BxDFType::REFLECTION
+      flags &= ~BxDFType::Reflection
     end
 
     @bxdf.matches_flags?(flags) ? @bxdf.f(wo, wi) : Color::BLACK
   end
 
-  def sample_f(wo_world : Vector, flags : Int32) : Tuple(Color, Vector, Float64, Int32)?
+  def sample_f(wo_world : Vector, flags : BxDFType) : Tuple(Color, Vector, Float64, BxDFType)?
     return nil unless @bxdf.matches_flags?(flags)
 
     wo = @world_to_local.world_to_local(wo_world).normalize
@@ -156,7 +156,7 @@ struct SingleBSDF < BSDF
     {color, wi_world, pdf, @bxdf.type}
   end
 
-  def pdf(wo_world : Vector, wi_world : Vector, flags = BxDFType::ALL)
+  def pdf(wo_world : Vector, wi_world : Vector, flags = BxDFType::All)
     return 0.0 unless @bxdf.matches_flags?(flags)
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
@@ -171,9 +171,9 @@ struct EmissiveBSDF < BSDF
     @world_to_local = ONB.from_w(@normal)
   end
 
-  def num_components(flags = BxDFType::ALL); 0; end
+  def num_components(flags = BxDFType::All); 0; end
   def f(wo_world, wi_world, flags); Color::BLACK; end
-  def pdf(wo, wi, flags = BxDFType::ALL); 0.0; end
+  def pdf(wo, wi, flags = BxDFType::All); 0.0; end
   def sample_f(wo_world, flags); nil; end
 
   def emitted(wo_world) : Color

@@ -1,10 +1,10 @@
 require "../fresnel"
 
 struct SpecularReflection < BxDF
-  @type : Int32 # For some reason crystal 0.21.0 needs this
+  @type : BxDFType # For some reason crystal 0.21.0 needs this
 
   def initialize(@color : Color, @fresnel : Fresnel)
-    @type = BxDFType::REFLECTION | BxDFType::SPECULAR
+    @type = BxDFType::Reflection | BxDFType::Specular
   end
 
   def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
@@ -23,10 +23,10 @@ struct SpecularReflection < BxDF
 end
 
 struct SpecularTransmission < BxDF
-  @type : Int32 # For some reason crystal 0.21.0 needs this
+  @type : BxDFType # For some reason crystal 0.21.0 needs this
 
   def initialize(@color : Color, @eta_i : Float64, @eta_t : Float64)
-    @type = BxDFType::TRANSMISSION | BxDFType::SPECULAR
+    @type = BxDFType::Transmission | BxDFType::Specular
     @fresnel = FresnelDielectric.new(@eta_i, @eta_t)
   end
 
