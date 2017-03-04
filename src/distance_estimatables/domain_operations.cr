@@ -37,11 +37,11 @@ module DE
 
   class SwapXZ < DistanceEstimatable
     def initialize(@object : DistanceEstimatable); end
-    def distance_estimate(pos); @object.distance_estimate(poz.zyx); end
+    def distance_estimate(pos); @object.distance_estimate(pos.zyx); end
   end
 
   class SwapYZ < DistanceEstimatable
     def initialize(@object : DistanceEstimatable); end
-    def distance_estimate(pos); @object.distance_estimate(pos.xzy), end
+    def distance_estimate(pos); @object.distance_estimate(pos.xzy); end
   end
 end

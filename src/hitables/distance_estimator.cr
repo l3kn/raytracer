@@ -8,7 +8,7 @@ class DistanceEstimator < Hitable
   property maximum_steps : Int32
   property minimum_distance : Float64
 
-  def initialize(@material, @object, @step = 0.1, @maximum_steps = 1000, @minimum_distance = EPSILON)
+  def initialize(@material, @object, @step = EPSILON, @maximum_steps = 1000, @minimum_distance = EPSILON)
   end
 
   def hit(ray)
@@ -26,8 +26,8 @@ class DistanceEstimator < Hitable
 
       return nil if total_distance >= ray.t_max
 
-      steps += 1
       break if distance < @minimum_distance
+      steps += 1
     end
 
     x_dir = Vector.new(@step, 0.0, 0.0)
@@ -42,7 +42,7 @@ class DistanceEstimator < Hitable
 
     return ::HitRecord.new(
       t: total_distance,
-      point: point + normal * @minimum_distance * 2.0,
+      point: point + normal * @minimum_distance * 20.0,
       normal: normal,
       material: @material,
       object: self,
@@ -80,9 +80,10 @@ class BruteForceDistanceEstimator < Hitable
       normal = @object.normal(point)
       ::HitRecord.new(
         t: closest,
-        point: point + normal * 0.1,
+        point: point + normal * 0.2,
         normal: normal,
         material: @material,
+        object: self,
         u: closest / @maximum, v: 0.0
       )
     else

@@ -37,14 +37,14 @@ module DE
     property iterations : Int32
     property scale : Float64
     property offset : Vector
-    property transformation : Transformation
+    # property transformation : Transformation
 
-    def initialize(@iterations = 4, @scale = 3.0, @offset = Vector.one, @transformation = Transformation::ID)
+    def initialize(@iterations = 4, @scale = 3.0, @offset = Vector.one)#, @transformation = Transformation::ID)
     end
 
     def distance_estimate(pos)
       @iterations.times do
-        pos = @transformation.world_to_object(pos)
+        # pos = @transformation.world_to_object(pos)
         pos = pos.abs
 
         pos = pos.yxz if pos.x < pos.y
