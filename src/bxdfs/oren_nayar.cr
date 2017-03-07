@@ -40,7 +40,7 @@ struct OrenNayarReflection < BxDF
     wi = cosine_sample_hemisphere(u1, u2)
     wi.z *= 1 if wo.z < 0.0 # Flip the direction if necessary
 
-    {f(wo, wi), wi, pdf(wo, wi)} 
+    {f(wo, wi), wi, pdf(wo, wi)}
   end
 
   def pdf(wo, wi)

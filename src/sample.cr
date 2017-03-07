@@ -57,10 +57,10 @@ class Visualisation
     end
 
     StumpyUtils.text(canvas, 16, @height,
-                     "#{name.to_s} (max: #{@max[name].round(2)})",
-                     StumpyPNG::RGBA.from_hex("#000000"),
-                     StumpyPNG::RGBA.from_hex("#ffffff"),
-                     size: 2)
+      "#{name.to_s} (max: #{@max[name].round(2)})",
+      StumpyPNG::RGBA.from_hex("#000000"),
+      StumpyPNG::RGBA.from_hex("#ffffff"),
+      size: 2)
     StumpyPNG.write(canvas, filename)
   end
 end

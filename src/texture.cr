@@ -20,7 +20,10 @@ end
 
 class ConstantTexture < Texture
   def initialize(@color : Color); end
-  def value(hit); @color; end
+
+  def value(hit)
+    @color
+  end
 end
 
 class CheckerTexture < Texture
@@ -81,5 +84,35 @@ class UTexture < Texture
 
   def value(hit)
     Color.new((1 - hit.u) ** @factor)
+  end
+end
+
+class GridTexture < Texture
+  @step : Float64
+
+  def initialize
+    @step = 0.05
+    @substep = 0.01
+    @width = 0.03
+  end
+
+  def value(hit)
+    # height = hit.point.y / @step
+    x = hit.point.x / @step
+    z = hit.point.z / @step
+    x_ = hit.point.x / @substep
+    z_ = hit.point.z / @substep
+
+    if x % 1.0 < @width || z % 1.0 < @width
+      Color::BLACK
+    elsif x_ % 1.0 < @width || z_ % 1.0 < @width
+      Color::BLACK * 0.5
+    else
+      Color.new(
+        (1.0 + hit.normal.x) * 0.5,
+        (1.0 + hit.normal.y) * 0.5,
+        (1.0 + hit.normal.z) * 0.5,
+      )
+    end
   end
 end

@@ -23,9 +23,9 @@ hitables << TransformationWrapper.new(
   VS.new(Vector.new(1.0, -0.0, -1.0), 0.5)
 )
 
-red   = Color.new(20.0,  0.0,  0.0)
-green = Color.new( 0.0, 20.0,  0.0)
-blue  = Color.new( 0.0,  0.0, 20.0)
+red = Color.new(20.0, 0.0, 0.0)
+green = Color.new(0.0, 20.0, 0.0)
+blue = Color.new(0.0, 0.0, 20.0)
 
 height = 2.0
 size = 0.4
@@ -71,7 +71,7 @@ camera = PerspectiveCamera.new(
 
 # raytracer = SPPMRaytracer.new(
 raytracer = PathRaytracer.new(
-  dimensions, camera, 
+  dimensions, camera,
   scene: Scene.new(hitables, lights),
   samples: 100
 )

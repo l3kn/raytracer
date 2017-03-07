@@ -67,10 +67,10 @@ camera = EnvironmentCamera.new(
 )
 
 raytracer = Phong::Raytracer.new(width, height,
-                                 hitables: node,
-                                 lights: [Phong::Light.new(Point.new(0.0, 1000.0, 0.0), 1.0)],
-                                 ambient: 0.05,
-                                 camera: camera,
-                                 samples: 5,
-                                 background: ConstantBackground.new(Color.new(1.0)))
+  hitables: node,
+  lights: [Phong::Light.new(Point.new(0.0, 1000.0, 0.0), 1.0)],
+  ambient: 0.05,
+  camera: camera,
+  samples: 5,
+  background: ConstantBackground.new(Color.new(1.0)))
 raytracer.render("sponza_phong.png")

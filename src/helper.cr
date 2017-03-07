@@ -13,14 +13,14 @@ end
 RADIANTS = (Math::PI / 180)
 
 # TODO: Use these constants everywhere
-TWOPI = 2.0 * Math::PI
+TWOPI  = 2.0 * Math::PI
 FOURPI = 4.0 * Math::PI
 
-INV_PI = 1.0 / Math::PI
-INV_TWOPI = 1.0 / TWOPI
+INV_PI     = 1.0 / Math::PI
+INV_TWOPI  = 1.0 / TWOPI
 INV_FOURPI = 1.0 / FOURPI
 
-PI_OVER_TWO = Math::PI / 2
+PI_OVER_TWO  = Math::PI / 2
 PI_OVER_FOUR = Math::PI / 4
 
 # TODO: Create a class Point2
@@ -52,8 +52,7 @@ end
 def stratified_sample_1D(nx : Int32, jitter = true)
   dx = 1.0 / nx
   res = Array(Float64).new(nx, 0.0)
-  
-  (0...nx).each do |x| 
+  (0...nx).each do |x|
     jx = jitter ? rand : 0.5
     res[x] = (x + jx) * dx
   end
@@ -98,7 +97,6 @@ def uniform_sample_sphere(u1 : Float64 = rand, u2 : Float64 = rand)
   z = 1.0 - 2.0 * u1
   r = Math.sqrt(1.0 - z*z)
   phi = TWOPI * u2
-  
   x = r * Math.cos(phi)
   y = r * Math.sin(phi)
 
@@ -114,7 +112,7 @@ def uniform_sample_disk(u1 : Float64 = rand, u2 : Float64 = rand) : {Float64, Fl
   theta = TWOPI * u2
   {
     r * Math.cos(theta),
-    r * Math.sin(theta)
+    r * Math.sin(theta),
   }
 end
 
@@ -147,8 +145,13 @@ def cosine_hemisphere_pdf(cos_theta : Float64)
   cos_theta * INV_PI
 end
 
-def min(a, b); a < b ? a : b; end
-def max(a, b); a < b ? b : a; end
+def min(a, b)
+  a < b ? a : b
+end
+
+def max(a, b)
+  a < b ? b : a
+end
 
 def minmax(a, b)
   a < b ? {a, b} : {b, a}
@@ -171,7 +174,6 @@ def solve_quadratic(a, b, c) : {Float64, Float64}?
 
   t0 = q / a
   t1 = c / q
-  
   t0 < t1 ? {t0, t1} : {t1, t0}
 end
 

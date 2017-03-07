@@ -5,7 +5,10 @@ module DE
     property a : DistanceEstimatable, b : DistanceEstimatable
 
     def initialize(@a, @b); end
-    def distance_estimate(pos); 0.0; end
+
+    def distance_estimate(pos)
+      0.0
+    end
   end
 
   class Union < DistanceOperation

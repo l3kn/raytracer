@@ -16,7 +16,7 @@ module DE
         a = -2.0 * r_i
         b = p_i - pos
         c = (p_i - pos).squared_length
-        n = n + b * (a / c) 
+        n = n + b * (a / c)
       end
 
       n.to_normal

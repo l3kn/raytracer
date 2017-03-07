@@ -14,32 +14,32 @@ def get_material(name)
 end
 
 materials = {
-  "leaf" => get_material("thorn"),
-  "vase_round" => get_material("vase_round"),
-  "Material__57" => get_material("vase_plant"),
+  "leaf"          => get_material("thorn"),
+  "vase_round"    => get_material("vase_round"),
+  "Material__57"  => get_material("vase_plant"),
   "Material__298" => get_material("background"),
-  "16___Default" => Lambertian.new(Color.new(0.5880)),
-  "bricks" => get_material("bricks"),
-  "arch" => get_material("sponza_arch_diff"),
-  "column_a" => get_material("sponza_column_a_diff"),
-  "column_b" => get_material("sponza_column_b_diff"),
-  "column_c" => get_material("sponza_column_c_diff"),
-  "floor" => get_material("sponza_floor_a_diff"),
-  "details" => get_material("sponza_details_diff"),
-  "Material__47" => Lambertian.new(Color.new(0.5880)),
-  "flagpole" => get_material("sponza_flagpole_diff"),
-  "fabric_e" => get_material("sponza_fabric_green_diff"),
-  "fabric_d" => get_material("sponza_fabric_blue_diff"),
-  "fabric_a" => get_material("sponza_fabric_diff"),
-  "fabric_g" => get_material("sponza_curtain_blue_diff"),
-  "fabric_c" => get_material("sponza_curtain_diff"),
-  "fabric_f" => get_material("sponza_curtain_green_diff"),
-  "chain" => get_material("chain_texture"),
-  "vase_hanging" => get_material("vase_hanging"),
-  "vase" => get_material("vase_dif"),
-  "Material__25" => get_material("lion"),
-  "roof" => get_material("sponza_roof_diff"),
-  "ceiling" => get_material("sponza_ceiling_a_diff"),
+  "16___Default"  => Lambertian.new(Color.new(0.5880)),
+  "bricks"        => get_material("bricks"),
+  "arch"          => get_material("sponza_arch_diff"),
+  "column_a"      => get_material("sponza_column_a_diff"),
+  "column_b"      => get_material("sponza_column_b_diff"),
+  "column_c"      => get_material("sponza_column_c_diff"),
+  "floor"         => get_material("sponza_floor_a_diff"),
+  "details"       => get_material("sponza_details_diff"),
+  "Material__47"  => Lambertian.new(Color.new(0.5880)),
+  "flagpole"      => get_material("sponza_flagpole_diff"),
+  "fabric_e"      => get_material("sponza_fabric_green_diff"),
+  "fabric_d"      => get_material("sponza_fabric_blue_diff"),
+  "fabric_a"      => get_material("sponza_fabric_diff"),
+  "fabric_g"      => get_material("sponza_curtain_blue_diff"),
+  "fabric_c"      => get_material("sponza_curtain_diff"),
+  "fabric_f"      => get_material("sponza_curtain_green_diff"),
+  "chain"         => get_material("chain_texture"),
+  "vase_hanging"  => get_material("vase_hanging"),
+  "vase"          => get_material("vase_dif"),
+  "Material__25"  => get_material("lion"),
+  "roof"          => get_material("sponza_roof_diff"),
+  "ceiling"       => get_material("sponza_ceiling_a_diff"),
 }
 
 hitables = OBJ.parse("old/models/sponza/sponza.obj", mat, interpolated: true, textured: true, materials: materials)
@@ -63,11 +63,11 @@ camera = Camera.new(
 )
 
 raytracer = Raytracer.new(width, height,
-                          hitables: node,
-                          focus_hitables: light,
-                          camera: camera,
-                          samples: 5000,
-                          background: ConstantBackground.new(Color.new(1.0)))
+  hitables: node,
+  focus_hitables: light,
+  camera: camera,
+  samples: 5000,
+  background: ConstantBackground.new(Color.new(1.0)))
 
 raytracer.recursion_depth = 4
 raytracer.render("sponza.png")

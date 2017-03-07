@@ -47,7 +47,7 @@ class XYRect < Rect
         @bot.y + rand * (@top.y - @bot.y),
         @bot.z
       ),
-      @normal
+      @normal,
     }
   end
 end
@@ -82,7 +82,7 @@ class XZRect < Rect
         @bot.y,
         @bot.z + rand * (@top.z - @bot.z)
       ),
-      @normal
+      @normal,
     }
   end
 end
@@ -117,7 +117,7 @@ class YZRect < Rect
         @bot.y + rand * (@top.y - @bot.y),
         @bot.z + rand * (@top.z - @bot.z)
       ),
-      @normal
+      @normal,
     }
   end
 end

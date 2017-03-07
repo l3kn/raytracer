@@ -41,6 +41,6 @@ class Sphere < FiniteHitable
   def sample : {Point, Normal}
     # NOTE: Constructing the normal by hand is a little bit faster
     point_s = Point.new(rand, rand, rand).normalize
-    { point_s, Normal.new(point_s.x, point_s.y, point_s.z) }
+    {point_s, Normal.new(point_s.x, point_s.y, point_s.z)}
   end
 end

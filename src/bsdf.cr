@@ -66,7 +66,7 @@ struct MultiBSDF < BSDF
     wi_world = @world_to_local.local_to_world(wi)
 
     # Compute the overall pdf of all matching BxDFs
-    # 
+    #
     # If the sampled bxdf is specular,
     # it means that its pdf is a delta distribution => pdf = 1.0
     # and it would be incorrect to add other pdfs onto it
@@ -117,7 +117,9 @@ struct MultiBSDF < BSDF
     matching.size == 0 ? 0.0 : pdf / matching.size
   end
 
-  def emitted(wo_world); Color::BLACK; end
+  def emitted(wo_world)
+    Color::BLACK
+  end
 end
 
 struct SingleBSDF < BSDF
@@ -163,7 +165,9 @@ struct SingleBSDF < BSDF
     @bxdf.pdf(wo, wi)
   end
 
-  def emitted(wo_world); Color::BLACK; end
+  def emitted(wo_world)
+    Color::BLACK
+  end
 end
 
 struct EmissiveBSDF < BSDF
@@ -171,10 +175,21 @@ struct EmissiveBSDF < BSDF
     @world_to_local = ONB.from_w(@normal)
   end
 
-  def num_components(flags = BxDFType::All); 0; end
-  def f(wo_world, wi_world, flags); Color::BLACK; end
-  def pdf(wo, wi, flags = BxDFType::All); 0.0; end
-  def sample_f(wo_world, flags); nil; end
+  def num_components(flags = BxDFType::All)
+    0
+  end
+
+  def f(wo_world, wi_world, flags)
+    Color::BLACK
+  end
+
+  def pdf(wo, wi, flags = BxDFType::All)
+    0.0
+  end
+
+  def sample_f(wo_world, flags)
+    nil
+  end
 
   def emitted(wo_world) : Color
     # Only emit light on one side

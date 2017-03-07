@@ -16,10 +16,10 @@ abstract class Raytracer
   end
 
   def uniform_sample_one_light(hit, bsdf, wo)
-      return Color::BLACK if @scene.lights.size == 0
+    return Color::BLACK if @scene.lights.size == 0
 
-      light_pdf = 1.0 / (@scene.lights.size)
-      estimate_direct(@scene.lights.sample, hit, bsdf, wo) / light_pdf
+    light_pdf = 1.0 / (@scene.lights.size)
+    estimate_direct(@scene.lights.sample, hit, bsdf, wo) / light_pdf
   end
 
   def uniform_sample_all_lights(hit, bsdf, wo)

@@ -13,7 +13,7 @@ class Distribution1D
     @cdf = Array.new(@count + 1, 0.0)
 
     (1..f.size).each do |i|
-      @cdf[i] = @cdf[i-1] + func[i-1] / @count
+      @cdf[i] = @cdf[i - 1] + func[i - 1] / @count
     end
 
     @func_integral = @cdf[@count]

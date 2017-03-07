@@ -57,8 +57,13 @@ class VS < Transformation
     point * @scale
   end
 
-  def world_to_object(n : Normal) : Normal; n; end
-  def object_to_world(n : Normal) : Normal; n; end
+  def world_to_object(n : Normal) : Normal
+    n
+  end
+
+  def object_to_world(n : Normal) : Normal
+    n
+  end
 
   def world_to_object(ray : Ray)
     Ray.new(world_to_object(ray.origin), world_to_object(ray.direction), ray.t_min, ray.t_max)
@@ -88,7 +93,6 @@ class VQS < Transformation
                  @scale = 1.0,
                  axis = Vector.x,
                  degrees = 0.0)
-
     @inv_scale = 1.0 / @scale
     rad = radiants(degrees)
 
@@ -190,7 +194,7 @@ end
 # # + M[0...3, 3]
 # # ```
 # # where `M[0...3, n]` denotes the (first 3 rows of the) n-th column of the matrix
-# # 
+# #
 # # Using the equality from above
 # # and the fact that min((a +- b) + (c +- d)) == min(a +- b) + min(c +- d),
 # # we can turn `min( M * (c +- o) )` (and analogously `max(...)`) into

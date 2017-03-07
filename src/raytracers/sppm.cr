@@ -8,9 +8,8 @@ class SPPMPixel
   property tau : Color, ld : Color, vp : VisiblePoint?
 
   def initialize(
-    @radius = 0.0, @ld = Color::BLACK, @vp = nil, @m = 0, @n = 0.0,
-    @tau = Color::BLACK, @phi = Color::BLACK
-  )
+                 @radius = 0.0, @ld = Color::BLACK, @vp = nil, @m = 0, @n = 0.0,
+                 @tau = Color::BLACK, @phi = Color::BLACK)
   end
 
   def add_phi(new_phi)
@@ -154,9 +153,9 @@ class SPPMRaytracer < Raytracer
       base_grid_reg = max_diagonal / max_radius
 
       grid_res = {
-       max(1, (base_grid_reg * diagonal[0] / max_diagonal).to_i),
-       max(1, (base_grid_reg * diagonal[1] / max_diagonal).to_i),
-       max(1, (base_grid_reg * diagonal[2] / max_diagonal).to_i)
+        max(1, (base_grid_reg * diagonal[0] / max_diagonal).to_i),
+        max(1, (base_grid_reg * diagonal[1] / max_diagonal).to_i),
+        max(1, (base_grid_reg * diagonal[2] / max_diagonal).to_i),
       }
 
       # Add visible points to SPPM grid
@@ -212,7 +211,7 @@ class SPPMRaytracer < Raytracer
             end
           end
           # Sample new photon ray direction
-          ## Compute BSDF at photon intersection point
+          # # Compute BSDF at photon intersection point
 
           photon_bsdf = hit.material.bsdf(hit)
           wo = -photon_ray.direction
@@ -225,7 +224,7 @@ class SPPMRaytracer < Raytracer
 
           new_throughput = path_throughput * fr * wi.dot(hit.normal).abs / pdf
 
-          ## Possibly terminate photon path w/ russian roulette
+          # # Possibly terminate photon path w/ russian roulette
           q = max(0.0, 1.0 - new_throughput.max_component / path_throughput.max_component)
           break if rand < q
 

@@ -3,25 +3,25 @@ class Triangulate
     t = (1.0 + Math.sqrt(5.0)) / 2.0
     inv = 1.0 / Math.sqrt(1.0 + t*t)
     points = [
-      Point.new(-1.0,  t, 0.0) * inv,
-      Point.new( 1.0,  t, 0.0) * inv,
+      Point.new(-1.0, t, 0.0) * inv,
+      Point.new(1.0, t, 0.0) * inv,
       Point.new(-1.0, -t, 0.0) * inv,
-      Point.new( 1.0, -t, 0.0) * inv,
-      Point.new( 0.0, -1.0,  t) * inv,
-      Point.new( 0.0,  1.0,  t) * inv,
-      Point.new( 0.0, -1.0, -t) * inv,
-      Point.new( 0.0,  1.0, -t) * inv,
-      Point.new( t, 0.0, -1.0) * inv,
-      Point.new( t, 0.0,  1.0) * inv,
+      Point.new(1.0, -t, 0.0) * inv,
+      Point.new(0.0, -1.0, t) * inv,
+      Point.new(0.0, 1.0, t) * inv,
+      Point.new(0.0, -1.0, -t) * inv,
+      Point.new(0.0, 1.0, -t) * inv,
+      Point.new(t, 0.0, -1.0) * inv,
+      Point.new(t, 0.0, 1.0) * inv,
       Point.new(-t, 0.0, -1.0) * inv,
-      Point.new(-t, 0.0,  1.0) * inv,
+      Point.new(-t, 0.0, 1.0) * inv,
     ]
 
     triangles = [
       Triangle.new(points[0], points[11], points[5], mat),
-      Triangle.new(points[0], points[5],  points[1], mat),
-      Triangle.new(points[0], points[1],  points[7], mat),
-      Triangle.new(points[0], points[7],  points[10], mat),
+      Triangle.new(points[0], points[5], points[1], mat),
+      Triangle.new(points[0], points[1], points[7], mat),
+      Triangle.new(points[0], points[7], points[10], mat),
       Triangle.new(points[0], points[10], points[11], mat),
       Triangle.new(points[1], points[5], points[9], mat),
       Triangle.new(points[5], points[11], points[4], mat),
@@ -43,7 +43,6 @@ class Triangulate
     iterations.times do
       triangles = divide_all(triangles)
     end
-    
     triangles
   end
 
@@ -67,7 +66,7 @@ class Triangulate
       Triangle.new(a, ab, ac, mat),
       Triangle.new(ab, b, bc, mat),
       Triangle.new(ac, bc, c, mat),
-      Triangle.new(ac, ab, bc, mat)
+      Triangle.new(ac, ab, bc, mat),
     ]
   end
 end

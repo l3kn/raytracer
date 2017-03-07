@@ -24,9 +24,11 @@ class EnvironmentCamera < Camera
     phi = 2.0 * Math::PI * s / @size_x
 
     # NOTE: This direction is already normalized bc/ sin^2 + cos^2 = 1
-    direction = Vector.new(Math.sin(theta) * Math.cos(phi),
-                           Math.cos(theta),
-                           Math.sin(theta) * Math.sin(phi))
+    direction = Vector.new(
+      Math.sin(theta) * Math.cos(phi),
+      Math.cos(theta),
+      Math.sin(theta) * Math.sin(phi)
+    )
 
     Ray.new(@origin, @onb.local_to_world(direction), t_min, t_max)
   end
@@ -39,7 +41,7 @@ class EnvironmentCamera < Camera
 
     {
       (phi * INV_PI / 2.0 * @size_x).to_i,
-      (theta * INV_PI * @size_y).to_i
+      (theta * INV_PI * @size_y).to_i,
     }
   end
 end
@@ -51,7 +53,8 @@ class PerspectiveCamera < Camera
   @onb : ONB
   @factor : Vector
 
-  def initialize(look_from : Point,
+  def initialize(
+                 look_from : Point,
                  look_at : Point,
                  vertical_fov : Float64,
                  dimensions : Tuple(Int32, Int32),
@@ -67,7 +70,6 @@ class PerspectiveCamera < Camera
                  dimensions : Tuple(Int32, Int32),
                  aperture : Float64,
                  focus_distance : Float64)
-
     aspect_ratio = dimensions[0].to_f / dimensions[1]
     @size_x = dimensions[0].to_f
     @size_y = dimensions[1].to_f
@@ -111,9 +113,9 @@ class PerspectiveCamera < Camera
     # Make sure c.z == 1.0
     c /= c.z
 
-    { 
+    {
       ((c.x + 1.0) / 2.0 * @size_x).to_i,
-      ((-c.y + 1.0) / 2.0 * @size_y).to_i
+      ((-c.y + 1.0) / 2.0 * @size_y).to_i,
     }
   end
 end

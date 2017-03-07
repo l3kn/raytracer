@@ -3,7 +3,6 @@ require "../src/backgrounds/*"
 require "../src/distance_estimatable"
 require "../src/quaternion"
 
-
 class Julia < DE::DistanceEstimatable
   def initialize(@iterations = 4)
     # @d = Quaternion.new(0.18, 0.88, 0.24, 0.16)

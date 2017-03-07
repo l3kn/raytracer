@@ -13,10 +13,14 @@ class GlassMaterial < Material
 
   def bsdf(hit)
     bxdfs = [
-      SpecularReflection.new(@texture_reflected.value(hit),
-                             FresnelDielectric.new(1.0, @ior)).as(BxDF),
-      SpecularTransmission.new(@texture_transmitted.value(hit),
-                               1.0, @ior).as(BxDF)
+      SpecularReflection.new(
+        @texture_reflected.value(hit),
+        FresnelDielectric.new(1.0, @ior)
+      ).as(BxDF),
+      SpecularTransmission.new(
+        @texture_transmitted.value(hit),
+        1.0, @ior
+      ).as(BxDF),
     ]
     MultiBSDF.new(bxdfs, hit.normal)
   end

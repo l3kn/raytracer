@@ -1,16 +1,15 @@
 require "../raytracer"
 
-white     = MatteMaterial.new(Color.new(0.73))
-red       = MatteMaterial.new(Color.new(0.65, 0.05, 0.05))
-green     = MatteMaterial.new(Color.new(0.12, 0.45, 0.15))
-aluminum  = MirrorMaterial.new(Color.new(0.8, 0.85, 0.88))
+white = MatteMaterial.new(Color.new(0.73))
+red = MatteMaterial.new(Color.new(0.65, 0.05, 0.05))
+green = MatteMaterial.new(Color.new(0.12, 0.45, 0.15))
+aluminum = MirrorMaterial.new(Color.new(0.8, 0.85, 0.88))
 
 lbf = Point.new(0.0, 0.0, 0.0)       # Left | Bottom | Front
 rtb = Point.new(555.0, 555.0, 555.0) # Right | Top | Back
 
 hitables = [] of Hitable
 lights = [] of Light
- 
 hitables << XZRect.new(lbf, Point.new(555.0, 0.0, 555.0), white)
 hitables << YZRect.new(lbf, Point.new(0.0, 555.0, 555.0), red)
 hitables << YZRect.new(Point.new(555.0, 0.0, 0.0), rtb, green).flip!

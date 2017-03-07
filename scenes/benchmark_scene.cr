@@ -9,7 +9,7 @@ hitables << TransformationWrapper.new(
 )
 
 hitables << TransformationWrapper.new(
-Sphere.new(MirrorMaterial.new(Color.new(0.8, 0.6, 0.2))),
+  Sphere.new(MirrorMaterial.new(Color.new(0.8, 0.6, 0.2))),
   VS.new(Vector.new(1.0, 0.0, -1.0), 0.5)
 )
 

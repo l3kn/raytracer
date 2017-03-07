@@ -11,9 +11,17 @@ module Vectorlike
     max(@x, max(@y, @z))
   end
 
-  def to_tuple; {@x, @y, @z}; end
-  def to_vector; Vector.new(@x, @y, @z); end
-  def to_point; Point.new(@x, @y, @z); end
+  def to_tuple
+    {@x, @y, @z}
+  end
+
+  def to_vector
+    Vector.new(@x, @y, @z)
+  end
+
+  def to_point
+    Point.new(@x, @y, @z)
+  end
 end
 
 struct Vector < LA::AVector3
@@ -48,6 +56,7 @@ struct Point < LA::AVector3
   include Vectorlike
 
   def initialize(@x, @y, @z); end
+
   def initialize(value)
     @x = @y = @z = value
   end

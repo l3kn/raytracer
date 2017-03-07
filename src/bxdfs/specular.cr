@@ -10,7 +10,7 @@ struct SpecularReflection < BxDF
   def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
     wi = Vector.new(-wo.x, -wo.y, wo.z)
     ft = @color * @fresnel.evaluate(cos_theta(wi))
-    { ft / cos_theta(wi).abs, wi, 1.0 }
+    {ft / cos_theta(wi).abs, wi, 1.0}
   end
 
   def pdf(wo, wi)
@@ -38,9 +38,9 @@ struct SpecularTransmission < BxDF
 
     if wi
       ft = @color * (1.0 - @fresnel.evaluate(cos_theta(wi)))
-      return { ft / cos_theta(wi).abs, wi, 1.0 }
+      return {ft / cos_theta(wi).abs, wi, 1.0}
     else
-      return { Color::BLACK, Vector.x, 0.0 }
+      return {Color::BLACK, Vector.x, 0.0}
     end
   end
 

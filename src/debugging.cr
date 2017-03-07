@@ -69,17 +69,17 @@ class Wireframe
       c_x, c_y = @camera.corresponding(triangle.c)
 
       StumpyUtils.line(canvas,
-                       a_x.to_i, a_y.to_i,
-                       b_x.to_i, b_y.to_i,
-                       StumpyPNG::RGBA.from_hex("#00ff00"))
+        a_x.to_i, a_y.to_i,
+        b_x.to_i, b_y.to_i,
+        StumpyPNG::RGBA.from_hex("#00ff00"))
       StumpyUtils.line(canvas,
-                       a_x.to_i, a_y.to_i,
-                       c_x.to_i, c_y.to_i,
-                       StumpyPNG::RGBA.from_hex("#00ff00"))
+        a_x.to_i, a_y.to_i,
+        c_x.to_i, c_y.to_i,
+        StumpyPNG::RGBA.from_hex("#00ff00"))
       StumpyUtils.line(canvas,
-                       b_x.to_i, b_y.to_i,
-                       c_x.to_i, c_y.to_i,
-                       StumpyPNG::RGBA.from_hex("#00ff00"))
+        b_x.to_i, b_y.to_i,
+        c_x.to_i, c_y.to_i,
+        StumpyPNG::RGBA.from_hex("#00ff00"))
     end
     canvas
   end

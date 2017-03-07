@@ -17,7 +17,8 @@ class Triangle < FiniteHitable
     det = @edge1.dot(p)
 
     # Ray lies in the plane of the triangle
-    return nil if det > -EPSILON && det < EPSILON
+    # return nil if det > -EPSILON && det < EPSILON
+    return nil if det == 0.0
 
     inv_det = 1.0 / det
 
@@ -48,7 +49,10 @@ class Triangle < FiniteHitable
   def get_normal(ray, point, u, v)
     @normal.dot(ray.direction) < 0.0 ? @normal : -@normal
   end
-  def get_uv(ray, point, u, v); {u, v}; end
+
+  def get_uv(ray, point, u, v)
+    {u, v}
+  end
 
   def barycentric_coordinates(p)
     v0 = @b - @a

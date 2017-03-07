@@ -16,7 +16,7 @@ class Cuboid < FiniteHitableList
       XZRect.new(flb, brb, bottom).flip!,
       XZRect.new(flt, brt, top),
       YZRect.new(flb, blt, left).flip!,
-      YZRect.new(frb, brt, right)
+      YZRect.new(frb, brt, right),
     ])
   end
 

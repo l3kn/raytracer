@@ -2,10 +2,12 @@ class Scene
   property hitable : Hitable
   property lights : Array(Light)
   property background : Background?
-  property light_sampling_CDF do Distribution1D.new(lights.map(&.power.length)) end
+  property light_sampling_CDF do
+    Distribution1D.new(lights.map(&.power.length))
+  end
 
   def initialize(hitables, @lights, @background = nil)
-    if hitables.size < 500
+    if hitables.size < 5 # 500
       @hitable = HitableList.new(hitables)
     else
       finite = hitables.select(&.is_a?(FiniteHitable)).map(&.as(FiniteHitable))

@@ -30,4 +30,3 @@ class SimpleRaytracer < BaseRaytracer
     l
   end
 end
-

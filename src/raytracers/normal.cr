@@ -12,3 +12,18 @@ class NormalRaytracer < BaseRaytracer
     end
   end
 end
+
+class ColorRaytracer < BaseRaytracer
+  def cast_ray(ray)
+    hit = @scene.hit(ray)
+    if hit.nil?
+      @scene.get_background(ray)
+    else
+      bsdf = hit.material.bsdf(hit)
+      sample = bsdf.sample_f(-ray.direction, BxDFType::All)
+      return Color::BLACK if sample.nil?
+      color, wi, pdf, sampled_flags = sample
+      color
+    end
+  end
+end

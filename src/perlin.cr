@@ -29,32 +29,32 @@ class Perlin
     v = fade(yf)
     w = fade(zf)
 
-    aaa = @p[@p[@p[    xi ] +     yi ] +     zi ]
-    aab = @p[@p[@p[    xi ] +     yi ] + inc(zi)]
-    aba = @p[@p[@p[    xi ] + inc(yi)] +     zi ]
-    abb = @p[@p[@p[    xi ] + inc(yi)] + inc(zi)]
-    baa = @p[@p[@p[inc(xi)] +     yi ] +     zi ]
-    bab = @p[@p[@p[inc(xi)] +     yi ] + inc(zi)]
-    bba = @p[@p[@p[inc(xi)] + inc(yi)] +     zi ]
+    aaa = @p[@p[@p[xi] + yi] + zi]
+    aab = @p[@p[@p[xi] + yi] + inc(zi)]
+    aba = @p[@p[@p[xi] + inc(yi)] + zi]
+    abb = @p[@p[@p[xi] + inc(yi)] + inc(zi)]
+    baa = @p[@p[@p[inc(xi)] + yi] + zi]
+    bab = @p[@p[@p[inc(xi)] + yi] + inc(zi)]
+    bba = @p[@p[@p[inc(xi)] + inc(yi)] + zi]
     bbb = @p[@p[@p[inc(xi)] + inc(yi)] + inc(zi)]
 
-    x1 = mix(grad(baa, xf-1, yf, zf),
-             grad(aaa, xf,   yf, zf),
-             u)
+    x1 = mix(grad(baa, xf - 1, yf, zf),
+      grad(aaa, xf, yf, zf),
+      u)
 
-    x2 = mix(grad(bba, xf-1, yf-1, zf),
-             grad(aba, xf,   yf-1, zf),
-             u)
+    x2 = mix(grad(bba, xf - 1, yf - 1, zf),
+      grad(aba, xf, yf - 1, zf),
+      u)
 
     y1 = mix(x2, x1, v)
 
-    x1 = mix(grad(bab, xf-1, yf, zf-1),
-             grad(aab, xf,   yf, zf-1),
-             u)
+    x1 = mix(grad(bab, xf - 1, yf, zf - 1),
+      grad(aab, xf, yf, zf - 1),
+      u)
 
-    x2 = mix(grad(bbb, xf-1, yf-1, zf-1),
-             grad(abb, xf,   yf-1, zf-1),
-             u)
+    x2 = mix(grad(bbb, xf - 1, yf - 1, zf - 1),
+      grad(abb, xf, yf - 1, zf - 1),
+      u)
 
     y2 = mix(x2, x1, v)
 
@@ -90,23 +90,23 @@ class Perlin
   # to one of the edges
   def grad(hash, x, y, z)
     case hash & 0xF
-    when 0x0;  x + y
+    when 0x0; x + y
     when 0x1; -x + y
-    when 0x2;  x - y
+    when 0x2; x - y
     when 0x3; -x - y
-    when 0x4;  x + z
+    when 0x4; x + z
     when 0x5; -x + z
-    when 0x6;  x - z
+    when 0x6; x - z
     when 0x7; -x - z
-    when 0x8;  y + z
+    when 0x8; y + z
     when 0x9; -y + z
-    when 0xA;  y - z
+    when 0xA; y - z
     when 0xB; -y - z
-    when 0xC;  y + x
+    when 0xC; y + x
     when 0xD; -y + z
-    when 0xE;  y - x
+    when 0xE; y - x
     when 0xF; -y - z
-    else; 0.0
+    else      0.0
     end
   end
 end

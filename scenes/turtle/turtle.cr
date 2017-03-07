@@ -82,12 +82,11 @@ end
 triangle = LSystem.new(
   start: "X",
   # rules: {
-    # 'A' => "+B-A-B+",
-    # 'B' => "-A+B+A-"
+  # 'A' => "+B-A-B+",
+  # 'B' => "-A+B+A-"
   # }
   rules: {
-    'X' => "^<XF^<XFX-F^>>XFX&F+>>XFX-F>X->"
-    # 'X' => "^F+F+F^F^F"
+    'X' => "^<XF^<XFX-F^>>XFX&F+>>XFX-F>X->" # 'X' => "^F+F+F^F^F"
   }
 )
 
@@ -131,7 +130,7 @@ camera = Camera.new(
 
 raytracer = NormalRaytracer.new(width, height,
   # hitables: BVHNode.new(t.lines),
-                                hitables: FiniteHitableList.new(t.lines),
+  hitables: FiniteHitableList.new(t.lines),
   camera: camera,
   samples: 10,
   background: SkyBackground.new)

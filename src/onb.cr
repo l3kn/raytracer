@@ -1,5 +1,6 @@
 struct ONB
   getter u : Vector, v : Vector, w : Vector
+
   def initialize(@u, @v, @w); end
 
   def world_to_local(vec)

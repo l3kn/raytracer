@@ -33,6 +33,7 @@ end
 
 class HitableList < Hitable
   include HitableListMethods
+
   def initialize(@objects : Array(Hitable)); end
 end
 

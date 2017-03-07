@@ -18,7 +18,7 @@ end
 
 class PointLight < Light
   # def initialize(@transformation : Transformation, @intensity : Color)
-    # @position = transformation.object_to_world(Point.new(0.0))
+  # @position = transformation.object_to_world(Point.new(0.0))
   def initialize(@position : Point, @intensity : Color); end
 
   def sample_l(normal : Normal, scene : Scene, point : Point) : {Vector, Color, VisibilityTester, Float64}
@@ -37,12 +37,17 @@ class PointLight < Light
       @intensity,
       Ray.new(@position, dir),
       dir.to_normal,
-      uniform_sphere_pdf
+      uniform_sphere_pdf,
     }
   end
 
-  def pdf(point, wi); 0.0; end
-  def delta_light?; true; end
+  def pdf(point, wi)
+    0.0
+  end
+
+  def delta_light?
+    true
+  end
 
   def power
     @intensity * 4.0 * Math::PI
@@ -71,18 +76,23 @@ class AreaLight < Light
     dir_pdf = cosine_hemisphere_pdf(wi.z)
 
     onb = ONB.from_w(normal)
-    wi_world = onb.local_to_world(wi) 
+    wi_world = onb.local_to_world(wi)
 
     {
       @intensity,
       Ray.new(origin, wi_world),
       normal,
-      @object.pdf(origin) * dir_pdf
+      @object.pdf(origin) * dir_pdf,
     }
   end
 
-  def pdf(point, wi); @object.pdf(point, wi); end
-  def delta_light?; false; end
+  def pdf(point, wi)
+    @object.pdf(point, wi)
+  end
+
+  def delta_light?
+    false
+  end
 
   def power
     @intensity * @object.area * Math::PI
@@ -91,6 +101,6 @@ class AreaLight < Light
   def self.with_object(object : Hitable, intensity : Color)
     light = self.new(object, intensity)
     object.area_light = light
-    { object, light }
+    {object, light}
   end
 end

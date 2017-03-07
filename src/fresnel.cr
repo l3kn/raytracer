@@ -47,5 +47,7 @@ class FresnelDielectric < Fresnel
 end
 
 class FresnelNoOp < Fresnel
-  def evaluate(cos_i); 1.0; end
+  def evaluate(cos_i)
+    1.0
+  end
 end

@@ -9,7 +9,6 @@ struct HitRecord
   def initialize(@t, @point, @normal, @material, @object, @u, @v); end
 end
 
-
 abstract class Hitable
   property area_light : Light? = nil
   @area_light = nil

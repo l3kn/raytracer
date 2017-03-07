@@ -10,7 +10,7 @@ class Cylinder < FiniteHitable
     @y_max = max(y1, y2)
 
     p1 = Point.new(-@radius, -@radius, @y_min)
-    p2 = Point.new( @radius,  @radius, @y_max)
+    p2 = Point.new(@radius, @radius, @y_max)
     @bounding_box = AABB.new(p1, p2)
 
     @phi_max : Float64 = radiants(360.0)

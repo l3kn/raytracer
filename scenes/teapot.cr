@@ -19,10 +19,10 @@ scene = Scene.new(
   hitables.map(&.as(Hitable)),
   [
     PointLight.new(Point.new(-1.5, 1.5, -1.0),
-                   Color.new(10.0)).as(Light),
+      Color.new(10.0)).as(Light),
   ],
-  ConstantBackground.new(Color::BLACK)
-  # SkyBackground.new
+  ConstantBackground.new(Color::BLACK) # SkyBackground.new
+
 )
 
 raytracer = WhittedRaytracer.new(

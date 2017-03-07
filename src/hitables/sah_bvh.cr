@@ -57,8 +57,8 @@ class SAHBVHNode < BVHNode
           count0 += buckets[j].count
         end
 
-        b1 = buckets[i+1].bounds
-        ((i+1)...BUCKETS).each do |j|
+        b1 = buckets[i + 1].bounds
+        ((i + 1)...BUCKETS).each do |j|
           b1 = b1.merge(buckets[j].bounds)
           count1 += buckets[j].count
         end
@@ -89,7 +89,7 @@ class SAHBVHNode < BVHNode
         b <= min_cost_split ? left_ << obj : right_ << obj
       end
 
-      @left  = left_.size  == 1 ? left_[0]  : SAHBVHNode.new(left_)
+      @left = left_.size == 1 ? left_[0] : SAHBVHNode.new(left_)
       @right = right_.size == 1 ? right_[0] : SAHBVHNode.new(right_)
     end
     @bounding_box = @left.bounding_box.merge(@right.bounding_box)
