@@ -1,6 +1,8 @@
 abstract class Camera
-  abstract def generate_ray(x : Float64, y : Float64,
-                            t_min : Float64, t_max : Float64) : Ray
+  abstract def generate_ray(
+    x : Float64, y : Float64,
+    t_min : Float64, t_max : Float64
+  ) : Ray
   abstract def corresponding(p : Point) : {Int32, Int32}
 end
 
@@ -54,22 +56,25 @@ class PerspectiveCamera < Camera
   @factor : Vector
 
   def initialize(
-                 look_from : Point,
-                 look_at : Point,
-                 vertical_fov : Float64,
-                 dimensions : Tuple(Int32, Int32),
-                 up = Vector.y,
-                 aperture = 0.0)
+     look_from : Point,
+     look_at : Point,
+     vertical_fov : Float64,
+     dimensions : Tuple(Int32, Int32),
+     up = Vector.y,
+     aperture = 0.0
+  )
     initialize(look_from, look_at, up, vertical_fov, dimensions, aperture, (look_from - look_at).length)
   end
 
-  def initialize(look_from : Point,
-                 look_at : Point,
-                 up : Vector,
-                 vertical_fov : Float64,
-                 dimensions : Tuple(Int32, Int32),
-                 aperture : Float64,
-                 focus_distance : Float64)
+  def initialize(
+    look_from : Point,
+    look_at : Point,
+    up : Vector,
+    vertical_fov : Float64,
+    dimensions : Tuple(Int32, Int32),
+    aperture : Float64,
+    focus_distance : Float64
+  )
     aspect_ratio = dimensions[0].to_f / dimensions[1]
     @size_x = dimensions[0].to_f
     @size_y = dimensions[1].to_f

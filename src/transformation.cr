@@ -89,10 +89,12 @@ class VQS < Transformation
   # TODO: Make this code less messy
   # TODO: All quaternions are of unit length =>
   # conjugation could be simpler
-  def initialize(@translation = Vector.new(0.0),
-                 @scale = 1.0,
-                 axis = Vector.x,
-                 degrees = 0.0)
+  def initialize(
+    @translation = Vector.new(0.0),
+    @scale = 1.0,
+    axis = Vector.x,
+    degrees = 0.0
+  )
     @inv_scale = 1.0 / @scale
     rad = radiants(degrees)
 

@@ -8,8 +8,9 @@ class SPPMPixel
   property tau : Color, ld : Color, vp : VisiblePoint?
 
   def initialize(
-                 @radius = 0.0, @ld = Color::BLACK, @vp = nil, @m = 0, @n = 0.0,
-                 @tau = Color::BLACK, @phi = Color::BLACK)
+    @radius = 0.0, @ld = Color::BLACK, @vp = nil, @m = 0, @n = 0.0,
+    @tau = Color::BLACK, @phi = Color::BLACK
+  )
   end
 
   def add_phi(new_phi)

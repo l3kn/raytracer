@@ -32,8 +32,8 @@ class XYRect < Rect
     point = ray.point_at_parameter(t)
 
     # Hitpoint is outside of the rect
-    return nil if point.x < @bot.x || point.x > @top.x ||
-                  point.y < @bot.y || point.y > @top.y
+    return nil if point.x < @bot.x || point.x > @top.x
+    return nil if point.y < @bot.y || point.y > @top.y
 
     u = (point.x - @bot.x) / (@top.x - @bot.x)
     v = (point.y - @bot.y) / (@top.y - @bot.y)
@@ -67,8 +67,8 @@ class XZRect < Rect
     point = ray.point_at_parameter(t)
 
     # Hitpoint is outside of the rect
-    return nil if point.x < @bot.x || point.x > @top.x ||
-                  point.z < @bot.z || point.z > @top.z
+    return nil if point.x < @bot.x || point.x > @top.x
+    return nil if point.z < @bot.z || point.z > @top.z
 
     u = (point.x - @bot.x) / (@top.x - @bot.x)
     v = (point.z - @bot.z) / (@top.z - @bot.z)
@@ -102,8 +102,8 @@ class YZRect < Rect
     point = ray.point_at_parameter(t)
 
     # Hitpoint is outside of the rect
-    return nil if point.y < @bot.y || point.y > @top.y ||
-                  point.z < @bot.z || point.z > @top.z
+    return nil if point.y < @bot.y || point.y > @top.y
+    return nil if point.z < @bot.z || point.z > @top.z
 
     u = (point.z - @bot.z) / (@top.z - @bot.z)
     v = (point.y - @bot.y) / (@top.y - @bot.y)
