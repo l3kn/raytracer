@@ -89,11 +89,10 @@ end
 
 class GridTexture < Texture
   @step : Float64
+  @substep : Float64
+  @width : Float64
 
-  def initialize
-    @step = 0.05
-    @substep = 0.01
-    @width = 0.03
+  def initialize(@step, @substep, @width)
   end
 
   def value(hit)

@@ -11,6 +11,11 @@ class Triangle < FiniteHitable
     @normal = edge1.cross(edge2).to_normal
   end
 
+  def flip!
+    @normal = -@normal
+    self
+  end
+
   # Möller-Trumbore intersection algorithm
   def hit(ray)
     p = ray.direction.cross(@edge2)
