@@ -23,7 +23,7 @@ struct SpecularReflection < BxDF
 end
 
 struct SpecularTransmission < BxDF
-  @type : BxDFType # For some reason crystal 0.21.0 needs this
+  @type : BxDFType
 
   def initialize(@color : Color, @eta_i : Float64, @eta_t : Float64)
     @type = BxDFType::Transmission | BxDFType::Specular
