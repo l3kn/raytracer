@@ -17,14 +17,11 @@ class SimpleRaytracer < BaseRaytracer
       l += path_throughput * bsdf.emitted(wo)
 
       sample = bsdf.sample_f(wo, BxDFType::All)
-      break if sample.nil?
+      break if sample.nil? || !sample.relevant?
 
-      f, wi, pdf, sampled_type = sample
-      break if pdf == 0.0
+      path_throughput *= sample.color * sample.dir.dot(hit.normal).abs / sample.pdf
 
-      path_throughput *= f * wi.dot(hit.normal).abs / pdf
-
-      ray = Ray.new(hit.point, wi)
+      ray = Ray.new(hit.point, sample.dir)
     end
 
     l

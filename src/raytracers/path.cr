@@ -26,13 +26,10 @@ class PathRaytracer < BaseRaytracer
 
       # sample bsdf to get new path dir
       sample = bsdf.sample_f(wo, BxDFType::All)
-      break if sample.nil?
+      break if sample.nil? || !sample.relevant?
 
-      f, wi, pdf, sampled_type = sample
-      break if pdf == 0.0
-
-      specular_bounce = sampled_type.specular?
-      path_throughput *= f * wi.dot(hit.normal).abs / pdf
+      specular_bounce = sample.type.specular?
+      path_throughput *= sample.color * sample.dir.dot(hit.normal).abs / sample.pdf
 
       # possibliy terminate the path
       if depth > 3
@@ -43,7 +40,7 @@ class PathRaytracer < BaseRaytracer
         path_throughput /= continue_probability
       end
 
-      ray = Ray.new(hit.point, wi)
+      ray = Ray.new(hit.point, sample.dir)
     end
 
     l

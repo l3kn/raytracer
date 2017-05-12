@@ -37,19 +37,18 @@ abstract class Raytracer
     return Color::BLACK if background.nil?
 
     sample = bsdf.sample_f(wo, flags)
-    return Color::BLACK if sample.nil?
+    return Color::BLACK if sample.nil? || !sample.relevant?
 
-    f, wi, bsdf_pdf, sampled_type = sample
     weight = 1.0
-    unless sampled_type.specular?
-      weight = power_heuristic(1, INV_PI, 1, bsdf_pdf)
+    unless sample.type.specular?
+      weight = power_heuristic(1, INV_PI, 1, sample.pdf)
     end
 
-    ray = Ray.new(hit.point, wi)
+    ray = Ray.new(hit.point, sample.dir)
     return Color::BLACK if @scene.fast_hit(ray)
 
     li = background.get(ray)
-    f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf
+    sample.color * li * sample.dir.dot(hit.normal).abs * weight / sample.pdf
   end
 
   def estimate_direct(light, hit, bsdf, wo, flags = ~BxDFType::Specular)
@@ -75,23 +74,22 @@ abstract class Raytracer
       sample = bsdf.sample_f(wo, flags)
 
       if sample
-        f, wi, bsdf_pdf, sampled_type = sample
         weight = 1.0
-        return ld if f.black? || bsdf_pdf == 0.0
+        return ld unless sample.relevant?
 
-        unless sampled_type.specular?
-          light_pdf = light.pdf(hit.point, wi)
+        unless sample.type.specular?
+          light_pdf = light.pdf(hit.point, sample.dir)
           return ld if light_pdf == 0.0
-          weight = power_heuristic(1, bsdf_pdf, 1, light_pdf)
+          weight = power_heuristic(1, sample.pdf, 1, light_pdf)
         end
 
         # Add weight contribution from BSDF sampling
-        ray = Ray.new(hit.point, wi)
+        ray = Ray.new(hit.point, sample.dir)
         light_hit = @scene.hit(ray)
 
         if light_hit && light_hit.object.area_light == light
-          li = light_hit.material.bsdf(light_hit).emitted(-wi)
-          ld += f * li * wi.dot(hit.normal).abs * weight / bsdf_pdf unless li.black?
+          li = light_hit.material.bsdf(light_hit).emitted(-sample.dir)
+          ld += sample.color * li * sample.dir.dot(hit.normal).abs * weight / sample.pdf unless li.black?
         end
       end
     end

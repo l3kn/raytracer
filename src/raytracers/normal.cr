@@ -21,9 +21,7 @@ class ColorRaytracer < BaseRaytracer
     else
       bsdf = hit.material.bsdf(hit)
       sample = bsdf.sample_f(-ray.direction, BxDFType::All)
-      return Color::BLACK if sample.nil?
-      color, wi, pdf, sampled_flags = sample
-      color
+      sample.nil? ? Color::BLACK : sample.color
     end
   end
 end

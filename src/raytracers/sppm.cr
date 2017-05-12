@@ -111,13 +111,10 @@ class SPPMRaytracer < Raytracer
           # Spawn ray from SPPM camera path vertex
           if depth < @recursion_depth - 1
             sample = bsdf.sample_f(wo, BxDFType::All)
-            break if sample.nil?
+            break if sample.nil? || !sample.relevant?
 
-            f, wi, pdf, sampled_type = sample
-            break if f.black?
-
-            specular_bounce = sampled_type.specular?
-            path_throughput *= f * wi.dot(hit.normal).abs / pdf
+            specular_bounce = sample.type.specular?
+            path_throughput *= sample.color * sample.dir.dot(hit.normal).abs / sample.pdf
 
             # TODO: change the equivalent code in
             # path integrator to look more like this
@@ -127,7 +124,7 @@ class SPPMRaytracer < Raytracer
               path_throughput /= continue_probability
             end
 
-            ray = Ray.new(hit.point, wi)
+            ray = Ray.new(hit.point, sample.dir)
           end
         end
 
@@ -220,19 +217,16 @@ class SPPMRaytracer < Raytracer
           wo = -photon_ray.direction
 
           sample = photon_bsdf.sample_f(wo, BxDFType::All)
-          break if sample.nil?
+          break if sample.nil? || !sample.relevant?
 
-          fr, wi, pdf, sampled_type = sample
-          break if pdf == 0.0 || fr.black?
+          new_throughput = path_throughput * sample.color * sample.dir.dot(hit.normal).abs / sample.pdf
 
-          new_throughput = path_throughput * fr * wi.dot(hit.normal).abs / pdf
-
-          # # Possibly terminate photon path w/ russian roulette
+          # Possibly terminate photon path w/ russian roulette
           q = max(0.0, 1.0 - new_throughput.max_component / path_throughput.max_component)
           break if rand < q
 
           path_throughput = new_throughput / (1.0 - q)
-          photon_ray = Ray.new(hit.point, wi)
+          photon_ray = Ray.new(hit.point, sample.dir)
         end
       end
 
