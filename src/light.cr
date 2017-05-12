@@ -1,19 +1,31 @@
 abstract class Light
   # TODO: Implement transformations for lights,
-  # throw an error if the transfromations alters the scale
+  # throw an error if the transformation alters the scale
 
   # Take a point in the scene and return:
   #  * A vector from this point to the light
   #  * The color emitted in this direction
   #  * A VisibilityTester to check if the path to the light is unoccluded
   #  * The pdf for that vector / ray
-  abstract def sample_l(normal : Normal, scene : Scene, point : Point) : {Vector, Color, VisibilityTester, Float64}
+  abstract def sample_l(normal : Normal, scene : Scene, point : Point) : LightIncomingSample
 
   # Sample a random outgoing ray,
-  abstract def sample_l : {Color, Ray, Normal, Float64}
+  abstract def sample_l : LightOutgoingSample
   abstract def pdf(point : Point, wi : Vector) : Float64
   abstract def delta_light? : Bool
   abstract def power : Color
+end
+
+record LightIncomingSample, dir : Vector, color : Color, tester : VisibilityTester, pdf : Float64 do
+  def relevant?
+    !(@pdf == 0.0 || @color.black?)
+  end
+end
+
+record LightOutgoingSample, ray : Ray, color : Color, normal : Normal, pdf : Float64 do
+  def relevant?
+    !(@pdf == 0.0 || @color.black?)
+  end
 end
 
 class PointLight < Light
@@ -21,24 +33,27 @@ class PointLight < Light
   # @position = transformation.object_to_world(Point.new(0.0))
   def initialize(@position : Point, @intensity : Color); end
 
-  def sample_l(normal : Normal, scene : Scene, point : Point) : {Vector, Color, VisibilityTester, Float64}
+  def sample_l(normal : Normal, scene : Scene, point : Point)
     dist = (@position - point)
     wi = dist.normalize
 
-    tester = VisibilityTester.from_segment(point, @position)
-
-    {wi, @intensity / dist.squared_length, tester, 1.0}
+    LightIncomingSample.new(
+      wi,
+      @intensity / dist.squared_length,
+      VisibilityTester.from_segment(point, @position),
+      1.0
+    )
   end
 
-  def sample_l : {Color, Ray, Normal, Float64}
+  def sample_l
     dir = uniform_sample_sphere
 
-    {
-      @intensity,
+    LightOutgoingSample.new(
       Ray.new(@position, dir),
+      @intensity,
       dir.to_normal,
-      uniform_sphere_pdf,
-    }
+      uniform_sphere_pdf
+    )
   end
 
   def pdf(point, wi)
@@ -57,20 +72,22 @@ end
 class AreaLight < Light
   def initialize(@object : FiniteHitable, @intensity : Color); end
 
-  def sample_l(normal : Normal, scene : Scene, point : Point) : {Vector, Color, VisibilityTester, Float64}
+  def sample_l(normal : Normal, scene : Scene, point : Point)
     point_s, normal_s = @object.sample(point)
 
     dist = point_s - point
     wi = dist.normalize
 
-    tester = VisibilityTester.from_segment(point, point_s)
-
-    # TODO: which version is the right one?
-    # {wi, @intensity / dist.squared_length, tester, @object.pdf(point, wi)}
-    {wi, @intensity, tester, @object.pdf(point, wi)}
+    # TODO: Does @intensity need to be divided by dist.squared_length?
+    LightIncomingSample.new(
+      wi,
+      @intensity,
+      VisibilityTester.from_segment(point, point_s),
+      @object.pdf(point, wi)
+    )
   end
 
-  def sample_l : {Color, Ray, Normal, Float64}
+  def sample_l
     origin, normal = @object.sample
     wi = cosine_sample_hemisphere
     dir_pdf = cosine_hemisphere_pdf(wi.z)
@@ -78,12 +95,12 @@ class AreaLight < Light
     onb = ONB.from_w(normal)
     wi_world = onb.local_to_world(wi)
 
-    {
-      @intensity,
+    LightOutgoingSample.new(
       Ray.new(origin, wi_world),
+      @intensity,
       normal,
-      @object.pdf(origin) * dir_pdf,
-    }
+      @object.pdf(origin) * dir_pdf
+    )
   end
 
   def pdf(point, wi)

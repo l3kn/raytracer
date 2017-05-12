@@ -76,6 +76,8 @@ class SPPMRaytracer < Raytracer
     pixels = Array.new(n_pixels) { SPPMPixel.new(@initial_search_radius) }
     light_distribution = @scene.light_sampling_CDF
 
+    window = StumpyX11.new(@width, @height)
+
     @iterations.times do |iter|
       puts "Iteration #{iter + 1} / #{@iterations}"
       Range2.new({@width - 1, @height - 1}).each do |x, y|
@@ -184,11 +186,11 @@ class SPPMRaytracer < Raytracer
         light = @scene.lights[light_n]
 
         # generate photon_ray from light source & initialize alpha
-        le, photon_ray, light_normal, pdf = light.sample_l
-        next if pdf == 0.0 || le.black?
+        l_sample = light.sample_l
+        next unless l_sample.relevant?
 
-        path_throughput = (le * light_normal.dot(photon_ray.direction.normalize).abs) / (light_pdf * pdf)
-
+        photon_ray = l_sample.ray
+        path_throughput = (l_sample.color * l_sample.normal.dot(photon_ray.direction.normalize).abs) / (light_pdf * l_sample.pdf)
         next if path_throughput.black?
 
         (0...@recursion_depth).each do |depth|
@@ -238,12 +240,13 @@ class SPPMRaytracer < Raytracer
       pixels.each(&.update!)
 
       # Update the output image every few iterations
-      if iter > 0 && iter % 100 == 0
-        StumpyPNG.write(
-          write_to_canvas(pixels, iter),
-          "iter#{iter.to_s.rjust(4, '0')}_#{filename}"
-        )
-      end
+      window.write(write_to_canvas(pixels, iter))
+      # if iter > 0 && iter % 100 == 0
+      #   # StumpyPNG.write(
+      #   #   write_to_canvas(pixels, iter),
+      #   #   "iter#{iter.to_s.rjust(4, '0')}_#{filename}"
+      #   )
+      # end
     end
 
     time = Time.now - start

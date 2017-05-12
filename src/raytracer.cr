@@ -56,17 +56,16 @@ abstract class Raytracer
     ld = Color::BLACK
 
     # Sample light w/ multiple importance sampling
-    wi, li, visibility, light_pdf = light.sample_l(hit.normal, scene, hit.point)
-
-    unless light_pdf == 0.0 || li.black?
-      f = bsdf.f(wo, wi, flags)
-      if visibility.unoccluded?(@scene) && !f.black?
+    sample = light.sample_l(hit.normal, scene, hit.point)
+    if sample.relevant?
+      f = bsdf.f(wo, sample.dir, flags)
+      if sample.tester.unoccluded?(@scene) && !f.black?
         if light.delta_light?
-          ld += f * li * (wi.dot(hit.normal).abs / light_pdf)
+          ld += f * sample.color * (sample.dir.dot(hit.normal).abs / sample.pdf)
         else
-          bsdf_pdf = bsdf.pdf(wo, wi, flags)
-          weight = power_heuristic(1, light_pdf, 1, bsdf_pdf)
-          ld += f * li * (wi.dot(hit.normal).abs * weight / light_pdf)
+          bsdf_pdf = bsdf.pdf(wo, sample.dir, flags)
+          weight = power_heuristic(1, sample.pdf, 1, bsdf_pdf)
+          ld += f * sample.color * (sample.dir.dot(hit.normal).abs * weight / sample.pdf)
         end
       end
     end
