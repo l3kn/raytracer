@@ -64,11 +64,7 @@ class BVHNode < FiniteHitable
     @bounding_box = @left.bounding_box.merge(@right.bounding_box)
   end
 
-  def hit(ray : Ray)
-    hit(ExtendedRay.new(ray))
-  end
-
-  def hit(ray : ExtendedRay)
+  def hit(ray)
     if @bounding_box.fast_hit(ray)
       @@hit_overall += 1
 

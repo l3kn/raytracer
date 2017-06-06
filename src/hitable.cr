@@ -15,10 +15,6 @@ abstract class Hitable
 
   abstract def hit(ray : Ray) : HitRecord?
 
-  def hit(ray : ExtendedRay) : HitRecord?
-    hit(Ray.new(ray.origin, ray.direction, ray.t_min, ray.t_max))
-  end
-
   def sample : {Point, Normal}
     raise "Error, this feature is not supported yet"
   end

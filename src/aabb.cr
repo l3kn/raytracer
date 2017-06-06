@@ -13,33 +13,33 @@ struct AABB
     @max = Point.new(-Float64::MAX)
   end
 
-  def fast_hit(ray : ExtendedRay)
-    if ray.pos_x
-      min = (@min.x - ray.origin.x) * ray.inv_x
-      max = (@max.x - ray.origin.x) * ray.inv_x
+  def fast_hit(ray : Ray)
+    if ray.sign[0] == 0
+      min = (@min.x - ray.origin.x) * ray.inv_direction.x
+      max = (@max.x - ray.origin.x) * ray.inv_direction.x
     else
-      max = (@min.x - ray.origin.x) * ray.inv_x
-      min = (@max.x - ray.origin.x) * ray.inv_x
+      max = (@min.x - ray.origin.x) * ray.inv_direction.x
+      min = (@max.x - ray.origin.x) * ray.inv_direction.x
     end
 
-    if ray.pos_y
-      y_min = (@min.y - ray.origin.y) * ray.inv_y
-      y_max = (@max.y - ray.origin.y) * ray.inv_y
+    if ray.sign[1] == 0
+      y_min = (@min.y - ray.origin.y) * ray.inv_direction.y
+      y_max = (@max.y - ray.origin.y) * ray.inv_direction.y
     else
-      y_max = (@min.y - ray.origin.y) * ray.inv_y
-      y_min = (@max.y - ray.origin.y) * ray.inv_y
+      y_max = (@min.y - ray.origin.y) * ray.inv_direction.y
+      y_min = (@max.y - ray.origin.y) * ray.inv_direction.y
     end
 
     return false if min > y_max || y_min > max
     min = y_min if y_min > min
     max = y_max if y_max < max
 
-    if ray.pos_z
-      z_min = (@min.z - ray.origin.z) * ray.inv_z
-      z_max = (@max.z - ray.origin.z) * ray.inv_z
+    if ray.sign[2] == 0
+      z_min = (@min.z - ray.origin.z) * ray.inv_direction.z
+      z_max = (@max.z - ray.origin.z) * ray.inv_direction.z
     else
-      z_max = (@min.z - ray.origin.z) * ray.inv_z
-      z_min = (@max.z - ray.origin.z) * ray.inv_z
+      z_max = (@min.z - ray.origin.z) * ray.inv_direction.z
+      z_min = (@max.z - ray.origin.z) * ray.inv_direction.z
     end
 
     return false if min > z_max || z_min > max

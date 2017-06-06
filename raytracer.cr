@@ -3,7 +3,7 @@ require "../linalg/src/linalg"
 require "stumpy_png"
 require "stumpy_x11"
 
-EPSILON = 0.0001
+EPSILON = 0.00001
 
 require "./src/vector"
 require "./src/color"

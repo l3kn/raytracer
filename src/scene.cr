@@ -7,7 +7,8 @@ class Scene
   end
 
   def initialize(hitables, @lights, @background = nil)
-    if hitables.size < 5 # 500
+    # if hitables.size < 5 # 500
+    if true
       @hitable = HitableList.new(hitables)
     else
       finite = hitables.select(&.is_a?(FiniteHitable)).map(&.as(FiniteHitable))

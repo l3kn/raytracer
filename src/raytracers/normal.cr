@@ -13,6 +13,21 @@ class NormalRaytracer < BaseRaytracer
   end
 end
 
+class PointRaytracer < BaseRaytracer
+  def cast_ray(ray)
+    hit = @scene.hit(ray)
+    if hit.nil?
+      @scene.get_background(ray)
+    else
+      Color.new(
+        hit.point.x % 10.0 / 10.0, 
+        hit.point.y % 10.0 / 10.0,
+        hit.point.z % 10.0 / 10.0
+      )
+    end
+  end
+end
+
 class ColorRaytracer < BaseRaytracer
   def cast_ray(ray)
     hit = @scene.hit(ray)

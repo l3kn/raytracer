@@ -26,7 +26,7 @@ class XYRect < Rect
   end
 
   def hit(ray)
-    t = (@bot.z - ray.origin.z) / ray.direction.z
+    t = (@bot.z - ray.origin.z) * ray.inv_direction.z
     return nil if t < ray.t_min || t > ray.t_max
 
     point = ray.point_at_parameter(t)
@@ -61,7 +61,7 @@ class XZRect < Rect
   end
 
   def hit(ray)
-    t = (@bot.y - ray.origin.y) / ray.direction.y
+    t = (@bot.y - ray.origin.y) * ray.inv_direction.y
     return nil if t < ray.t_min || t > ray.t_max
 
     point = ray.point_at_parameter(t)
@@ -96,7 +96,7 @@ class YZRect < Rect
   end
 
   def hit(ray)
-    t = (@bot.x - ray.origin.x) / ray.direction.x
+    t = (@bot.x - ray.origin.x) * ray.inv_direction.x
     return nil if t < ray.t_min || t > ray.t_max
 
     point = ray.point_at_parameter(t)

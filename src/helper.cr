@@ -23,6 +23,10 @@ INV_FOURPI = 1.0 / FOURPI
 PI_OVER_TWO  = Math::PI / 2
 PI_OVER_FOUR = Math::PI / 4
 
+def sign(x : Float64)
+  x < 0 ? -1.0 : 1.0
+end
+
 # TODO: Create a class Point2
 # to use instead of u1, u2
 # and for all 2D sampling methods
