@@ -69,7 +69,6 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions
 )
 
-# raytracer = SPPMRaytracer.new(
 raytracer = PathRaytracer.new(
   dimensions, camera,
   scene: Scene.new(hitables, lights),

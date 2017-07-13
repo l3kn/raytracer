@@ -1,10 +1,8 @@
-require "../src/raytracer"
-require "../src/backgrounds/*"
-require "../src/distance_estimatable"
-require "../src/quaternion"
+require "../../src/distance_estimatable"
+require "../../raytracer"
 
 class Julia < DE::DistanceEstimatable
-  def initialize(@iterations = 4)
+  def initialize(@iterations = 8)
     # @d = Quaternion.new(0.18, 0.88, 0.24, 0.16)
     @d = Quaternion.new(-0.137, -0.630, -0.475, -0.046)
     # @d = Quaternion.new(-0.218,-0.113,-0.181,-0.496)
@@ -25,7 +23,7 @@ class Julia < DE::DistanceEstimatable
   end
 end
 
-mat = Lambertian.new(UTexture.new(20.0))
+mat = MatteMaterial.new(UTexture.new(20.0))
 
 de = Julia.new(100)
 hitables = DistanceEstimator.new(
@@ -35,18 +33,24 @@ hitables = DistanceEstimator.new(
   minimum_distance: 0.0001
 )
 
-# width, height = {1920, 1080}
-width, height = {400, 400}
+dimensions = {400, 400}
 
 camera = PerspectiveCamera.new(
   look_from: Point.new(4.0, 0.0, 0.0),
   look_at: Point.new(0.0, 0.0, 0.0),
   vertical_fov: 30.0,
-  dimensions: {width, height}
+  dimensions: dimensions
 )
 
-# Raytracer
-raytracer = SimpleRaytracer.new(width, height, hitables: hitables, camera: camera, samples: 5)
-raytracer.recursion_depth = 1
-raytracer.t_max = 100.0
+raytracer = ColorRaytracer.new(
+  dimensions,
+  scene: Scene.new(
+    [hitables.as(Hitable)],
+    [] of Light,
+    ConstantBackground.new(Color.new(1.0))
+  ),
+  camera: camera,
+  samples: 1)
+
+# raytracer.t_max = 100.0
 raytracer.render("fractal5.png")

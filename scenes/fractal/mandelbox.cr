@@ -1,7 +1,5 @@
-require "../src/raytracer"
-require "../src/backgrounds/*"
-require "../src/distance_estimatable"
-require "../src/quaternion"
+require "../../src/distance_estimatables/*"
+require "../../raytracer"
 
 class Mandelbox < DE::DistanceEstimatable
   def initialize(@iterations = 4, @scale = 2.9)
@@ -51,8 +49,7 @@ class Mandelbox < DE::DistanceEstimatable
   end
 end
 
-# mat = Lambertian.new(UTexture.new)
-mat = Lambertian.new(UTexture.new)
+mat = MatteMaterial.new(UTexture.new)
 
 de = Mandelbox.new(10)
 hitables = DistanceEstimator.new(
@@ -63,20 +60,24 @@ hitables = DistanceEstimator.new(
   minimum_distance: 0.0001
 )
 
-# width, height = {1920, 1080}
-width, height = {192 * 5, 108 * 5}
-# width, height = {800, 800}
+dimensions = {800, 400}
 
 camera = PerspectiveCamera.new(
   look_from: Point.new(4.5, 0.0, 1.0),
   look_at: Point.new(0.0, 0.0, -3.0),
   vertical_fov: 25.0,
-  dimensions: {width, height}
+  dimensions: dimensions
 )
 
 # Raytracer
-raytracer = SimpleRaytracer.new(width, height, hitables: hitables, camera: camera, samples: 40)
-raytracer.recursion_depth = 1
-raytracer.gamma_correction = 1.0
-raytracer.t_max = 10000.0
-raytracer.render("fractal6.png")
+raytracer = ColorRaytracer.new(
+  dimensions,
+  scene: Scene.new(
+    [hitables.as(Hitable)],
+    [] of Light,
+    ConstantBackground.new(Color.new(1.0))
+  ),
+  camera: camera,
+  samples: 10)
+
+raytracer.render("fractal.png")

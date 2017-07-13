@@ -1,9 +1,8 @@
-require "../src/raytracer"
-require "../src/backgrounds/*"
-require "../src/distance_estimatable"
+require "../../src/distance_estimatable"
+require "../../raytracer"
 
 class SierpinskyTetrahedron < DE::DistanceEstimatable
-  def initialize(@iterations = 4, @scale = 2.0)
+  def initialize(@iterations = 3, @scale = 2.0)
   end
 
   def distance_estimate(pos)
@@ -24,27 +23,31 @@ class SierpinskyTetrahedron < DE::DistanceEstimatable
   end
 end
 
-mat = Lambertian.new(UTexture.new(40.0))
+mat = MatteMaterial.new(UTexture.new(40.0))
 
 de = SierpinskyTetrahedron.new(11, 2.0)
 hitables = DistanceEstimator.new(mat, de, maximum_steps: 600)
 
 # width, height = {1920, 1080}
-width, height = {400, 400}
+# dimensions = {400, 400}
+dimensions = {2480, 3508}
 
 camera = PerspectiveCamera.new(
-  look_at: Point.new(1.0),
-  look_from: Point.new(0.0),
+  look_at: Point.new(1.0, 1.0, 1.0),
+  look_from: Point.new(0.0, 0.0, 0.0),
   vertical_fov: 22.0,
-  dimensions: {width, height}
+  dimensions: dimensions
 )
 
 # Raytracer
-raytracer = SimpleRaytracer.new(width, height,
-  hitables: hitables,
+raytracer = ColorRaytracer.new(
+  dimensions,
+  scene: Scene.new(
+    [hitables.as(Hitable)],
+    [] of Light,
+    ConstantBackground.new(Color.new(1.0))
+  ),
   camera: camera,
-  samples: 3,
-  background: ConstantBackground.new(Color.new(1.0)))
-raytracer.recursion_depth = 1
+  samples: 2)
 
 raytracer.render("fractal3.png")

@@ -16,8 +16,10 @@ hitables << YZRect.new(Point.new(555.0, 0.0, 0.0), rtb, green).flip!
 hitables << XZRect.new(Point.new(0.0, 555.0, 0.0), rtb, white).flip!
 hitables << XYRect.new(Point.new(0.0, 0.0, 555.0), rtb, white).flip!
 
+
 hitables << TransformationWrapper.new(
   Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum),
+  # Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), GlassMaterial.new(1.5)),
   VQS.new(Vector.new(265.0, 0.0, 295.0), 1.0, Vector.y, 15.0)
 )
 
@@ -38,7 +40,7 @@ light_object, light_light = AreaLight.with_object(
 lights << light_light
 hitables << light_object
 
-dimensions = {400, 400}
+dimensions = {300, 300}
 camera = PerspectiveCamera.new(
   look_from: Point.new(278.0, 278.0, -800.0),
   look_at: Point.new(278.0, 278.0, 0.0),
@@ -48,10 +50,11 @@ camera = PerspectiveCamera.new(
 
 # raytracer = SPPMRaytracer.new(
 # raytracer = WhittedRaytracer.new(
-raytracer = PathRaytracer.new(
+raytracer = SimpleRaytracer.new(
   dimensions, camera,
   scene: Scene.new(hitables, lights),
-  samples: 10 # 200
+  # samples: 10 # 200
+  samples: 100
 )
 
 raytracer.render("cornell.png")

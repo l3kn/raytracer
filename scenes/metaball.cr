@@ -1,9 +1,7 @@
-require "../src/raytracer"
-require "../src/hitables/distance_estimator"
-require "../src/backgrounds/*"
+require "../../raytracer"
 require "../src/distance_estimatables/*"
 
-mat = Metal.new(Color.new(0.8), 0.0)
+mat = MirrorMaterial.new(Color.new(0.8))
 
 bfde = DE::Metaball.new(
   [
@@ -13,24 +11,22 @@ bfde = DE::Metaball.new(
   ],
   3.4
 )
-hitables = BruteForceDistanceEstimator.new(mat, bfde, 5.0)
+hitables = [BruteForceDistanceEstimator.new(mat, bfde, 5.0).as(Hitable)]
 
-width, height = {800, 400}
-# width, height = {1920, 1080}
+dimensions = {800, 400}
 
-camera = Camera.new(
+camera = PerspectiveCamera.new(
   look_from: Point.new(0.0, 0.0, 2.0),
   look_at: Point.new(0.0, 0.0, 0.0),
-  vertical_fov: 70,
-  aspect_ratio: width.to_f / height.to_f,
+  vertical_fov: 70.0,
+  dimensions: dimensions,
 )
 
 raytracer = SimpleRaytracer.new(
-  width, height,
-  hitables: hitables,
+  dimensions,
+  scene: Scene.new(hitables, [] of Light, CubeMap.new("cube_maps/Yokohama")),
   camera: camera,
-  samples: 10,
-  background: CubeMap.new("cube_maps/Yokohama"))
-raytracer.gamma_correction = 1.0
+  samples: 10
+)
 
 raytracer.render("metaball.png")

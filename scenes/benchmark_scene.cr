@@ -19,7 +19,7 @@ hitables << TransformationWrapper.new(
 )
 
 hitables << TransformationWrapper.new(
-  Sphere.new(GlassMaterial.new(Color::WHITE, Color::WHITE, 1.8)),
+  Sphere.new(GlassMaterial.new(1.8, Color::WHITE, Color::WHITE)),
   VS.new(Vector.new(-1.0, 0.0, -1.0), 0.5)
 )
 
