@@ -81,9 +81,10 @@ struct AABB
   end
 
   def self.from_points(points : Array(Point))
-    min = max = points[0]
+    min = Point.new(Float64::MAX)
+    max = Point.new(-Float64::MAX)
 
-    points[1..-1].each do |point|
+    points.each do |point|
       min = min.min(point)
       max = max.max(point)
     end

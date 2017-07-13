@@ -4,20 +4,21 @@ class Cylinder < FiniteHitable
   property y_min : Float64, y_max : Float64, radius : Float64
   @inv_phi_max : Float64
   @inv_length : Float64
+  @phi_max : Float64 = radiants(360.0)
 
-  def initialize(y1, y2, @radius : Float64, @material : Material)
+  def initialize(y1 : Float64, y2 : Float64, @radius : Float64, @material : Material)
     @y_min = min(y1, y2)
     @y_max = max(y1, y2)
 
-    p1 = Point.new(-@radius, -@radius, @y_min)
-    p2 = Point.new(@radius, @radius, @y_max)
+    p1 = Point.new(-@radius, @y_min, -@radius)
+    p2 = Point.new(@radius, @y_max, @radius)
     @bounding_box = AABB.new(p1, p2)
 
-    @phi_max : Float64 = radiants(360.0)
     @inv_phi_max = 1.0 / @phi_max
     @inv_length = 1.0 / (@y_max - @y_min)
   end
 
+  # TODO: Are the caps broken (wrong t?)
   def hit(ray)
     a = (ray.direction.x * ray.direction.x) + (ray.direction.z * ray.direction.z)
     b = 2 * ((ray.direction.x * ray.origin.x) + (ray.direction.z * ray.origin.z))
@@ -43,11 +44,13 @@ class Cylinder < FiniteHitable
       # TODO: calculate correct uv coordinates
     elsif y0 >= @y_min && y0 <= @y_max
       # Cylinder body
+      return nil if t0 > ray.t_max || t0 < ray.t_min
       t_hit = t0
       point = ray.point_at_parameter(t_hit)
       normal = Vector.new(point.x, 0.0, point.z).to_normal
     else
       # Top cap
+      return nil
       return nil if y1 > @y_max # Ray misses the cylinder entirely
 
       t_hit = t0 + (t1 - t0) * (y0 - @y_max) / (y0 - y1)

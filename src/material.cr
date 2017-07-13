@@ -26,16 +26,6 @@ class GlassMaterial < Material
   end
 end
 
-class CheckerMaterial < Material
-  def initialize(@m1 : Material, @m2 : Material, @size = 10); end
-
-  def bsdf(hit)
-    u = (hit.u * @size).to_i % 2
-    v = (hit.v * @size).to_i % 2
-    (u + v).even? ? @m1.bsdf(hit) : @m2.bsdf(hit)
-  end
-end
-
 class MatteMaterial < Material
   def initialize(@texture : Texture); end
 

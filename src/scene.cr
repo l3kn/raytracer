@@ -6,9 +6,8 @@ class Scene
     Distribution1D.new(lights.map(&.power.length))
   end
 
-  def initialize(hitables, @lights, @background = nil)
-    # if hitables.size < 5 # 500
-    if true
+  def initialize(hitables, @lights = [] of Light, @background = nil)
+    if hitables.size < 5
       @hitable = HitableList.new(hitables)
     else
       finite = hitables.select(&.is_a?(FiniteHitable)).map(&.as(FiniteHitable))
