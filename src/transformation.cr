@@ -106,7 +106,7 @@ class VQS < Transformation
 
   def world_to_object(point : Point) : Point
     a = (point - @translation)
-    trans_ = Quaternion.new(1.0, a.x, a.y, a.z)
+    trans_ = Quaternion.new(1.0, a)
     rot_ = @inv_rotation * trans_ * @rotation
     rot = rot_.yzw.to_point
     rot * @inv_scale
@@ -114,7 +114,7 @@ class VQS < Transformation
 
   def object_to_world(point : Point) : Point
     a = point * @scale
-    b = Quaternion.new(1.0, a.x, a.y, a.z)
+    b = Quaternion.new(1.0, a)
     c = @rotation * b * @inv_rotation
 
     c.yzw.to_point + @translation
@@ -135,61 +135,30 @@ class VQS < Transformation
   end
 
   def world_to_object(n : Normal) : Normal
-    trans_ = Quaternion.new(0.0, n.x, n.y, n.z)
+    trans_ = Quaternion.new(0.0, n)
     r = @inv_rotation * trans_ * @rotation
     r.yzw.to_normal
   end
 
   def object_to_world(n : Normal) : Normal
-    b = Quaternion.new(0.0, n.x, n.y, n.z)
+    b = Quaternion.new(0.0, n)
     r = @rotation * b * @inv_rotation
     r.yzw.to_normal
   end
 
   def object_to_world(box : AABB)
     points = [
-      box.min,
-      box.max,
-      Point.new(
-        box.max.x,
-        box.min.y,
-        box.min.z
-      ),
-      Point.new(
-        box.min.x,
-        box.max.y,
-        box.min.z
-      ),
-      Point.new(
-        box.min.x,
-        box.min.y,
-        box.max.z
-      ),
-      Point.new(
-        box.min.x,
-        box.max.y,
-        box.max.z
-      ),
-      Point.new(
-        box.max.x,
-        box.min.y,
-        box.max.z
-      ),
-      Point.new(
-        box.max.x,
-        box.max.y,
-        box.min.z
-      ),
+      Point.new(box.min.x, box.min.y, box.min.z),
+      Point.new(box.min.x, box.min.y, box.max.z),
+      Point.new(box.min.x, box.max.y, box.min.z),
+      Point.new(box.min.x, box.max.y, box.max.z),
+      Point.new(box.max.x, box.min.y, box.min.z),
+      Point.new(box.max.x, box.min.y, box.max.z),
+      Point.new(box.max.x, box.max.y, box.min.z),
+      Point.new(box.max.x, box.max.y, box.max.z)
     ]
 
-    AABB.from_points(
-      points.map { |p| object_to_world(p) }
-    )
-
-    AABB.new(
-      object_to_world(box.min),
-      object_to_world(box.max)
-    )
+    AABB.from_points(points.map { |p| object_to_world(p) })
   end
 end
 

@@ -4,11 +4,11 @@ struct Quaternion < LA::AQuaternion
 
   def initialize(@x, @y, @z, @w); end
 
-  def initialize(@x : Float64, yzw : (Point | Vector))
+  def initialize(@x : Float64, yzw : (Point | Vector | Normal))
     @y, @z, @w = yzw.to_tuple
   end
 
-  def initialize(xyz : (Point | Vector), @w : Float64)
+  def initialize(xyz : (Point | Vector | Normal), @w : Float64)
     @x, @y, @z = xyz.to_tuple
   end
 
