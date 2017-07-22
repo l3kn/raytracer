@@ -76,7 +76,7 @@ class SPPMRaytracer < Raytracer
     pixels = Array.new(n_pixels) { SPPMPixel.new(@initial_search_radius) }
     light_distribution = @scene.light_sampling_CDF
 
-    window = StumpyX11.new(@width, @height)
+    # window = StumpyX11.new(@width, @height)
 
     @iterations.times do |iter|
       puts "Iteration #{iter + 1} / #{@iterations}"
@@ -234,7 +234,7 @@ class SPPMRaytracer < Raytracer
       pixels.each(&.update!)
 
       # Update the output image every few iterations
-      window.write(write_to_canvas(pixels, iter))
+      # window.write(write_to_canvas(pixels, iter))
       # if iter > 0 && iter % 100 == 0
       #   # StumpyPNG.write(
       #   #   write_to_canvas(pixels, iter),
