@@ -1,6 +1,6 @@
 require "../raytracer"
 
-mat = MirrorMaterial.new(Color.from_hex("#FFD700"))
+mat = Material::Mirror.new(Color.from_hex("#FFD700"))
 hitables = OBJ.parse("models/teapot.obj", mat, interpolated: true)
 
 dimensions = {400, 400}

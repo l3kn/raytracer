@@ -23,7 +23,7 @@ class SierpinskyTetrahedron < DE::DistanceEstimatable
   end
 end
 
-mat = MatteMaterial.new(UTexture.new(40.0))
+mat = Material::Matte.new(UTexture.new(40.0))
 
 de = SierpinskyTetrahedron.new(11, 2.0)
 hitables = DistanceEstimator.new(mat, de, maximum_steps: 600)

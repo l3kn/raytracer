@@ -23,7 +23,7 @@ class Julia < DE::DistanceEstimatable
   end
 end
 
-mat = MatteMaterial.new(UTexture.new(20.0))
+mat = Material::Matte.new(UTexture.new(20.0))
 
 de = Julia.new(100)
 hitables = DistanceEstimator.new(

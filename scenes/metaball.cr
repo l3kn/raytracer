@@ -1,7 +1,7 @@
 require "../../raytracer"
 require "../src/distance_estimatables/*"
 
-mat = MirrorMaterial.new(Color.new(0.8))
+mat = Material::Mirror.new(Color.new(0.8))
 
 bfde = DE::Metaball.new(
   [

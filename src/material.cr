@@ -2,7 +2,7 @@ abstract class Material
   abstract def bsdf(hit : HitRecord) : BSDF
 end
 
-class GlassMaterial < Material
+class Material::Glass < Material
   def initialize(@ior : Float64, @texture_reflected : Texture, @texture_transmitted : Texture)
   end
 
@@ -26,7 +26,7 @@ class GlassMaterial < Material
   end
 end
 
-class MatteMaterial < Material
+class Material::Matte < Material
   def initialize(@texture : Texture); end
 
   def initialize(color : Color)
@@ -39,7 +39,7 @@ class MatteMaterial < Material
   end
 end
 
-class OrenNayarMaterial < Material
+class Material::OrenNayar < Material
   def initialize(@texture : Texture, @sig : Float64); end
 
   def initialize(color : Color, @sig : Float64)
@@ -52,7 +52,7 @@ class OrenNayarMaterial < Material
   end
 end
 
-class MirrorMaterial < Material
+class Material::Mirror < Material
   def initialize(@texture : Texture); end
 
   def initialize(color : Color)
@@ -65,7 +65,7 @@ class MirrorMaterial < Material
   end
 end
 
-class DiffuseLightMaterial < Material
+class Material::DiffuseLight < Material
   def initialize(@texture : Texture); end
 
   def initialize(color : Color)

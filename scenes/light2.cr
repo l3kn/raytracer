@@ -4,22 +4,22 @@ hitables = [] of UnboundedHitable
 lights = [] of Light
 
 hitables << TransformationWrapper.new(
-  Sphere.new(MatteMaterial.new(Color.new(0.8))),
+  Sphere.new(Material::Matte.new(Color.new(0.8))),
   VS.new(Vector.new(0.0, -100.5, -1.0), 100.0)
 )
 
 ior = 1.8
 
 hitables << TransformationWrapper.new(
-  Sphere.new(GlassMaterial.new(ior)),
+  Sphere.new(Material::Glass.new(ior)),
   VS.new(Vector.new(-1.0, -0.0, -1.0), 0.5)
 )
 hitables << TransformationWrapper.new(
-  Sphere.new(GlassMaterial.new(ior)),
+  Sphere.new(Material::Glass.new(ior)),
   VS.new(Vector.new(0.0, -0.0, -1.0), 0.5)
 )
 hitables << TransformationWrapper.new(
-  Sphere.new(GlassMaterial.new(ior)),
+  Sphere.new(Material::Glass.new(ior)),
   VS.new(Vector.new(1.0, -0.0, -1.0), 0.5)
 )
 
@@ -34,7 +34,7 @@ light1_obj, light1_light = Light::Area.with_object(
   XZRect.new(
     Point.new(-1.0 - size, height, -1.0 - size),
     Point.new(-1.0 + size, height, -1.0 + size),
-    DiffuseLightMaterial.new(red)
+    Material::DiffuseLight.new(red)
   ).flip!,
   red
 )
@@ -43,7 +43,7 @@ light2_obj, light2_light = Light::Area.with_object(
   XZRect.new(
     Point.new(0.0 - size, height, -1.0 - size),
     Point.new(0.0 + size, height, -1.0 + size),
-    DiffuseLightMaterial.new(green)
+    Material::DiffuseLight.new(green)
   ).flip!,
   green
 )
@@ -52,7 +52,7 @@ light3_obj, light3_light = Light::Area.with_object(
   XZRect.new(
     Point.new(1.0 - size, height, -1.0 - size),
     Point.new(1.0 + size, height, -1.0 + size),
-    DiffuseLightMaterial.new(blue)
+    Material::DiffuseLight.new(blue)
   ).flip!,
   blue
 )

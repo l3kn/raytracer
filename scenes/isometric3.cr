@@ -21,7 +21,7 @@ File.read("blocks2.csv").each_line do |line|
   hitables << Cuboid2.new(
     Point.new(x, y, z),
     Point.new(x + sx, y + sy, z + sz) - Vector.one * (EPSILON * 10),
-    opaque ? MatteMaterial.new(color) : GlassMaterial.new(1.4, color, color)
+    opaque ? Material::Matte.new(color) : Material::Glass.new(1.4, color, color)
   )
 end
 

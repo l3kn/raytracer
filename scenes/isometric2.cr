@@ -14,8 +14,8 @@ hitables = [] of UnboundedHitable
 #   hitables << Cuboid.new(
 #     Point.new(x, y, z),
 #     Point.new(x, y, z) + Vector.one,
-#     # opaque ? MatteMaterial.new(color) : GlassMaterial.new(1.4, color, color)
-#     opaque ? MatteMaterial.new(color) : GlassMaterial.new(1.4, color, color)
+#     # opaque ? Material::Matte.new(color) : Material::Glass.new(1.4, color, color)
+#     opaque ? Material::Matte.new(color) : Material::Glass.new(1.4, color, color)
 #   )
 # end
 

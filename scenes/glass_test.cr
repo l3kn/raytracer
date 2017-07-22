@@ -8,7 +8,7 @@ hitables = [] of UnboundedHitable
 #       hitables << Cuboid.new(
 #         Point.new(x.to_f, y.to_f, z.to_f),
 #         Point.new(x.to_f, y.to_f, z.to_f) + Vector.one,
-#         GlassMaterial.new(1.4)
+#         Material::Glass.new(1.4)
 #       )
 #     end
 #   end
@@ -19,7 +19,7 @@ x, y, z = -1, -1, -1
 hitables << Cuboid.new(
   Point.new(x.to_f, y.to_f, z.to_f),
   Point.new(x.to_f, y.to_f, z.to_f) + Vector.one * 2.0,
-  GlassMaterial.new(1.4)
+  Material::Glass.new(1.4)
 )
 
 dimensions = {800, 800}
