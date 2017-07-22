@@ -8,13 +8,13 @@ class Scene
 
   def initialize(hitables, @lights = [] of Light, @background = nil)
     if hitables.size < 5
-      @hitable = HitableList.new(hitables)
+      @hitable = Hitable::List.new(hitables)
     else
       finite = hitables.select(&.is_a?(BoundedHitable)).map(&.as(BoundedHitable))
       infinite = hitables.reject(&.is_a?(BoundedHitable))
 
       if infinite.size > 0
-        @hitable = HitableList.new([SAHBVHNode.new(finite)] + infinite)
+        @hitable = Hitable::List.new([SAHBVHNode.new(finite)] + infinite)
       else
         @hitable = SAHBVHNode.new(finite)
       end

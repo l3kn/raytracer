@@ -1,7 +1,7 @@
 require "./hitable_list"
 
 module Hitable
-  class CuboidWrapper < BoundedHitableList
+  class CuboidWrapper < BoundedList
     def initialize(p1, p2, top, bottom, front, back, left, right)
       # back | front, right | left, top | bottom
       brt = Point.new(p2.x, p2.y, p2.z)
