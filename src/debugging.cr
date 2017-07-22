@@ -1,3 +1,5 @@
+require "stumpy_png"
+
 class CameraCanvas
   getter canvas : StumpyPNG::Canvas
   getter camera : Camera

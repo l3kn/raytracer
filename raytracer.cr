@@ -1,4 +1,3 @@
-require "../linalg/src/linalg"
 require "stumpy_png"
 
 EPSILON = 0.00001
@@ -9,9 +8,6 @@ require "./src/quaternion"
 require "./src/distribution"
 require "./src/ray"
 require "./src/hitable"
-# TODO: This needs to be required first, bc/ Cuboid < FiniteHitableList
-#       maybe create a separate folder for aggregate hitables
-require "./src/hitables/hitable_list"
 require "./src/hitables/*"
 require "./src/transformation"
 require "./src/camera"

@@ -1,3 +1,5 @@
+require "./hitable_list"
+
 class CuboidWrapper < FiniteHitableList
   def initialize(p1, p2, top, bottom, front, back, left, right)
     # back | front, right | left, top | bottom

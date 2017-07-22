@@ -12,5 +12,3 @@ loop do
 end
 
 # (add :sphere (0 0 0) 1.0)
-
-def parse_vec

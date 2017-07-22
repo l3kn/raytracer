@@ -1,3 +1,5 @@
+require "linalg"
+
 module Vectorlike
   def max_axis
     @x >= @y && @x >= @z ? 0 : (@y >= @x && @y >= @z ? 1 : 2)
