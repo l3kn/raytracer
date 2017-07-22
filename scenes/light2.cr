@@ -30,7 +30,7 @@ blue = Color.new(0.0, 0.0, 20.0)
 height = 2.0
 size = 0.4
 
-light1_obj, light1_light = AreaLight.with_object(
+light1_obj, light1_light = Light::Area.with_object(
   XZRect.new(
     Point.new(-1.0 - size, height, -1.0 - size),
     Point.new(-1.0 + size, height, -1.0 + size),
@@ -39,7 +39,7 @@ light1_obj, light1_light = AreaLight.with_object(
   red
 )
 
-light2_obj, light2_light = AreaLight.with_object(
+light2_obj, light2_light = Light::Area.with_object(
   XZRect.new(
     Point.new(0.0 - size, height, -1.0 - size),
     Point.new(0.0 + size, height, -1.0 + size),
@@ -48,7 +48,7 @@ light2_obj, light2_light = AreaLight.with_object(
   green
 )
 
-light3_obj, light3_light = AreaLight.with_object(
+light3_obj, light3_light = Light::Area.with_object(
   XZRect.new(
     Point.new(1.0 - size, height, -1.0 - size),
     Point.new(1.0 + size, height, -1.0 + size),
@@ -69,7 +69,7 @@ camera = Camera::Perspective.new(
   dimensions: dimensions
 )
 
-raytracer = Renderer::Path.new(
+raytracer = Raytracer::Path.new(
   dimensions, camera,
   scene: Scene.new(hitables, lights),
   samples: 100

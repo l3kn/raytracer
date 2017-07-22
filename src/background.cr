@@ -1,5 +1,3 @@
-module Background
-  abstract class Abstract
-    abstract def get(ray : Ray) : Color
-  end
+abstract class Background
+  abstract def get(ray : Ray) : Color
 end

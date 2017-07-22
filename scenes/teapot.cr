@@ -12,7 +12,7 @@ camera = Camera::Perspective.new(
   dimensions: dimensions
 )
 
-raytracer = Renderer::Simple.new(
+raytracer = Raytracer::Simple.new(
   dimensions,
   scene: Scene.new(
     hitables.map(&.as(UnboundedHitable)),

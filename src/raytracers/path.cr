@@ -1,4 +1,4 @@
-module Renderer
+class Raytracer
   class Path < Base
     def initialize(dimensions, camera, samples, scene, filter = BoxFilter.new(0.5),
                    @sample_background = true)

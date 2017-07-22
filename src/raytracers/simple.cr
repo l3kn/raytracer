@@ -1,4 +1,4 @@
-module Renderer
+class Raytracer
   class Simple < Base
     def cast_ray(ray)
       l = ::Color::BLACK

@@ -1,4 +1,4 @@
-module Renderer
+class Raytracer
   class Normal < Base
     def cast_ray(ray)
       hit = @scene.hit(ray)

@@ -40,7 +40,7 @@ camera = Camera::Perspective.new(
 )
 
 # Raytracer
-raytracer = Renderer::Color.new(
+raytracer = Raytracer::Color.new(
   dimensions,
   scene: Scene.new(
     [hitables.as(UnboundedHitable)],

@@ -28,7 +28,7 @@ hitables << TransformationWrapper.new(
   VS.new(Vector.new(190.0, 90.0, 190.0), 90.0)
 )
 
-light_object, light_light = AreaLight.with_object(
+light_object, light_light = Light::Area.with_object(
   XZRect.new(
     Point.new(213.0, 554.0, 227.0),
     Point.new(343.0, 554.0, 332.0),
@@ -48,7 +48,7 @@ camera = Camera::Perspective.new(
   dimensions: dimensions
 )
 
-raytracer = Renderer::Simple.new(
+raytracer = Raytracer::Simple.new(
   dimensions, camera,
   scene: Scene.new(hitables, lights),
   samples: 100

@@ -1,5 +1,5 @@
-module Renderer
-  record VisiblePoint, point : Point, wo : Vector, bsdf : BSDF::Abstract, throughput : ::Color
+class Raytracer
+  record VisiblePoint, point : Point, wo : Vector, bsdf : BSDF, throughput : ::Color
 
   # NOTE:
   # This needs to be a class instead of a struct
