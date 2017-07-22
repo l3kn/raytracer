@@ -18,11 +18,12 @@ raytracer = Renderer::Color.new(
   dimensions,
   scene: Scene.new(
     [hitables.as(UnboundedHitable)],
-    [] of Light,
-    ConstantBackground.new(Color.new(1.0))
+    background: Background::Constant.new(Color.new(1.0))
   ),
   camera: camera,
-  samples: 5)
+  samples: 5
+)
+
 raytracer.recursion_depth = 1
 raytracer.gamma_correction = 1.0 / 4.0
 

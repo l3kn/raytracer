@@ -1,8 +1,6 @@
 require "../raytracer"
 
 hitables = [] of UnboundedHitable
-lights = [] of Light
-
 # File.read("blocks.csv").each_line do |line|
 #   tokens = line.split(",")
 
@@ -92,7 +90,7 @@ camera = PerspectiveCamera.new(
 
 raytracer = Renderer::Simple.new(
   dimensions, camera,
-  scene: Scene.new(hitables, lights, SkyBackground.new),
+  scene: Scene.new(hitables, background: Background::Sky.new),
   samples: 200
 )
 

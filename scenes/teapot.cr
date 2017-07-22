@@ -12,15 +12,12 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions
 )
 
-scene = Scene.new(
-  hitables.map(&.as(UnboundedHitable)),
-  [] of Light,
-  SkyBackground.new()
-)
-
 raytracer = Renderer::Simple.new(
   dimensions,
-  scene: scene,
+  scene: Scene.new(
+    hitables.map(&.as(UnboundedHitable)),
+    background: Background::Sky.new
+  ),
   camera: camera,
   samples: 50
 )

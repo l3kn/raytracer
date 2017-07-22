@@ -44,10 +44,10 @@ raytracer = Renderer::Color.new(
   dimensions,
   scene: Scene.new(
     [hitables.as(UnboundedHitable)],
-    [] of Light,
-    ConstantBackground.new(Color.new(1.0))
+    background: Background::Constant.new(Color.new(1.0))
   ),
   camera: camera,
-  samples: 2)
+  samples: 2
+)
 
 raytracer.render("fractal3.png")

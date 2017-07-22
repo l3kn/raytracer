@@ -1,7 +1,6 @@
 require "../raytracer"
 
 hitables = [] of UnboundedHitable
-lights = [] of Light
 
 # [-1, 0].each do |x|
 #   [-1, 0].each do |y|
@@ -33,7 +32,7 @@ camera = PerspectiveCamera.new(
 
 raytracer = Renderer::Path.new(
   dimensions, camera,
-  scene: Scene.new(hitables, lights, SkyBackground.new),
+  scene: Scene.new(hitables, background: Background::Sky.new),
   samples: 100
 )
 

@@ -31,10 +31,10 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions
 )
 
+
 raytracer = Renderer::Simple.new(
   dimensions, camera,
-  # scene: Scene.new(hitables, [] of Light, CubeMap.new("cube_maps/Yokohama")),
-  scene: Scene.new(hitables, [] of Light, SkyBackground.new),
+  scene: Scene.new(hitables, background: Background::Sky.new),
   samples: 100
 )
 
