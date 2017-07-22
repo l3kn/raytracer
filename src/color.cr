@@ -45,11 +45,11 @@ struct Color
 
   def to_rgba(gamma_correction = 1.0)
     col = self.min(1.0) ** gamma_correction
-    StumpyPNG::RGBA.new(
-      (UInt16::MAX * col.r).to_u16,
-      (UInt16::MAX * col.g).to_u16,
-      (UInt16::MAX * col.b).to_u16,
-      UInt16::MAX
-    )
+    StumpyPNG::RGBA.from_relative(col.r, col.g, col.b, 1.0)
+  end
+
+  def self.from_rgba(rgba : StumpyPNG::RGBA)
+    r, g, b, a = rgba.to_relative
+    Color.new(r, g, b)
   end
 end

@@ -1,18 +1,18 @@
 class CubeMap < Background
-  getter right : StumpyPNG::Canvas
-  getter left : StumpyPNG::Canvas
-  getter up : StumpyPNG::Canvas
-  getter down : StumpyPNG::Canvas
-  getter forward : StumpyPNG::Canvas
-  getter backward : StumpyPNG::Canvas
+  @right : StumpyPNG::Canvas
+  @left  : StumpyPNG::Canvas
+  @up    : StumpyPNG::Canvas
+  @down  : StumpyPNG::Canvas
+  @front : StumpyPNG::Canvas
+  @back  : StumpyPNG::Canvas
 
   def initialize(name)
     @right = StumpyPNG.read("#{name}/posx.png")
-    @left = StumpyPNG.read("#{name}/negx.png")
-    @up = StumpyPNG.read("#{name}/posy.png")
-    @down = StumpyPNG.read("#{name}/negy.png")
-    @forward = StumpyPNG.read("#{name}/posz.png")
-    @backward = StumpyPNG.read("#{name}/negz.png")
+    @left  = StumpyPNG.read("#{name}/negx.png")
+    @up    = StumpyPNG.read("#{name}/posy.png")
+    @down  = StumpyPNG.read("#{name}/negy.png")
+    @front = StumpyPNG.read("#{name}/posz.png")
+    @back  = StumpyPNG.read("#{name}/negz.png")
   end
 
   def get(ray)
@@ -42,26 +42,18 @@ class CubeMap < Background
       if dir.z >= 0.0
         u = (dir.x / dir.z + 1.0) / 2
         v = 1.0 - (dir.y / dir.z + 1.0) / 2
-        read_texture(@forward, u, v)
+        read_texture(@front, u, v)
       else
         u = (dir.x / dir.z + 1.0) / 2
         v = (dir.y / dir.z + 1.0) / 2
-        read_texture(@backward, u, v)
+        read_texture(@back, u, v)
       end
     end
   end
 
-  def read_texture(texture, u, v)
+  private def read_texture(texture, u, v)
     i = (u * texture.width).to_i
     j = (v * texture.height).to_i
-
-    max = UInt16::MAX
-    pixel = texture[i, j]
-
-    Color.new(
-      pixel.r.to_f / max,
-      pixel.g.to_f / max,
-      pixel.b.to_f / max,
-    )
+    Color.from_rgba(texture.get(i, j))
   end
 end
