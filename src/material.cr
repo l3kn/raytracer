@@ -22,7 +22,7 @@ class GlassMaterial < Material
         1.0, @ior
       ).as(BxDF),
     ]
-    MultiBSDF.new(bxdfs, hit.normal)
+    BSDF::Multi.new(bxdfs, hit.normal)
   end
 end
 
@@ -35,7 +35,7 @@ class MatteMaterial < Material
 
   def bsdf(hit)
     bxdf = LambertianReflection.new(@texture.value(hit)).as(BxDF)
-    SingleBSDF.new(bxdf, hit.normal)
+    BSDF::Single.new(bxdf, hit.normal)
   end
 end
 
@@ -48,7 +48,7 @@ class OrenNayarMaterial < Material
 
   def bsdf(hit)
     bxdf = OrenNayarReflection.new(@texture.value(hit), @sig).as(BxDF)
-    SingleBSDF.new(bxdf, hit.normal)
+    BSDF::Single.new(bxdf, hit.normal)
   end
 end
 
@@ -61,7 +61,7 @@ class MirrorMaterial < Material
 
   def bsdf(hit)
     bxdf = SpecularReflection.new(@texture.value(hit), Fresnel::NoOp.new).as(BxDF)
-    SingleBSDF.new(bxdf, hit.normal)
+    BSDF::Single.new(bxdf, hit.normal)
   end
 end
 
@@ -73,6 +73,6 @@ class DiffuseLightMaterial < Material
   end
 
   def bsdf(hit)
-    EmissiveBSDF.new(@texture.value(hit), hit.normal)
+    BSDF::Emissive.new(@texture.value(hit), hit.normal)
   end
 end
