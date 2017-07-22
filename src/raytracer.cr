@@ -1,7 +1,7 @@
 module Renderer
   abstract class Raytracer
     property width : Int32, height : Int32, samples : Int32
-    property camera : Camera
+    property camera : Camera::Abstract
     property scene : Scene
     property gamma_correction : Float64
 
