@@ -62,7 +62,7 @@ hitables += [light1_obj, light2_obj, light3_obj]
 
 dimensions = {800, 400}
 
-camera = PerspectiveCamera.new(
+camera = Camera::Perspective.new(
   look_from: Point.new(0.0, 1.5, 1.5),
   look_at: Point.new(0.0, 0.0, -1.0),
   vertical_fov: 35.0,

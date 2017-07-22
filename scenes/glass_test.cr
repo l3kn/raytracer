@@ -23,7 +23,7 @@ hitables << Cuboid.new(
 )
 
 dimensions = {800, 800}
-camera = PerspectiveCamera.new(
+camera = Camera::Perspective.new(
   look_from: Point.new(2.0, 2.0, 2.0),
   look_at: Point.new(0.0),
   vertical_fov: 40.0,

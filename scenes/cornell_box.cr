@@ -41,7 +41,7 @@ lights << light_light
 hitables << light_object
 
 dimensions = {300, 300}
-camera = PerspectiveCamera.new(
+camera = Camera::Perspective.new(
   look_from: Point.new(278.0, 278.0, -800.0),
   look_at: Point.new(278.0, 278.0, 0.0),
   vertical_fov: 40.0,

@@ -15,7 +15,7 @@ hitables = [BruteForceDistanceEstimator.new(mat, bfde, 5.0).as(UnboundedHitable)
 
 dimensions = {800, 400}
 
-camera = PerspectiveCamera.new(
+camera = Camera::Perspective.new(
   look_from: Point.new(0.0, 0.0, 2.0),
   look_at: Point.new(0.0, 0.0, 0.0),
   vertical_fov: 70.0,

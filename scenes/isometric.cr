@@ -27,7 +27,7 @@ end
 
 dimensions = {800, 800}
 
-camera = PerspectiveCamera.new(
+camera = Camera::Perspective.new(
   look_from: Point.new(-20.0, 80.0, -10.0),
   look_at: Point.new(128.0, 0.0, 128.0),
   vertical_fov: 40.0,

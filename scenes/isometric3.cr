@@ -26,7 +26,7 @@ File.read("blocks2.csv").each_line do |line|
 end
 
 dimensions = {800, 800}
-camera = PerspectiveCamera.new(
+camera = Camera::Perspective.new(
   look_from: Point.new(40.0, 20.0, 40.0) * 2.0,
   look_at: Point.new(16.0, 8.0, 16.0) * 2.0,
   vertical_fov: 40.0,

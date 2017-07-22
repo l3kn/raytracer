@@ -32,7 +32,7 @@ hitables = DistanceEstimator.new(mat, de, maximum_steps: 600)
 # dimensions = {400, 400}
 dimensions = {2480, 3508}
 
-camera = PerspectiveCamera.new(
+camera = Camera::Perspective.new(
   look_at: Point.new(1.0, 1.0, 1.0),
   look_from: Point.new(0.0, 0.0, 0.0),
   vertical_fov: 22.0,
