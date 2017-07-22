@@ -101,7 +101,7 @@ abstract class Raytracer
     property recursion_depth : Int32
     property filter : Filter
 
-    def initialize(dimensions, camera, samples, scene, @filter = BoxFilter.new(0.5))
+    def initialize(dimensions, camera, samples, scene, @filter = Filter::Box.new(0.5))
       super(dimensions, camera, samples, scene)
       @recursion_depth = 10
     end

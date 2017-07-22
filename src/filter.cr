@@ -9,19 +9,19 @@ abstract class Filter
   abstract def evaluate(x : Float64, y : Float64) : Float64
 end
 
-class BoxFilter < Filter
+class Filter::Box < Filter
   def evaluate(x, y)
     1.0
   end
 end
 
-class TriangleFilter < Filter
+class Filter::Triangle < Filter
   def evaluate(x, y)
     (@width_x - x.abs) * (@width_y - y.abs)
   end
 end
 
-class GaussianFilter < Filter
+class Filter::Gaussian < Filter
   @exp_x : Float64
   @exp_y : Float64
 
@@ -40,7 +40,7 @@ class GaussianFilter < Filter
   end
 end
 
-class MitchellFilter
+class Filter::Mitchell
   @inv_width_x : Float64
   @inv_width_y : Float64
 
