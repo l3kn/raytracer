@@ -69,7 +69,7 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions
 )
 
-raytracer = PathRaytracer.new(
+raytracer = Renderer::Path.new(
   dimensions, camera,
   scene: Scene.new(hitables, lights),
   samples: 100

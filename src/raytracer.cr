@@ -1,180 +1,182 @@
-abstract class Raytracer
-  property width : Int32, height : Int32, samples : Int32
-  property camera : Camera
-  property scene : Scene
-  property gamma_correction : Float64
+module Renderer
+  abstract class Raytracer
+    property width : Int32, height : Int32, samples : Int32
+    property camera : Camera
+    property scene : Scene
+    property gamma_correction : Float64
 
-  def initialize(dimensions, @camera, @samples, @scene)
-    @width, @height = dimensions
-    @gamma_correction = 1.0 / 2.2
-  end
-
-  abstract def render_to_canvas(filename : String, adaptive = false)
-
-  def render(filename, adaptive = false)
-    StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
-  end
-
-  def uniform_sample_one_light(hit, bsdf, wo)
-    return Color::BLACK if @scene.lights.size == 0
-
-    light_pdf = 1.0 / (@scene.lights.size)
-    estimate_direct(@scene.lights.sample, hit, bsdf, wo) / light_pdf
-  end
-
-  def uniform_sample_all_lights(hit, bsdf, wo)
-    color = Color::BLACK
-    return color if @scene.lights.size == 0
-
-    light_pdf = 1.0 / @scene.lights.size
-    @scene.lights.each do |light|
-      color += estimate_direct(light, hit, bsdf, wo) / light_pdf
-    end
-  end
-
-  def estimate_background(hit, bsdf, wo, flags = ~BxDFType::Specular)
-    background = @scene.background
-    return Color::BLACK if background.nil?
-
-    sample = bsdf.sample_f(wo, flags)
-    return Color::BLACK if sample.nil? || !sample.relevant?
-
-    weight = 1.0
-    unless sample.type.specular?
-      weight = power_heuristic(1, INV_PI, 1, sample.pdf)
+    def initialize(dimensions, @camera, @samples, @scene)
+      @width, @height = dimensions
+      @gamma_correction = 1.0 / 2.2
     end
 
-    ray = Ray.new(hit.point, sample.dir)
-    return Color::BLACK if @scene.fast_hit(ray)
+    abstract def render_to_canvas(filename : String, adaptive = false)
 
-    li = background.get(ray)
-    sample.color * li * sample.dir.dot(hit.normal).abs * weight / sample.pdf
-  end
+    def render(filename, adaptive = false)
+      StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
+    end
 
-  def estimate_direct(light, hit, bsdf, wo, flags = ~BxDFType::Specular)
-    ld = Color::BLACK
+    def uniform_sample_one_light(hit, bsdf, wo)
+      return Color::BLACK if @scene.lights.size == 0
 
-    # Sample light w/ multiple importance sampling
-    sample = light.sample_l(hit.normal, scene, hit.point)
-    if sample.relevant?
-      f = bsdf.f(wo, sample.dir, flags)
-      if sample.tester.unoccluded?(@scene) && !f.black?
-        if light.delta_light?
-          ld += f * sample.color * (sample.dir.dot(hit.normal).abs / sample.pdf)
-        else
-          bsdf_pdf = bsdf.pdf(wo, sample.dir, flags)
-          weight = power_heuristic(1, sample.pdf, 1, bsdf_pdf)
-          ld += f * sample.color * (sample.dir.dot(hit.normal).abs * weight / sample.pdf)
-        end
+      light_pdf = 1.0 / (@scene.lights.size)
+      estimate_direct(@scene.lights.sample, hit, bsdf, wo) / light_pdf
+    end
+
+    def uniform_sample_all_lights(hit, bsdf, wo)
+      color = Color::BLACK
+      return color if @scene.lights.size == 0
+
+      light_pdf = 1.0 / @scene.lights.size
+      @scene.lights.each do |light|
+        color += estimate_direct(light, hit, bsdf, wo) / light_pdf
       end
     end
 
-    # Sample BSDF w/ multiple importance sampling
-    unless light.delta_light?
+    def estimate_background(hit, bsdf, wo, flags = ~BxDFType::Specular)
+      background = @scene.background
+      return Color::BLACK if background.nil?
+
       sample = bsdf.sample_f(wo, flags)
+      return Color::BLACK if sample.nil? || !sample.relevant?
 
-      if sample
-        weight = 1.0
-        return ld unless sample.relevant?
+      weight = 1.0
+      unless sample.type.specular?
+        weight = power_heuristic(1, INV_PI, 1, sample.pdf)
+      end
 
-        unless sample.type.specular?
-          light_pdf = light.pdf(hit.point, sample.dir)
-          return ld if light_pdf == 0.0
-          weight = power_heuristic(1, sample.pdf, 1, light_pdf)
+      ray = Ray.new(hit.point, sample.dir)
+      return Color::BLACK if @scene.fast_hit(ray)
+
+      li = background.get(ray)
+      sample.color * li * sample.dir.dot(hit.normal).abs * weight / sample.pdf
+    end
+
+    def estimate_direct(light, hit, bsdf, wo, flags = ~BxDFType::Specular)
+      ld = Color::BLACK
+
+      # Sample light w/ multiple importance sampling
+      sample = light.sample_l(hit.normal, scene, hit.point)
+      if sample.relevant?
+        f = bsdf.f(wo, sample.dir, flags)
+        if sample.tester.unoccluded?(@scene) && !f.black?
+          if light.delta_light?
+            ld += f * sample.color * (sample.dir.dot(hit.normal).abs / sample.pdf)
+          else
+            bsdf_pdf = bsdf.pdf(wo, sample.dir, flags)
+            weight = power_heuristic(1, sample.pdf, 1, bsdf_pdf)
+            ld += f * sample.color * (sample.dir.dot(hit.normal).abs * weight / sample.pdf)
+          end
         end
+      end
 
-        # Add weight contribution from BSDF sampling
-        ray = Ray.new(hit.point, sample.dir)
-        light_hit = @scene.hit(ray)
+      # Sample BSDF w/ multiple importance sampling
+      unless light.delta_light?
+        sample = bsdf.sample_f(wo, flags)
 
-        if light_hit && light_hit.object.area_light == light
-          li = light_hit.material.bsdf(light_hit).emitted(-sample.dir)
-          ld += sample.color * li * sample.dir.dot(hit.normal).abs * weight / sample.pdf unless li.black?
+        if sample
+          weight = 1.0
+          return ld unless sample.relevant?
+
+          unless sample.type.specular?
+            light_pdf = light.pdf(hit.point, sample.dir)
+            return ld if light_pdf == 0.0
+            weight = power_heuristic(1, sample.pdf, 1, light_pdf)
+          end
+
+          # Add weight contribution from BSDF sampling
+          ray = Ray.new(hit.point, sample.dir)
+          light_hit = @scene.hit(ray)
+
+          if light_hit && light_hit.object.area_light == light
+            li = light_hit.material.bsdf(light_hit).emitted(-sample.dir)
+            ld += sample.color * li * sample.dir.dot(hit.normal).abs * weight / sample.pdf unless li.black?
+          end
+        end
+      end
+
+      ld
+    end
+  end
+
+  abstract class Base < Raytracer
+    property recursion_depth : Int32
+    property filter : Filter
+
+    def initialize(dimensions, camera, samples, scene, @filter = BoxFilter.new(0.5))
+      super(dimensions, camera, samples, scene)
+      @recursion_depth = 10
+    end
+
+    def print_pixel(color, mode = :truecolor)
+      r, g, b = color.to_rgb8
+      if mode == :truecolor
+        print "\033[48;2;#{r};#{g};#{b}m \033[0m"
+      else
+        chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ".reverse
+        gray = 0.3 * r + 0.6 * g + 0.1 * b
+        print chars[(gray / 256 * chars.size).to_i]
+      end
+    end
+
+    def sample_pixel(sample, x, y, samples)
+      # Box filter, size 1.0
+      size = 4.0
+      samples_sqrt = Math.sqrt(samples).ceil
+      (0...samples_sqrt).each do |i|
+        (0...samples_sqrt).each do |j|
+          off_x = (((i + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_x
+          off_y = (((j + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_y
+
+          ray = @camera.generate_ray(x + off_x, y + off_y, EPSILON, Float64::MAX)
+          # sample.add(cast_ray(ray).de_nan, triangle_filter(off_x, off_y))
+          sample.add(cast_ray(ray).de_nan, @filter.evaluate(off_x, off_y))
         end
       end
     end
 
-    ld
-  end
-end
+    def render_to_canvas(filename, adaptive = false)
+      canvas = StumpyPNG::Canvas.new(@width, @height)
+      vis = Visualisation.new(@width, @height)
+      vis.add_layer(:variance)
 
-abstract class BaseRaytracer < Raytracer
-  property recursion_depth : Int32
-  property filter : Filter
+      pr_x = @width / 80
+      pr_y = (pr_x / 0.4).to_i
 
-  def initialize(dimensions, camera, samples, scene, @filter = BoxFilter.new(0.5))
-    super(dimensions, camera, samples, scene)
-    @recursion_depth = 10
-  end
+      start = Time.now
 
-  def print_pixel(color, mode = :truecolor)
-    r, g, b = color.to_rgb8
-    if mode == :truecolor
-      print "\033[48;2;#{r};#{g};#{b}m \033[0m"
-    else
-      chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ".reverse
-      gray = 0.3 * r + 0.6 * g + 0.1 * b
-      print chars[(gray / 256 * chars.size).to_i]
-    end
-  end
+      (0...@height).each do |y|
+        (0...@width).each do |x|
+          sample = Sample.new
 
-  def sample_pixel(sample, x, y, samples)
-    # Box filter, size 1.0
-    size = 4.0
-    samples_sqrt = Math.sqrt(samples).ceil
-    (0...samples_sqrt).each do |i|
-      (0...samples_sqrt).each do |j|
-        off_x = (((i + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_x
-        off_y = (((j + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_y
+          if adaptive
+            sample_pixel(sample, x, y, samples / 2)
+            var = sample.variance
+            sample_pixel(sample, x, y, samples * 2) if var.squared_length >= 0.1
+          else
+            sample_pixel(sample, x, y, samples)
+          end
 
-        ray = @camera.generate_ray(x + off_x, y + off_y, EPSILON, Float64::MAX)
-        # sample.add(cast_ray(ray).de_nan, triangle_filter(off_x, off_y))
-        sample.add(cast_ray(ray).de_nan, @filter.evaluate(off_x, off_y))
-      end
-    end
-  end
+          vis.set(:variance, x, y, sample.variance.length)
+          rgba = sample.mean.to_rgba(@gamma_correction)
+          canvas[x, y] = rgba
 
-  def render_to_canvas(filename, adaptive = false)
-    canvas = StumpyPNG::Canvas.new(@width, @height)
-    vis = Visualisation.new(@width, @height)
-    vis.add_layer(:variance)
-
-    pr_x = @width / 80
-    pr_y = (pr_x / 0.4).to_i
-
-    start = Time.now
-
-    (0...@height).each do |y|
-      (0...@width).each do |x|
-        sample = Sample.new
-
-        if adaptive
-          sample_pixel(sample, x, y, samples / 2)
-          var = sample.variance
-          sample_pixel(sample, x, y, samples * 2) if var.squared_length >= 0.1
-        else
-          sample_pixel(sample, x, y, samples)
+          print_pixel(rgba, mode: :grayscale) if (x % pr_x) == 0 && (y % pr_y) == 0
         end
-
-        vis.set(:variance, x, y, sample.variance.length)
-        rgba = sample.mean.to_rgba(@gamma_correction)
-        canvas[x, y] = rgba
-
-        print_pixel(rgba, mode: :grayscale) if (x % pr_x) == 0 && (y % pr_y) == 0
+        print "\n" if (y % pr_y) == 0
+        # print "\rTraced line #{y} / #{@height}"
       end
-      print "\n" if (y % pr_y) == 0
-      # print "\rTraced line #{y} / #{@height}"
+
+      time = Time.now - start
+
+      puts "\nTime: #{(time.total_milliseconds / 1000).round(3)}s"
+      puts "Total rays: #{Ray.count}"
+      puts "Rays / sec: #{((Ray.count.to_f / time.total_milliseconds) * 1000).round(3)}"
+
+      vis.write(:variance, "variance_" + filename)
+      canvas
     end
 
-    time = Time.now - start
-
-    puts "\nTime: #{(time.total_milliseconds / 1000).round(3)}s"
-    puts "Total rays: #{Ray.count}"
-    puts "Rays / sec: #{((Ray.count.to_f / time.total_milliseconds) * 1000).round(3)}"
-
-    vis.write(:variance, "variance_" + filename)
-    canvas
+    abstract def cast_ray(ray)
   end
-
-  abstract def cast_ray(ray)
 end

@@ -22,7 +22,7 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions,
 )
 
-raytracer = SimpleRaytracer.new(
+raytracer = Renderer::Simple.new(
   dimensions,
   scene: Scene.new(hitables, [] of Light, CubeMap.new("cube_maps/Yokohama")),
   camera: camera,

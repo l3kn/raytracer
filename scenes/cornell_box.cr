@@ -48,12 +48,9 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions
 )
 
-# raytracer = SPPMRaytracer.new(
-# raytracer = WhittedRaytracer.new(
-raytracer = SimpleRaytracer.new(
+raytracer = Renderer::Simple.new(
   dimensions, camera,
   scene: Scene.new(hitables, lights),
-  # samples: 10 # 200
   samples: 100
 )
 

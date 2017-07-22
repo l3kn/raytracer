@@ -18,7 +18,7 @@ scene = Scene.new(
   SkyBackground.new()
 )
 
-raytracer = SimpleRaytracer.new(
+raytracer = Renderer::Simple.new(
   dimensions,
   scene: scene,
   camera: camera,

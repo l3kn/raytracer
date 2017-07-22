@@ -1,7 +1,6 @@
 require "../raytracer"
 
 hitables = [] of Hitable
-lights = [] of Light
 
 hitables << TransformationWrapper.new(
   Sphere.new(MirrorMaterial.new(Color.new(0.8))),
@@ -32,9 +31,10 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions
 )
 
-raytracer = SimpleRaytracer.new(
+raytracer = Renderer::Simple.new(
   dimensions, camera,
-  scene: Scene.new(hitables, lights, SkyBackground.new),
+  # scene: Scene.new(hitables, [] of Light, CubeMap.new("cube_maps/Yokohama")),
+  scene: Scene.new(hitables, [] of Light, SkyBackground.new),
   samples: 100
 )
 

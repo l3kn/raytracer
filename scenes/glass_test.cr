@@ -31,8 +31,7 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions
 )
 
-# raytracer = SPPMRaytracer.new(
-raytracer = PathRaytracer.new(
+raytracer = Renderer::Path.new(
   dimensions, camera,
   scene: Scene.new(hitables, lights, SkyBackground.new),
   samples: 100
