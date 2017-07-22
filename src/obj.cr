@@ -52,12 +52,12 @@ module OBJ
               tb = texture_coords[vs[i][1].to_i - 1]
               tc = texture_coords[vs[i + 1][1].to_i - 1]
 
-              hitables << TexturedTriangle.new(a, b, c, na, nb, nc, ta, tb, tc, material)
+              hitables << Hitable::TexturedTriangle.new(a, b, c, na, nb, nc, ta, tb, tc, material)
             else
-              hitables << InterpolatedTriangle.new(a, b, c, na, nb, nc, mat)
+              hitables << Hitable::InterpolatedTriangle.new(a, b, c, na, nb, nc, mat)
             end
           else
-            hitables << Triangle.new(a, b, c, mat)
+            hitables << Hitable::Triangle.new(a, b, c, mat)
           end
         end
       end

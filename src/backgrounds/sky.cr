@@ -1,4 +1,6 @@
 class Background
+  # Gradient from blue to white,
+  # simulating the color of the sky
   class Sky < Background
     def get(ray)
       t = 0.5 * (ray.direction.normalize.y + 1.0)

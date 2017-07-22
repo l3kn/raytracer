@@ -1,8 +1,8 @@
-module Hitable
+class Hitable
   # Methods shared between `List` and `BoundedList`
   #
   # NOTE: Inheritance is not possible,
-  # because `List < UnboundedHitable`
+  # because `List < Hitable`
   # but `BoundedList < BoundedHitable`
   module ListMethods
     def hit(ray)
@@ -37,10 +37,10 @@ module Hitable
     end
   end
 
-  class List < UnboundedHitable
+  class List < Hitable
     include ListMethods
 
-    def initialize(@objects : Array(UnboundedHitable)); end
+    def initialize(@objects : Array(Hitable)); end
   end
 
   class BoundedList < BoundedHitable

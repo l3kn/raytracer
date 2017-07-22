@@ -1,4 +1,5 @@
 class Background
+  # Physically inspired model of color of the atmosphere
   class Atmosphere < Background
     @sun_direction : Vector
     @earth_radius : Float64

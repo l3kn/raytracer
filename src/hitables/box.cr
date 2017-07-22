@@ -1,153 +1,151 @@
-module Hitable
-  class Cuboid2 < BoundedHitable
-    getter bot : Point
-    getter top : Point
-    getter center : Point
+class Hitable::Cuboid2 < BoundedHitable
+  getter bot : Point
+  getter top : Point
+  getter center : Point
 
-    getter material : Material
+  getter material : Material
 
-    getter area : Float64
+  getter area : Float64
 
-    @bounds : Tuple(Point, Point)
+  @bounds : Tuple(Point, Point)
 
-    def initialize(@bot : Point, @top : Point, @material)
-      @bounding_box = AABB.new(bot, top)
-      @center = (@top + @bot) * 0.5
-      @bounds = {@bot, @top}
+  def initialize(@bot : Point, @top : Point, @material)
+    @bounding_box = AABB.new(bot, top)
+    @center = (@top + @bot) * 0.5
+    @bounds = {@bot, @top}
 
-      raise "bottom.x must me lower than top.x" if bot.x >= top.x
-      raise "bottom.y must me lower than top.y" if bot.y >= top.y
-      raise "bottom.z must me lower than top.z" if bot.z >= top.z
+    raise "bottom.x must me lower than top.x" if bot.x >= top.x
+    raise "bottom.y must me lower than top.y" if bot.y >= top.y
+    raise "bottom.z must me lower than top.z" if bot.z >= top.z
 
-      @area = (top.x - bot.x) * (top.y - bot.y) + (top.x - bot.x) * (top.z - bot.z) + (top.y - bot.y) * (top.z - bot.z)
-    end
-    
-    def hit(ray)
-      # TODO: Handle cases where the ray starts inside the cube?
+    @area = (top.x - bot.x) * (top.y - bot.y) + (top.x - bot.x) * (top.z - bot.z) + (top.y - bot.y) * (top.z - bot.z)
+  end
+  
+  def hit(ray)
+    # TODO: Handle cases where the ray starts inside the cube?
 
-      tx_min = (@bounds[ray.sign[0]].x - ray.origin.x) * ray.inv_direction.x
-      tx_max = (@bounds[1 - ray.sign[0]].x - ray.origin.x) * ray.inv_direction.x
+    tx_min = (@bounds[ray.sign[0]].x - ray.origin.x) * ray.inv_direction.x
+    tx_max = (@bounds[1 - ray.sign[0]].x - ray.origin.x) * ray.inv_direction.x
 
-      t_min = tx_min
-      t_max = tx_max
+    t_min = tx_min
+    t_max = tx_max
 
-      ty_min = (@bounds[ray.sign[1]].y - ray.origin.y) * ray.inv_direction.y
-      ty_max = (@bounds[1 - ray.sign[1]].y - ray.origin.y) * ray.inv_direction.y
+    ty_min = (@bounds[ray.sign[1]].y - ray.origin.y) * ray.inv_direction.y
+    ty_max = (@bounds[1 - ray.sign[1]].y - ray.origin.y) * ray.inv_direction.y
 
-      return nil if (t_min > ty_max) || (ty_min > t_max)
-      t_min = ty_min if ty_min > t_min
-      t_max = ty_max if ty_max < t_max
+    return nil if (t_min > ty_max) || (ty_min > t_max)
+    t_min = ty_min if ty_min > t_min
+    t_max = ty_max if ty_max < t_max
 
-      tz_min = (@bounds[ray.sign[2]].z - ray.origin.z) * ray.inv_direction.z
-      tz_max = (@bounds[1 - ray.sign[2]].z - ray.origin.z) * ray.inv_direction.z
+    tz_min = (@bounds[ray.sign[2]].z - ray.origin.z) * ray.inv_direction.z
+    tz_max = (@bounds[1 - ray.sign[2]].z - ray.origin.z) * ray.inv_direction.z
 
-      return nil if (t_min > tz_max) || (tz_min > t_max)
-      t_min = tz_min if tz_min > t_min
-      t_max = tz_max if tz_max < t_max
+    return nil if (t_min > tz_max) || (tz_min > t_max)
+    t_min = tz_min if tz_min > t_min
+    t_max = tz_max if tz_max < t_max
 
 
-      # tx_min = (@bot.x - ray.origin.x) / ray.direction.x
-      # tx_max = (@top.x - ray.origin.x) / ray.direction.x
-      # tx_min, tx_max = tx_max, tx_min if tx_min > tx_max
+    # tx_min = (@bot.x - ray.origin.x) / ray.direction.x
+    # tx_max = (@top.x - ray.origin.x) / ray.direction.x
+    # tx_min, tx_max = tx_max, tx_min if tx_min > tx_max
 
-      # t_min = tx_min
-      # t_max = tx_max
+    # t_min = tx_min
+    # t_max = tx_max
 
-      # ty_min = (@bot.y - ray.origin.y) / ray.direction.y
-      # ty_max = (@top.y - ray.origin.y) / ray.direction.y
-      # ty_min, ty_max = ty_max, ty_min if ty_min > ty_max
+    # ty_min = (@bot.y - ray.origin.y) / ray.direction.y
+    # ty_max = (@top.y - ray.origin.y) / ray.direction.y
+    # ty_min, ty_max = ty_max, ty_min if ty_min > ty_max
 
-      # return nil if (t_min > ty_max) || (ty_min > t_max)
+    # return nil if (t_min > ty_max) || (ty_min > t_max)
 
-      # t_min = ty_min if ty_min > t_min
-      # t_max = ty_max if ty_max < t_max
+    # t_min = ty_min if ty_min > t_min
+    # t_max = ty_max if ty_max < t_max
 
-      # tz_min = (@bot.z - ray.origin.z) / ray.direction.z
-      # tz_max = (@top.z - ray.origin.z) / ray.direction.z
-      # tz_min, tz_max = tz_max, tz_min if tz_min > tz_max
+    # tz_min = (@bot.z - ray.origin.z) / ray.direction.z
+    # tz_max = (@top.z - ray.origin.z) / ray.direction.z
+    # tz_min, tz_max = tz_max, tz_min if tz_min > tz_max
 
-      # return nil if (t_min > tz_max) || (tz_min > t_max)
+    # return nil if (t_min > tz_max) || (tz_min > t_max)
 
-      # t_min = tz_min if tz_min > t_min
-      # t_max = tz_max if tz_max < t_max
+    # t_min = tz_min if tz_min > t_min
+    # t_max = tz_max if tz_max < t_max
 
-      t = t_min
+    t = t_min
 
-      return nil if t < ray.t_min || t > ray.t_max
+    return nil if t < ray.t_min || t > ray.t_max
 
-      point = ray.point_at_parameter(t)
-      n = point - @center
+    point = ray.point_at_parameter(t)
+    n = point - @center
 
-      if t == tx_min
-        normal = Normal.new(1.0 * sign(n.x), 0.0, 0.0)
-      elsif t == ty_min
-        normal = Normal.new(0.0, 1.0 * sign(n.y), 0.0)
-      else
-        normal = Normal.new(0.0, 0.0, 1.0 * sign(n.z))
-      end
-
-      # TODO: Calculate real u & v
-      return HitRecord.new(t, point, normal, @material, self, 1.0, 1.0)
+    if t == tx_min
+      normal = Normal.new(1.0 * sign(n.x), 0.0, 0.0)
+    elsif t == ty_min
+      normal = Normal.new(0.0, 1.0 * sign(n.y), 0.0)
+    else
+      normal = Normal.new(0.0, 0.0, 1.0 * sign(n.z))
     end
 
-    def sample
-      side = rand(0..5)
+    # TODO: Calculate real u & v
+    return HitRecord.new(t, point, normal, @material, self, 1.0, 1.0)
+  end
 
-      if side == 0
-        {
-          Point.new(
-            @bot.x + rand * (@top.x - @bot.x),
-            @top.y,
-            @bot.z + rand * (@top.z - @bot.z)
-          ),
-          Normal.new(0.0, 1.0, 0.0)
-        }
-      elsif side == 1
-        {
-          Point.new(
-            @bot.x + rand * (@top.x - @bot.x),
-            @bot.y,
-            @bot.z + rand * (@top.z - @bot.z)
-          ),
-          Normal.new(0.0, -1.0, 0.0)
-        }
-      elsif side == 2
-        {
-          Point.new(
-            @top.x,
-            @bot.y + rand * (@top.y - @bot.y),
-            @bot.z + rand * (@top.z - @bot.z)
-          ),
-          Normal.new(1.0, 0.0, 0.0)
-        }
-      elsif side == 3
-        {
-          Point.new(
-            @bot.x,
-            @bot.y + rand * (@top.y - @bot.y),
-            @bot.z + rand * (@top.z - @bot.z)
-          ),
-          Normal.new(-1.0, 0.0, 0.0)
-        }
-      elsif side == 4
-        {
-          Point.new(
-            @bot.x + rand * (@top.x - @bot.x),
-            @bot.y + rand * (@top.y - @bot.y),
-            @top.z
-          ),
-          Normal.new(0.0, 0.0, 1.0)
-        }
-      else
-        {
-          Point.new(
-            @bot.x + rand * (@top.x - @bot.x),
-            @bot.y + rand * (@top.y - @bot.y),
-            @bot.z
-          ),
-          Normal.new(0.0, 0.0, -1.0)
-        }
-      end
+  def sample
+    side = rand(0..5)
+
+    if side == 0
+      {
+        Point.new(
+          @bot.x + rand * (@top.x - @bot.x),
+          @top.y,
+          @bot.z + rand * (@top.z - @bot.z)
+        ),
+        Normal.new(0.0, 1.0, 0.0)
+      }
+    elsif side == 1
+      {
+        Point.new(
+          @bot.x + rand * (@top.x - @bot.x),
+          @bot.y,
+          @bot.z + rand * (@top.z - @bot.z)
+        ),
+        Normal.new(0.0, -1.0, 0.0)
+      }
+    elsif side == 2
+      {
+        Point.new(
+          @top.x,
+          @bot.y + rand * (@top.y - @bot.y),
+          @bot.z + rand * (@top.z - @bot.z)
+        ),
+        Normal.new(1.0, 0.0, 0.0)
+      }
+    elsif side == 3
+      {
+        Point.new(
+          @bot.x,
+          @bot.y + rand * (@top.y - @bot.y),
+          @bot.z + rand * (@top.z - @bot.z)
+        ),
+        Normal.new(-1.0, 0.0, 0.0)
+      }
+    elsif side == 4
+      {
+        Point.new(
+          @bot.x + rand * (@top.x - @bot.x),
+          @bot.y + rand * (@top.y - @bot.y),
+          @top.z
+        ),
+        Normal.new(0.0, 0.0, 1.0)
+      }
+    else
+      {
+        Point.new(
+          @bot.x + rand * (@top.x - @bot.x),
+          @bot.y + rand * (@top.y - @bot.y),
+          @bot.z
+        ),
+        Normal.new(0.0, 0.0, -1.0)
+      }
     end
   end
 end

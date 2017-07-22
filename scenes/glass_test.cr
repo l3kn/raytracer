@@ -1,6 +1,6 @@
 require "../raytracer"
 
-hitables = [] of UnboundedHitable
+hitables = [] of Hitable
 
 # [-1, 0].each do |x|
 #   [-1, 0].each do |y|
@@ -16,7 +16,7 @@ hitables = [] of UnboundedHitable
 
 x, y, z = -1, -1, -1
 
-hitables << Cuboid.new(
+hitables << Hitable::Cuboid.new(
   Point.new(x.to_f, y.to_f, z.to_f),
   Point.new(x.to_f, y.to_f, z.to_f) + Vector.one * 2.0,
   Material::Glass.new(1.4)

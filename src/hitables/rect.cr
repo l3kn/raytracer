@@ -1,4 +1,4 @@
-module Hitable
+class Hitable
   abstract class Rect < BoundedHitable
     getter bot : Point
     getter top : Point

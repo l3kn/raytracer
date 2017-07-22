@@ -11,7 +11,7 @@ bfde = DE::Metaball.new(
   ],
   3.4
 )
-hitables = [BruteForceDistanceEstimator.new(mat, bfde, 5.0).as(UnboundedHitable)]
+hitables = [Hitable::BruteForceDistanceEstimator.new(mat, bfde, 5.0).as(Hitable)]
 
 dimensions = {800, 400}
 

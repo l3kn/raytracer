@@ -1,25 +1,25 @@
 require "../raytracer"
 
-hitables = [] of UnboundedHitable
+hitables = [] of Hitable
 lights = [] of Light
 
 hitables << TransformationWrapper.new(
-  Sphere.new(Material::Matte.new(Color.new(0.8))),
+  Hitable::Sphere.new(Material::Matte.new(Color.new(0.8))),
   VS.new(Vector.new(0.0, -100.5, -1.0), 100.0)
 )
 
 ior = 1.8
 
 hitables << TransformationWrapper.new(
-  Sphere.new(Material::Glass.new(ior)),
+  Hitable::Sphere.new(Material::Glass.new(ior)),
   VS.new(Vector.new(-1.0, -0.0, -1.0), 0.5)
 )
 hitables << TransformationWrapper.new(
-  Sphere.new(Material::Glass.new(ior)),
+  Hitable::Sphere.new(Material::Glass.new(ior)),
   VS.new(Vector.new(0.0, -0.0, -1.0), 0.5)
 )
 hitables << TransformationWrapper.new(
-  Sphere.new(Material::Glass.new(ior)),
+  Hitable::Sphere.new(Material::Glass.new(ior)),
   VS.new(Vector.new(1.0, -0.0, -1.0), 0.5)
 )
 
@@ -31,7 +31,7 @@ height = 2.0
 size = 0.4
 
 light1_obj, light1_light = Light::Area.with_object(
-  XZRect.new(
+  Hitable::XZRect.new(
     Point.new(-1.0 - size, height, -1.0 - size),
     Point.new(-1.0 + size, height, -1.0 + size),
     Material::DiffuseLight.new(red)
@@ -40,7 +40,7 @@ light1_obj, light1_light = Light::Area.with_object(
 )
 
 light2_obj, light2_light = Light::Area.with_object(
-  XZRect.new(
+  Hitable::XZRect.new(
     Point.new(0.0 - size, height, -1.0 - size),
     Point.new(0.0 + size, height, -1.0 + size),
     Material::DiffuseLight.new(green)
@@ -49,7 +49,7 @@ light2_obj, light2_light = Light::Area.with_object(
 )
 
 light3_obj, light3_light = Light::Area.with_object(
-  XZRect.new(
+  Hitable::XZRect.new(
     Point.new(1.0 - size, height, -1.0 - size),
     Point.new(1.0 + size, height, -1.0 + size),
     Material::DiffuseLight.new(blue)

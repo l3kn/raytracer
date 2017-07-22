@@ -1,6 +1,6 @@
 require "../raytracer"
 
-hitables = [] of UnboundedHitable
+hitables = [] of Hitable
 
 File.read("blocks2.csv").each_line do |line|
   tokens = line.split(",")
@@ -18,7 +18,7 @@ File.read("blocks2.csv").each_line do |line|
   opaque = tokens.shift == "true"
 
   # TODO: is the offset necessary?
-  hitables << Cuboid2.new(
+  hitables << Hitable::Cuboid2.new(
     Point.new(x, y, z),
     Point.new(x + sx, y + sy, z + sz) - Vector.one * (EPSILON * 10),
     opaque ? Material::Matte.new(color) : Material::Glass.new(1.4, color, color)

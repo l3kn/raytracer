@@ -8,28 +8,28 @@ aluminum = Material::Mirror.new(Color.new(0.8, 0.85, 0.88))
 lbf = Point.new(0.0, 0.0, 0.0)       # Left | Bottom | Front
 rtb = Point.new(555.0, 555.0, 555.0) # Right | Top | Back
 
-hitables = [] of UnboundedHitable
+hitables = [] of Hitable
 lights = [] of Light
-hitables << XZRect.new(lbf, Point.new(555.0, 0.0, 555.0), white)
-hitables << YZRect.new(lbf, Point.new(0.0, 555.0, 555.0), red)
-hitables << YZRect.new(Point.new(555.0, 0.0, 0.0), rtb, green).flip!
-hitables << XZRect.new(Point.new(0.0, 555.0, 0.0), rtb, white).flip!
-hitables << XYRect.new(Point.new(0.0, 0.0, 555.0), rtb, white).flip!
+hitables << Hitable::XZRect.new(lbf, Point.new(555.0, 0.0, 555.0), white)
+hitables << Hitable::YZRect.new(lbf, Point.new(0.0, 555.0, 555.0), red)
+hitables << Hitable::YZRect.new(Point.new(555.0, 0.0, 0.0), rtb, green).flip!
+hitables << Hitable::XZRect.new(Point.new(0.0, 555.0, 0.0), rtb, white).flip!
+hitables << Hitable::XYRect.new(Point.new(0.0, 0.0, 555.0), rtb, white).flip!
 
 
-hitables << TransformationWrapper.new(
-  Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum),
+hitables << Hitable::TransformationWrapper.new(
+  Hitable::Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum),
   # Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), Material::Glass.new(1.5)),
   VQS.new(Vector.new(265.0, 0.0, 295.0), 1.0, Vector.y, 15.0)
 )
 
 hitables << TransformationWrapper.new(
-  Sphere.new(Material::Glass.new(1.5)),
+  Hitable::Sphere.new(Material::Glass.new(1.5)),
   VS.new(Vector.new(190.0, 90.0, 190.0), 90.0)
 )
 
 light_object, light_light = Light::Area.with_object(
-  XZRect.new(
+  Hitable::XZRect.new(
     Point.new(213.0, 554.0, 227.0),
     Point.new(343.0, 554.0, 332.0),
     Material::DiffuseLight.new(Color.new(15.0))

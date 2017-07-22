@@ -1,4 +1,7 @@
 class Background
+  # Use cube maps as a backgound.
+  # See [Wikipedia](https://en.wikipedia.org/wiki/Cube_mapping)
+  # for an explanation of how this works.
   class CubeMap < Background
     @right : StumpyPNG::Canvas
     @left  : StumpyPNG::Canvas
@@ -7,6 +10,13 @@ class Background
     @front : StumpyPNG::Canvas
     @back  : StumpyPNG::Canvas
 
+    # `name` should point to a folder
+    # containing six images
+    # `posx.png`, `negx.png`,
+    # `posy.png`, `negy.png`,
+    # `posz.png`, `negz.png`
+    # for the right, left, top, bottom, front
+    # and back of the cube
     def initialize(name)
       @right = StumpyPNG.read("#{name}/posx.png")
       @left  = StumpyPNG.read("#{name}/negx.png")

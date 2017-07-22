@@ -1,4 +1,4 @@
-module Hitable
+class Hitable
   class Triangle < BoundedHitable
     getter a : Point, b : Point, c : Point
     getter edge1 : Vector, edge2 : Vector

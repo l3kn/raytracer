@@ -1,5 +1,5 @@
 class Scene
-  property hitable : UnboundedHitable
+  property hitable : Hitable
   property lights : Array(Light)
   property background : Background?
   property light_sampling_CDF do
@@ -14,9 +14,9 @@ class Scene
       infinite = hitables.reject(&.is_a?(BoundedHitable))
 
       if infinite.size > 0
-        @hitable = Hitable::List.new([SAHBVHNode.new(finite)] + infinite)
+        @hitable = Hitable::List.new([Hitable::SAHBVHNode.new(finite)] + infinite)
       else
-        @hitable = SAHBVHNode.new(finite)
+        @hitable = Hitable::SAHBVHNode.new(finite)
       end
     end
   end

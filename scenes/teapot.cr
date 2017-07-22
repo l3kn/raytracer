@@ -15,7 +15,7 @@ camera = Camera::Perspective.new(
 raytracer = Raytracer::Simple.new(
   dimensions,
   scene: Scene.new(
-    hitables.map(&.as(UnboundedHitable)),
+    hitables.map(&.as(Hitable)),
     background: Background::Sky.new
   ),
   camera: camera,

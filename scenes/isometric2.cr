@@ -1,6 +1,6 @@
 require "../raytracer"
 
-hitables = [] of UnboundedHitable
+hitables = [] of Hitable
 # File.read("blocks.csv").each_line do |line|
 #   tokens = line.split(",")
 
