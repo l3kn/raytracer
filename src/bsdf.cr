@@ -1,27 +1,27 @@
 abstract struct BSDF
-  record Sample, color : Color, dir : Vector, pdf : Float64, type : BxDFType do
+  record Sample, color : Color, dir : Vector, pdf : Float64, type : BxDF::Type do
     def relevant?
       !(@pdf == 0.0 || @color.black?)
     end
   end
 
   # Number of components matching the given flag
-  abstract def num_components(flags = BxDFType::All) : Int32
-  abstract def f(wo_world : Vector, wi_world : Vector, flags : BxDFType) : Color
-  abstract def sample_f(wo_world : Vector, flags : BxDFType) : Sample?
-  abstract def pdf(wo : Vector, wi : Vector, flags = BxDFType::All) : Float64
+  abstract def num_components(flags = BxDF::Type::All) : Int32
+  abstract def f(wo_world : Vector, wi_world : Vector, flags : BxDF::Type) : Color
+  abstract def sample_f(wo_world : Vector, flags : BxDF::Type) : Sample?
+  abstract def pdf(wo : Vector, wi : Vector, flags = BxDF::Type::All) : Float64
   abstract def emitted(wo_world) : Color
 
-  def matches_flags?(flags : BxDFType)
+  def matches_flags?(flags : BxDF::Type)
     num_components(flags) > 0
   end
 
   def diffuse?
-    matches_flags?(BxDFType::Diffuse | BxDFType::Reflection | BxDFType::Transmission)
+    matches_flags?(BxDF::Type::Diffuse | BxDF::Type::Reflection | BxDF::Type::Transmission)
   end
 
   def glossy?
-    matches_flags?(BxDFType::Glossy | BxDFType::Reflection | BxDFType::Transmission)
+    matches_flags?(BxDF::Type::Glossy | BxDF::Type::Reflection | BxDF::Type::Transmission)
   end
 end
 
@@ -32,20 +32,20 @@ struct BSDF::Multi < BSDF
     @world_to_local = ONB.from_w(@normal)
   end
 
-  def num_components(flags = BxDFType::All)
+  def num_components(flags = BxDF::Type::All)
     @bxdfs.count(&.matches_flags?(flags))
   end
 
-  def f(wo_world : Vector, wi_world : Vector, flags : BxDFType) : Color
+  def f(wo_world : Vector, wi_world : Vector, flags : BxDF::Type) : Color
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
 
     # Both vectors outside of the object ? ingnore BTDFs : ignore BRDFs
     # NOTE: "~" = complement
     if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
-      flags &= ~BxDFType::Transmission
+      flags &= ~BxDF::Type::Transmission
     else
-      flags &= ~BxDFType::Reflection
+      flags &= ~BxDF::Type::Reflection
     end
 
     color = Color::BLACK
@@ -57,7 +57,7 @@ struct BSDF::Multi < BSDF
     color
   end
 
-  def sample_f(wo_world : Vector, flags : BxDFType)
+  def sample_f(wo_world : Vector, flags : BxDF::Type)
     matching = @bxdfs.select(&.matches_flags?(flags))
     return nil if matching.size == 0
 
@@ -96,9 +96,9 @@ struct BSDF::Multi < BSDF
       Sample.new(color, wi_world, pdf, bxdf.type)
     else
       if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
-        flags = flags & ~BxDFType::Transmission
+        flags = flags & ~BxDF::Type::Transmission
       else
-        flags = flags & ~BxDFType::Reflection
+        flags = flags & ~BxDF::Type::Reflection
       end
 
       color = Color::BLACK
@@ -110,7 +110,7 @@ struct BSDF::Multi < BSDF
     end
   end
 
-  def pdf(wo_world : Vector, wi_world : Vector, flags = BxDFType::All) : Float64
+  def pdf(wo_world : Vector, wi_world : Vector, flags = BxDF::Type::All) : Float64
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
 
@@ -135,24 +135,24 @@ struct BSDF::Single < BSDF
     @world_to_local = ONB.from_w(@normal)
   end
 
-  def num_components(flags = BxDFType::All)
+  def num_components(flags = BxDF::Type::All)
     @bxdf.matches_flags?(flags) ? 1 : 0
   end
 
-  def f(wo_world : Vector, wi_world : Vector, flags : BxDFType) : Color
+  def f(wo_world : Vector, wi_world : Vector, flags : BxDF::Type) : Color
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
 
     if wi_world.dot(@normal) * wo_world.dot(@normal) > 0
-      flags &= ~BxDFType::Transmission
+      flags &= ~BxDF::Type::Transmission
     else
-      flags &= ~BxDFType::Reflection
+      flags &= ~BxDF::Type::Reflection
     end
 
     @bxdf.matches_flags?(flags) ? @bxdf.f(wo, wi) : Color::BLACK
   end
 
-  def sample_f(wo_world : Vector, flags : BxDFType)
+  def sample_f(wo_world : Vector, flags : BxDF::Type)
     return nil unless @bxdf.matches_flags?(flags)
 
     wo = @world_to_local.world_to_local(wo_world).normalize
@@ -164,7 +164,7 @@ struct BSDF::Single < BSDF
     Sample.new(color, wi_world, pdf, @bxdf.type)
   end
 
-  def pdf(wo_world : Vector, wi_world : Vector, flags = BxDFType::All)
+  def pdf(wo_world : Vector, wi_world : Vector, flags = BxDF::Type::All)
     return 0.0 unless @bxdf.matches_flags?(flags)
     wo = @world_to_local.world_to_local(wo_world).normalize
     wi = @world_to_local.world_to_local(wi_world).normalize
@@ -181,7 +181,7 @@ struct BSDF::Emissive < BSDF
     @world_to_local = ONB.from_w(@normal)
   end
 
-  def num_components(flags = BxDFType::All)
+  def num_components(flags = BxDF::Type::All)
     0
   end
 
@@ -189,7 +189,7 @@ struct BSDF::Emissive < BSDF
     Color::BLACK
   end
 
-  def pdf(wo, wi, flags = BxDFType::All)
+  def pdf(wo, wi, flags = BxDF::Type::All)
     0.0
   end
 

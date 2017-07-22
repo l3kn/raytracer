@@ -36,7 +36,7 @@ class Raytracer
         @scene.get_background(ray)
       else
         bsdf = hit.material.bsdf(hit)
-        sample = bsdf.sample_f(-ray.direction, BxDFType::All)
+        sample = bsdf.sample_f(-ray.direction, BxDF::Type::All)
         sample.nil? ? ::Color::BLACK : sample.color
       end
     end

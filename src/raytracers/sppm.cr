@@ -111,7 +111,7 @@ class Raytracer
 
             # Spawn ray from SPPM camera path vertex
             if depth < @recursion_depth - 1
-              sample = bsdf.sample_f(wo, BxDFType::All)
+              sample = bsdf.sample_f(wo, BxDF::Type::All)
               break if sample.nil? || !sample.relevant?
 
               specular_bounce = sample.type.specular?
@@ -207,7 +207,7 @@ class Raytracer
                   next if hit.point.squared_distance(vp.point) > (pixel.radius ** 2)
 
                   wi = -photon_ray.direction
-                  pixel.add_phi(path_throughput * vp.bsdf.f(vp.wo, wi, BxDFType::All))
+                  pixel.add_phi(path_throughput * vp.bsdf.f(vp.wo, wi, BxDF::Type::All))
                 end
               end
             end
@@ -217,7 +217,7 @@ class Raytracer
             photon_bsdf = hit.material.bsdf(hit)
             wo = -photon_ray.direction
 
-            sample = photon_bsdf.sample_f(wo, BxDFType::All)
+            sample = photon_bsdf.sample_f(wo, BxDF::Type::All)
             break if sample.nil? || !sample.relevant?
 
             new_throughput = path_throughput * sample.color * sample.dir.dot(hit.normal).abs / sample.pdf

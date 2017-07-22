@@ -1,8 +1,8 @@
-struct LambertianReflection < BxDF
-  @type : BxDFType # For some reason crystal 0.21.0 needs this
+struct BxDF::LambertianReflection < BxDF
+  @type : Type # For some reason crystal 0.21.0 needs this
 
   def initialize(@color : Color)
-    @type = BxDFType::Reflection | BxDFType::Diffuse
+    @type = Type::Reflection | Type::Diffuse
   end
 
   def sample_f(wo : Vector, u1 : Float64 = rand, u2 : Float64 = rand) : Tuple(Color, Vector, Float64)

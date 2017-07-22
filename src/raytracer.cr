@@ -32,7 +32,7 @@ abstract class Raytracer
     end
   end
 
-  def estimate_background(hit, bsdf, wo, flags = ~BxDFType::Specular)
+  def estimate_background(hit, bsdf, wo, flags = ~BxDF::Type::Specular)
     background = @scene.background
     return Color::BLACK if background.nil?
 
@@ -51,7 +51,7 @@ abstract class Raytracer
     sample.color * li * sample.dir.dot(hit.normal).abs * weight / sample.pdf
   end
 
-  def estimate_direct(light, hit, bsdf, wo, flags = ~BxDFType::Specular)
+  def estimate_direct(light, hit, bsdf, wo, flags = ~BxDF::Type::Specular)
     ld = Color::BLACK
 
     # Sample light w/ multiple importance sampling

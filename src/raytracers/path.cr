@@ -26,7 +26,7 @@ class Raytracer
         l += path_throughput * estimate_background(hit, bsdf, wo)
 
         # sample bsdf to get new path dir
-        sample = bsdf.sample_f(wo, BxDFType::All)
+        sample = bsdf.sample_f(wo, BxDF::Type::All)
         break if sample.nil? || !sample.relevant?
 
         specular_bounce = sample.type.specular?

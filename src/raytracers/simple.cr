@@ -17,7 +17,7 @@ class Raytracer
 
         l += path_throughput * bsdf.emitted(wo)
 
-        sample = bsdf.sample_f(wo, BxDFType::All)
+        sample = bsdf.sample_f(wo, BxDF::Type::All)
         break if sample.nil? || !sample.relevant?
 
         path_throughput *= sample.color * sample.dir.dot(hit.normal).abs / sample.pdf

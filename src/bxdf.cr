@@ -1,17 +1,17 @@
-@[Flags]
-enum BxDFType
-  Reflection
-  Transmission
-
-  Diffuse
-  Glossy
-  Specular
-end
-
 abstract struct BxDF
-  getter type : BxDFType = BxDFType::None
+  @[Flags]
+  enum Type
+    Reflection
+    Transmission
 
-  def matches_flags?(other : BxDFType)
+    Diffuse
+    Glossy
+    Specular
+  end
+
+  getter type : Type = Type::None
+
+  def matches_flags?(other : BxDF::Type)
     (@type & other) == @type
   end
 
