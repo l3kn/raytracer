@@ -19,7 +19,7 @@ abstract class Transformation
   abstract def object_to_world(point : AABB) : AABB
 end
 
-class TransformationWrapper < BoundedHitable
+class Hitable::TransformationWrapper < BoundedHitable
   def initialize(@object : BoundedHitable, @transformation : Transformation)
     @bounding_box = transformation.object_to_world(@object.bounding_box)
   end
