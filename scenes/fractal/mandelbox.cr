@@ -49,7 +49,7 @@ class Mandelbox < DE::DistanceEstimatable
   end
 end
 
-mat = Material::Matte.new(UTexture.new)
+mat = Material::Matte.new(Texture::U.new)
 
 de = Mandelbox.new(10)
 hitables = DistanceEstimator.new(

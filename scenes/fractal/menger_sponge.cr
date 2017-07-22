@@ -1,7 +1,7 @@
 require "../../src/distance_estimatables/*"
 require "../../raytracer"
 
-mat = Material::Matte.new(UTexture.new(120.0))
+mat = Material::Matte.new(Texture::U.new(120.0))
 de = DE::MengerSponge.new(15)
 hitables = DistanceEstimator.new(mat, de, maximum_steps: 1000)
 

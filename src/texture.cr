@@ -5,11 +5,7 @@ abstract class Texture
   abstract def value(hit : HitRecord) : Color
 end
 
-abstract class Texture1D
-  abstract def value(hit : HitRecord) : Float64
-end
-
-class NormalTexture < Texture
+class Texture::Normal < Texture
   def value(hit)
     Color.new(
       (1.0 + hit.normal.x) * 0.5,
@@ -19,7 +15,7 @@ class NormalTexture < Texture
   end
 end
 
-class ConstantTexture < Texture
+class Texture::Constant < Texture
   def initialize(@color : Color); end
 
   def value(hit)
@@ -27,7 +23,7 @@ class ConstantTexture < Texture
   end
 end
 
-class CheckerTexture < Texture
+class Texture::Checker < Texture
   def initialize(@even : Texture, @odd : Texture); end
 
   # TODO: Use uv values instead
@@ -42,25 +38,16 @@ class CheckerTexture < Texture
   end
 end
 
-class NoiseTexture1D < Texture1D
-  def initialize(@scale = 10.0, @noise = Perlin.new(100)); end
-
-  def value(hit)
-    @noise.perlin(hit.point * @scale)
-  end
-end
-
-class NoiseTexture < Texture
-  def initialize(scale = 10.0)
-    @tex1D = NoiseTexture1D.new(scale)
+class Texture::Noise < Texture
+  def initialize(@scale = 10.0, @noise = Perlin.new(100))
   end
 
   def value(hit)
-    Color.new(@tex1D.value(hit))
+    Color.new(@noise.perlin(hit.point * @scale))
   end
 end
 
-class ImageTexture < Texture
+class Texture::Image < Texture
   getter canvas : StumpyPNG::Canvas
 
   def initialize(path)
@@ -80,7 +67,7 @@ class ImageTexture < Texture
   end
 end
 
-class UTexture < Texture
+class Texture::U < Texture
   def initialize(@factor = 1.0); end
 
   def value(hit)
@@ -88,7 +75,7 @@ class UTexture < Texture
   end
 end
 
-class GridTexture < Texture
+class Texture::Grid < Texture
   @step : Float64
   @substep : Float64
   @width : Float64

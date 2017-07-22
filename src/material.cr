@@ -7,8 +7,8 @@ class Material::Glass < Material
   end
 
   def initialize(@ior : Float64, color_reflected = Color::WHITE, color_transmitted = Color::WHITE)
-    @texture_reflected = ConstantTexture.new(color_reflected)
-    @texture_transmitted = ConstantTexture.new(color_transmitted)
+    @texture_reflected = Texture::Constant.new(color_reflected)
+    @texture_transmitted = Texture::Constant.new(color_transmitted)
   end
 
   def bsdf(hit)
@@ -30,7 +30,7 @@ class Material::Matte < Material
   def initialize(@texture : Texture); end
 
   def initialize(color : Color)
-    @texture = ConstantTexture.new(color)
+    @texture = Texture::Constant.new(color)
   end
 
   def bsdf(hit)
@@ -43,7 +43,7 @@ class Material::OrenNayar < Material
   def initialize(@texture : Texture, @sig : Float64); end
 
   def initialize(color : Color, @sig : Float64)
-    @texture = ConstantTexture.new(color)
+    @texture = Texture::Constant.new(color)
   end
 
   def bsdf(hit)
@@ -56,7 +56,7 @@ class Material::Mirror < Material
   def initialize(@texture : Texture); end
 
   def initialize(color : Color)
-    @texture = ConstantTexture.new(color)
+    @texture = Texture::Constant.new(color)
   end
 
   def bsdf(hit)
@@ -69,7 +69,7 @@ class Material::DiffuseLight < Material
   def initialize(@texture : Texture); end
 
   def initialize(color : Color)
-    @texture = ConstantTexture.new(color)
+    @texture = Texture::Constant.new(color)
   end
 
   def bsdf(hit)
