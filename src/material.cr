@@ -15,7 +15,7 @@ class GlassMaterial < Material
     bxdfs = [
       SpecularReflection.new(
         @texture_reflected.value(hit),
-        FresnelDielectric.new(1.0, @ior)
+        Fresnel::Dielectric.new(1.0, @ior)
       ).as(BxDF),
       SpecularTransmission.new(
         @texture_transmitted.value(hit),
@@ -60,7 +60,7 @@ class MirrorMaterial < Material
   end
 
   def bsdf(hit)
-    bxdf = SpecularReflection.new(@texture.value(hit), FresnelNoOp.new).as(BxDF)
+    bxdf = SpecularReflection.new(@texture.value(hit), Fresnel::NoOp.new).as(BxDF)
     SingleBSDF.new(bxdf, hit.normal)
   end
 end

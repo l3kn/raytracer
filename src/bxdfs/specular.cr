@@ -3,7 +3,7 @@ require "../fresnel"
 struct SpecularReflection < BxDF
   @type : BxDFType # For some reason crystal 0.21.0 needs this
 
-  def initialize(@color : Color, @fresnel : Fresnel)
+  def initialize(@color : Color, @fresnel : Fresnel::Abstract)
     @type = BxDFType::Reflection | BxDFType::Specular
   end
 
@@ -27,7 +27,7 @@ struct SpecularTransmission < BxDF
 
   def initialize(@color : Color, @eta_i : Float64, @eta_t : Float64)
     @type = BxDFType::Transmission | BxDFType::Specular
-    @fresnel = FresnelDielectric.new(@eta_i, @eta_t)
+    @fresnel = Fresnel::Dielectric.new(@eta_i, @eta_t)
   end
 
   def sample_f(wo : Vector) : Tuple(Color, Vector, Float64)
