@@ -1,3 +1,4 @@
+require "stumpy_png"
 require "./perlin"
 
 abstract class Texture

@@ -3,13 +3,13 @@ struct HitRecord
   getter point : Point
   getter normal : Normal
   getter material : Material
-  getter object : Hitable
+  getter object : UnboundedHitable
   getter u : Float64, v : Float64
 
   def initialize(@t, @point, @normal, @material, @object, @u, @v); end
 end
 
-abstract class Hitable
+abstract class UnboundedHitable
   property area_light : Light? = nil
   @area_light = nil
 
@@ -43,7 +43,7 @@ abstract class Hitable
   end
 end
 
-abstract class FiniteHitable < Hitable
+abstract class BoundedHitable < UnboundedHitable
   property bounding_box : AABB
 
   def initialize

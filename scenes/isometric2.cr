@@ -1,6 +1,6 @@
 require "../raytracer"
 
-hitables = [] of Hitable
+hitables = [] of UnboundedHitable
 lights = [] of Light
 
 # File.read("blocks.csv").each_line do |line|
@@ -21,7 +21,7 @@ lights = [] of Light
 #   )
 # end
 
-class VoxelGrid < FiniteHitable
+class VoxelGrid < BoundedHitable
   @voxels : Array(Int8)
   @width : Int16
   @height : Int16

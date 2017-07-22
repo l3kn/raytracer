@@ -1,6 +1,6 @@
 require "../raytracer"
 
-hitables = [] of Hitable
+hitables = [] of UnboundedHitable
 lights = [] of Light
 
 File.read("blocks2.csv").each_line do |line|

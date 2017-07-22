@@ -13,7 +13,7 @@ camera = PerspectiveCamera.new(
 )
 
 scene = Scene.new(
-  hitables.map(&.as(Hitable)),
+  hitables.map(&.as(UnboundedHitable)),
   [] of Light,
   SkyBackground.new()
 )

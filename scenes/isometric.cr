@@ -1,6 +1,6 @@
 require "../raytracer"
 
-hitables = [] of Hitable
+hitables = [] of UnboundedHitable
 lights = [] of Light
 
 

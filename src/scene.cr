@@ -1,5 +1,5 @@
 class Scene
-  property hitable : Hitable
+  property hitable : UnboundedHitable
   property lights : Array(Light)
   property background : Background?
   property light_sampling_CDF do
@@ -10,8 +10,8 @@ class Scene
     if hitables.size < 5
       @hitable = HitableList.new(hitables)
     else
-      finite = hitables.select(&.is_a?(FiniteHitable)).map(&.as(FiniteHitable))
-      infinite = hitables.reject(&.is_a?(FiniteHitable))
+      finite = hitables.select(&.is_a?(BoundedHitable)).map(&.as(BoundedHitable))
+      infinite = hitables.reject(&.is_a?(BoundedHitable))
 
       if infinite.size > 0
         @hitable = HitableList.new([SAHBVHNode.new(finite)] + infinite)

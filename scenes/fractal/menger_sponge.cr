@@ -14,10 +14,10 @@ camera = PerspectiveCamera.new(
   dimensions: dimensions
 )
 
-raytracer = ColorRaytracer.new(
+raytracer = Renderer::Color.new(
   dimensions,
   scene: Scene.new(
-    [hitables.as(Hitable)],
+    [hitables.as(UnboundedHitable)],
     [] of Light,
     ConstantBackground.new(Color.new(1.0))
   ),

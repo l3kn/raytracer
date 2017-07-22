@@ -70,7 +70,7 @@ class PointLight < Light
 end
 
 class AreaLight < Light
-  def initialize(@object : FiniteHitable, @intensity : Color); end
+  def initialize(@object : BoundedHitable, @intensity : Color); end
 
   def sample_l(normal : Normal, scene : Scene, point : Point)
     point_s, normal_s = @object.sample(point)

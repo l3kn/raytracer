@@ -1,6 +1,6 @@
 require "../raytracer"
 
-hitables = [] of Hitable
+hitables = [] of UnboundedHitable
 
 hitables << TransformationWrapper.new(
   Sphere.new(MirrorMaterial.new(Color.new(0.8))),

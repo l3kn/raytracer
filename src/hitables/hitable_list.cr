@@ -31,18 +31,18 @@ module HitableListMethods
   end
 end
 
-class HitableList < Hitable
+class HitableList < UnboundedHitable
   include HitableListMethods
 
-  def initialize(@objects : Array(Hitable)); end
+  def initialize(@objects : Array(UnboundedHitable)); end
 end
 
 # TODO: find a way to do this with less code duplication
-class FiniteHitableList < FiniteHitable
+class BoundedHitableList < BoundedHitable
   include HitableListMethods
 
-  def initialize(list : Array(FiniteHitable))
-    @objects = Array(FiniteHitable).new
+  def initialize(list : Array(BoundedHitable))
+    @objects = Array(BoundedHitable).new
     @bounding_box = list[0].bounding_box
 
     list.each do |object|

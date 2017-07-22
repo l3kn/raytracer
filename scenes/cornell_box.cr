@@ -8,7 +8,7 @@ aluminum = MirrorMaterial.new(Color.new(0.8, 0.85, 0.88))
 lbf = Point.new(0.0, 0.0, 0.0)       # Left | Bottom | Front
 rtb = Point.new(555.0, 555.0, 555.0) # Right | Top | Back
 
-hitables = [] of Hitable
+hitables = [] of UnboundedHitable
 lights = [] of Light
 hitables << XZRect.new(lbf, Point.new(555.0, 0.0, 555.0), white)
 hitables << YZRect.new(lbf, Point.new(0.0, 555.0, 555.0), red)

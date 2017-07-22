@@ -23,8 +23,9 @@ require "./src/light"
 require "./src/onb"
 require "./src/obj"
 require "./src/scene"
-require "./src/debugging"
 require "./src/sample"
 require "./src/filter"
 require "./src/raytracer"
 require "./src/raytracers/*"
+
+include Hitable
