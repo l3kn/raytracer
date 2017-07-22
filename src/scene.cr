@@ -1,7 +1,7 @@
 class Scene
   property hitable : UnboundedHitable
   property lights : Array(Light)
-  property background : ABackground?
+  property background : Background::Abstract?
   property light_sampling_CDF do
     Distribution1D.new(lights.map(&.power.length))
   end

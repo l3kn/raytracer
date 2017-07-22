@@ -1,5 +1,5 @@
 module Background
-  class Constant < ABackground
+  class Constant < Abstract
     def initialize(@color : Color)
     end
 

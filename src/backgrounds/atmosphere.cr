@@ -1,5 +1,5 @@
 module Background
-  class Atmosphere < ABackground
+  class Atmosphere < Abstract
     @sun_direction : Vector
     @earth_radius : Float64
     @atmosphere_radius : Float64

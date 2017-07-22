@@ -1,5 +1,5 @@
 module Background
-  class CubeMap < ABackground
+  class CubeMap < Abstract
     @right : StumpyPNG::Canvas
     @left  : StumpyPNG::Canvas
     @up    : StumpyPNG::Canvas
