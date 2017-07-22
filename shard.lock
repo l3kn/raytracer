@@ -12,7 +12,3 @@ shards:
     github: stumpycr/stumpy_png
     version: 4.1.1
 
-  stumpy_x11:
-    github: stumpycr/stumpy_x11
-    commit: e2c2b4c2e2a2055762c7965502dc275e69c938ff
-

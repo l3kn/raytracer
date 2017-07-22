@@ -1,7 +1,5 @@
 require "../linalg/src/linalg"
-# require "../stumpy_utils/src/stumpy_utils"
 require "stumpy_png"
-require "stumpy_x11"
 
 EPSILON = 0.00001
 
