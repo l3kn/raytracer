@@ -27,5 +27,3 @@ require "./src/sample"
 require "./src/filter"
 require "./src/raytracer"
 require "./src/raytracers/*"
-
-include Hitable
