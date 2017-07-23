@@ -1,5 +1,7 @@
 # Raytracer
 
+* [Documentation](http://docs.l3kn.de/raytracer/doc/)
+
 ## Scenes
 
 ### `scenes/cornell_box.cr`
