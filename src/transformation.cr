@@ -17,6 +17,10 @@ abstract class Transformation
   end
 
   abstract def object_to_world(point : AABB) : AABB
+
+  abstract def translate(offset : Vector) : Transformation
+  abstract def scale(size : Float64) : Transformation
+  abstract def rotate(axis : Vector, degrees : Float64) : Transformation
 end
 
 class TransformationWrapper < BoundedHitable
@@ -37,6 +41,30 @@ class TransformationWrapper < BoundedHitable
       hit.object,
       hit.u, hit.v
     )
+  end
+
+  # Pretty much the same as `Hitable.translate(offset)`,
+  # but instead of nesting `TransformationWrapper`s
+  # change the value of the transformation
+  def translate(offset : Vector)
+    @transformation = @transformation.translate(offset)
+    self
+  end
+
+  # Pretty much the same as `Hitable.scale(size)`,
+  # but instead of nesting `TransformationWrapper`s
+  # change the value of the transformation
+  def scale(size : Float64)
+    @transformation = @transformation.scale(size)
+    self
+  end
+
+  # Pretty much the same as `Hitable.rotate(axis, degrees)`,
+  # but instead of nesting `TransformationWrapper`s
+  # change the value of the transformation
+  def rotate(axis : Vector, degrees : Float64)
+    @transformation = @transformation.rotate(axis, degrees)
+    self
   end
 end
 
@@ -77,6 +105,21 @@ class VS < Transformation
       object_to_world(box.min),
       object_to_world(box.max)
     )
+  end
+
+  def translate(offset : Vector)
+    @translation = offset
+    self
+  end
+
+  def scale(size : Float64)
+    @scale = size
+    @inv_scale = 1.0 / size
+    self
+  end
+
+  def rotate(axis : Vector, degrees : Float64)
+    VQS.new(@translation, @scale, axis, degrees)
   end
 end
 
@@ -159,6 +202,29 @@ class VQS < Transformation
     ]
 
     AABB.from_points(points.map { |p| object_to_world(p) })
+  end
+
+  def translate(offset : Vector)
+    @translation = offset
+    self
+  end
+
+  def scale(size : Float64)
+    @scale = size
+    @inv_scale = 1.0 / size
+    self
+  end
+  
+  def rotate(axis : Vector, degrees : Float64)
+    rad = radiants(degrees)
+
+    @rotation = Quaternion.new(
+      Math.cos(rad / 2.0),
+      axis * Math.sin(rad / 2.0)
+    )
+    @inv_rotation = @rotation.inverse
+
+    self
   end
 end
 

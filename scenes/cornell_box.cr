@@ -16,17 +16,13 @@ hitables << Hitable::YZRect.new(Point.new(555.0, 0.0, 0.0), rtb, green).flip!
 hitables << Hitable::XZRect.new(Point.new(0.0, 555.0, 0.0), rtb, white).flip!
 hitables << Hitable::XYRect.new(Point.new(0.0, 0.0, 555.0), rtb, white).flip!
 
+hitables << Hitable::Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum)
+  .translate(Vector.new(265.0, 0.0, 295.0))
+  .rotate_y(15.0)
 
-hitables << Hitable::TransformationWrapper.new(
-  Hitable::Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum),
-  # Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), Material::Glass.new(1.5)),
-  VQS.new(Vector.new(265.0, 0.0, 295.0), 1.0, Vector.y, 15.0)
-)
-
-hitables << TransformationWrapper.new(
-  Hitable::Sphere.new(Material::Glass.new(1.5)),
-  VS.new(Vector.new(190.0, 90.0, 190.0), 90.0)
-)
+hitables << Hitable::Sphere.new(Material::Glass.new(1.5))
+  .translate(Vector.new(190.0, 90.0, 190.0))
+  .scale(90.0)
 
 light_object, light_light = Light::Area.with_object(
   Hitable::XZRect.new(
@@ -40,7 +36,7 @@ light_object, light_light = Light::Area.with_object(
 lights << light_light
 hitables << light_object
 
-dimensions = {300, 300}
+dimensions = {400, 400}
 camera = Camera::Perspective.new(
   look_from: Point.new(278.0, 278.0, -800.0),
   look_at: Point.new(278.0, 278.0, 0.0),
@@ -51,7 +47,7 @@ camera = Camera::Perspective.new(
 raytracer = Raytracer::Simple.new(
   dimensions, camera,
   scene: Scene.new(hitables, lights),
-  samples: 100
+  samples: 50
 )
 
 raytracer.render("cornell.png")

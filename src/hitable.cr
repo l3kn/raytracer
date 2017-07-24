@@ -71,6 +71,51 @@ abstract class Hitable
   def area : Float64
     raise "Error, this feature is not supported yet"
   end
+
+  # Return a new hitable translated (moved)
+  # by some offset
+  #
+  # TODO: Chaining two transformations
+  # of the same kind is not possible right now
+  def translate(offset : Vector) : Hitable
+    TransformationWrapper.new(
+      self,
+      VS.new(offset)
+    )
+  end
+
+  # Return a new hitable scaled
+  # by some factor
+  def scale(size : Float64) : Hitable
+    TransformationWrapper.new(
+      self,
+      VS.new(Vector.zero, size)
+    )
+  end
+
+  # Return a new hitable rotated
+  # around `axis` by `degrees`
+  def rotate(axis : Vector, degrees : Float64) : Hitable
+    TransformationWrapper.new(
+      self,
+      VQS.new(Vector.zero, 1.0, axis, degrees)
+    )
+  end
+
+  # Shorthand for `rotate(Vector.x, degrees)`
+  def rotate_x(degrees : Float64) : Hitable
+    rotate(Vector.x, degrees)
+  end
+
+  # Shorthand for `rotate(Vector.y, degrees)`
+  def rotate_y(degrees : Float64) : Hitable
+    rotate(Vector.y, degrees)
+  end
+
+  # Shorthand for `rotate(Vector.z, degrees)`
+  def rotate_z(degrees : Float64) : Hitable
+    rotate(Vector.z, degrees)
+  end
 end
 
 abstract class BoundedHitable < Hitable

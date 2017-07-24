@@ -3,25 +3,15 @@ require "../raytracer"
 hitables = [] of Hitable
 lights = [] of Light
 
-hitables << TransformationWrapper.new(
-  Hitable::Sphere.new(Material::Matte.new(Color.new(0.8))),
-  VS.new(Vector.new(0.0, -100.5, -1.0), 100.0)
-)
+hitables << Hitable::Sphere.new(Material::Matte.new(Color.new(0.8)))
+  .translate(Vector.new(0.0, -100.5, -1.0))
+  .scale(100.0)
 
-ior = 1.8
-
-hitables << TransformationWrapper.new(
-  Hitable::Sphere.new(Material::Glass.new(ior)),
-  VS.new(Vector.new(-1.0, -0.0, -1.0), 0.5)
-)
-hitables << TransformationWrapper.new(
-  Hitable::Sphere.new(Material::Glass.new(ior)),
-  VS.new(Vector.new(0.0, -0.0, -1.0), 0.5)
-)
-hitables << TransformationWrapper.new(
-  Hitable::Sphere.new(Material::Glass.new(ior)),
-  VS.new(Vector.new(1.0, -0.0, -1.0), 0.5)
-)
+[-1.0, 0.0, 1.0].each do |x|
+  hitables << Hitable::Sphere.new(Material::Glass.new(1.8))
+    .translate(Vector.new(x, 0.0, -1.0))
+    .scale(0.5)
+end
 
 red = Color.new(20.0, 0.0, 0.0)
 green = Color.new(0.0, 20.0, 0.0)
