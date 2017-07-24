@@ -1,6 +1,6 @@
 abstract class Raytracer
   property width : Int32, height : Int32, samples : Int32
-  property camera : Camera::Abstract
+  property camera : Camera
   property scene : Scene
   property gamma_correction : Float64
 

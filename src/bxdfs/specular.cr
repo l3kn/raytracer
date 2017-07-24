@@ -3,7 +3,7 @@ require "../fresnel"
 struct BxDF::SpecularReflection < BxDF
   @type : Type # For some reason crystal 0.21.0 needs this
 
-  def initialize(@color : Color, @fresnel : Fresnel::Abstract)
+  def initialize(@color : Color, @fresnel : Fresnel)
     @type = Type::Reflection | Type::Specular
   end
 
