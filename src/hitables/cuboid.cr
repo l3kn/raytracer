@@ -13,11 +13,11 @@ class Hitable::CuboidWrapper < Hitable::BoundedList
     flb = Point.new(p1.x, p1.y, p1.z)
 
     super([
-      XYRect.new(flb, frt, front).flip!,
+      XYRect.new(flb, frt, front, flipped: true),
       XYRect.new(blb, brt, back),
-      XZRect.new(flb, brb, bottom).flip!,
+      XZRect.new(flb, brb, bottom, flipped: true),
       XZRect.new(flt, brt, top),
-      YZRect.new(flb, blt, left).flip!,
+      YZRect.new(flb, blt, left, flipped: true),
       YZRect.new(frb, brt, right),
     ])
   end

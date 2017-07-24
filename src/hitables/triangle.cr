@@ -5,16 +5,12 @@ class Hitable
     getter normal : Normal
     property material : Material
 
-    def initialize(@a, @b, @c, @material)
+    def initialize(@a, @b, @c, @material, flipped = false)
       @bounding_box = AABB.from_points([@a, @b, @c])
       @edge1 = @b - @a
       @edge2 = @c - @a
       @normal = edge1.cross(edge2).to_normal
-    end
-
-    def flip!
-      @normal = -@normal
-      self
+      @normal = -@normal if flipped
     end
 
     # Möller-Trumbore intersection algorithm

@@ -24,8 +24,9 @@ light1_obj, light1_light = Light::Area.with_object(
   Hitable::XZRect.new(
     Point.new(-1.0 - size, height, -1.0 - size),
     Point.new(-1.0 + size, height, -1.0 + size),
-    Material::DiffuseLight.new(red)
-  ).flip!,
+    Material::DiffuseLight.new(red),
+    flipped: true
+  ),
   red
 )
 
@@ -34,7 +35,8 @@ light2_obj, light2_light = Light::Area.with_object(
     Point.new(0.0 - size, height, -1.0 - size),
     Point.new(0.0 + size, height, -1.0 + size),
     Material::DiffuseLight.new(green)
-  ).flip!,
+    flipped: true
+  ),
   green
 )
 
@@ -43,7 +45,8 @@ light3_obj, light3_light = Light::Area.with_object(
     Point.new(1.0 - size, height, -1.0 - size),
     Point.new(1.0 + size, height, -1.0 + size),
     Material::DiffuseLight.new(blue)
-  ).flip!,
+    flipped: true
+  ),
   blue
 )
 

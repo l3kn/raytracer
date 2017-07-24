@@ -10,11 +10,11 @@ rtb = Point.new(555.0, 555.0, 555.0) # Right | Top | Back
 
 hitables = [] of Hitable
 lights = [] of Light
-hitables << Hitable::XZRect.new(lbf, Point.new(555.0, 0.0, 555.0), white)
-hitables << Hitable::YZRect.new(lbf, Point.new(0.0, 555.0, 555.0), red)
-hitables << Hitable::YZRect.new(Point.new(555.0, 0.0, 0.0), rtb, green).flip!
-hitables << Hitable::XZRect.new(Point.new(0.0, 555.0, 0.0), rtb, white).flip!
-hitables << Hitable::XYRect.new(Point.new(0.0, 0.0, 555.0), rtb, white).flip!
+hitables << Hitable::Rect.new(lbf, Point.new(555.0, 0.0, 555.0), white)
+hitables << Hitable::Rect.new(lbf, Point.new(0.0, 555.0, 555.0), red)
+hitables << Hitable::Rect.new(Point.new(555.0, 0.0, 0.0), rtb, green, flipped: true)
+hitables << Hitable::Rect.new(Point.new(0.0, 555.0, 0.0), rtb, white, flipped: true)
+hitables << Hitable::Rect.new(Point.new(0.0, 0.0, 555.0), rtb, white, flipped: true)
 
 hitables << Hitable::Cuboid.new(Point.new(0.0), Point.new(165.0, 330.0, 165.0), aluminum)
   .translate(Vector.new(265.0, 0.0, 295.0))
@@ -25,11 +25,12 @@ hitables << Hitable::Sphere.new(Material::Glass.new(1.5))
   .scale(90.0)
 
 light_object, light_light = Light::Area.with_object(
-  Hitable::XZRect.new(
+  Hitable::Rect.new(
     Point.new(213.0, 554.0, 227.0),
     Point.new(343.0, 554.0, 332.0),
-    Material::DiffuseLight.new(Color.new(15.0))
-  ).flip!,
+    Material::DiffuseLight.new(Color.new(15.0)),
+    flipped: true
+  ),
   Color.new(15.0)
 )
 

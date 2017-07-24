@@ -1,29 +1,28 @@
 class Hitable
-  abstract class Rect < BoundedHitable
-    getter bot : Point
-    getter top : Point
-    getter area : Float64
-
-    def initialize(@bot : Point, @top : Point)
-      @bounding_box = AABB.new(bot, top)
-
-      # TODO: find a way to remove this
-      @area = 0.0
-    end
-
-    # NOTE: (Rect.new(...).flip!) should return a Hitable, not a Normal
-    def flip!
-      @normal = -@normal
-      self
+  module Rect
+    # Helper function to create the correct subtype of rectangle
+    # depending on the input values
+    def self.new(bot, top, material, flipped = false)
+      if bot.x == top.x
+        YZRect.new(bot, top, material, flipped)
+      elsif bot.y == top.y
+        XZRect.new(bot, top, material, flipped)
+      elsif bot.z == top.z
+        XYRect.new(bot, top, material, flipped)
+      else
+        raise "bot & top must have the same value in some component"
+      end
     end
   end
 
-  class XYRect < Rect
-    def initialize(bot : Point, top : Point, @material : Material)
+  class XYRect < BoundedHitable
+    @area : Float64
+
+    def initialize(@bot : Point, @top : Point, @material : Material, flipped = false)
       raise "XYRect bot & top don't have the same z value" if bot.z != top.z
-      super(bot, top)
-      @normal = Normal.new(0.0, 0.0, 1.0)
+      @normal = Normal.new(0.0, 0.0, flipped ? -1.0 : 1.0)
       @area = (top.x - bot.x) * (top.y - bot.y)
+      @bounding_box = AABB.new(bot, top)
     end
 
     def hit(ray)
@@ -53,12 +52,14 @@ class Hitable
     end
   end
 
-  class XZRect < Rect
-    def initialize(bot : Point, top : Point, @material : Material)
+  class XZRect < BoundedHitable
+    @area : Float64
+
+    def initialize(@bot : Point, @top : Point, @material : Material, flipped = false)
       raise "XZRect bot & top don't have the same y value" if bot.y != top.y
-      super(bot, top)
-      @normal = Normal.new(0.0, 1.0, 0.0)
+      @normal = Normal.new(0.0, flipped ? -1.0 : 1.0, 0.0)
       @area = (top.x - bot.x) * (top.z - bot.z)
+      @bounding_box = AABB.new(bot, top)
     end
 
     def hit(ray)
@@ -88,12 +89,14 @@ class Hitable
     end
   end
 
-  class YZRect < Rect
-    def initialize(bot : Point, top : Point, @material : Material)
+  class YZRect < BoundedHitable
+    @area : Float64
+    
+    def initialize(@bot : Point, @top : Point, @material : Material, flipped = false)
       raise "YZRect bot & top don't have the same x value" if bot.x != top.x
-      super(bot, top)
-      @normal = Normal.new(1.0, 0.0, 0.0)
+      @normal = Normal.new(flipped ? -1.0 : 1.0, 0.0, 0.0)
       @area = (top.y - bot.y) * (top.z - bot.z)
+      @bounding_box = AABB.new(bot, top)
     end
 
     def hit(ray)
