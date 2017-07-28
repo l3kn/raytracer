@@ -22,6 +22,14 @@ struct HitRecord
   getter u : Float64, v : Float64
 
   def initialize(@t, @point, @normal, @material, @object, @u, @v); end
+
+  # Return the same HitRecord but with a flipped normal.
+  # One place where this is useful is `CSG::Difference`
+  def flipped
+    HitRecord.new(
+      @t, @point, -@normal, @material, @object, @u, @v
+    )
+  end
 end
 
 # Superclass for any kind of 'object'
