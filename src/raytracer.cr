@@ -3,26 +3,58 @@ abstract class Raytracer
   property camera : Camera
   property scene : Scene
   property gamma_correction : Float64
+  property adaptive : Bool
 
   def initialize(dimensions, @camera, @samples, @scene)
     @width, @height = dimensions
     @gamma_correction = 1.0 / 2.2
+    @adaptive = false
   end
 
   abstract def render_to_canvas(filename : String, adaptive = false)
 
-  def render(filename, adaptive = false)
+  def render(filename)
     start = Time.now
+    cores = 4
 
-    # workers = [] of Process
-    # 4.times do |i|
-    #   workers << Process.fork do
-    #     StumpyPNG.write(render_to_canvas(filename, adaptive), filename + i.to_s)
-    #   end
-    # end
+    if cores > 1
+      workers = [] of Process
+      cores.times do |i|
+        workers << Process.fork do
+          StumpyPNG.write(render_to_canvas, filename + i.to_s)
+        end
+      end
 
-    # workers.each(&.wait)
-    StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
+      workers.each(&.wait)
+      canvasses = (0...cores).map { |i| StumpyPNG.read(filename + i.to_s) }
+      4.times do |i|
+        File.delete(filename + i.to_s)
+      end
+
+      canvas = StumpyPNG::Canvas.new(@width, @height) do |x, y|
+        r = 0u32
+        g = 0u32
+        b = 0u32
+        a = 0u32
+        canvasses.each do |c|
+          r += c.get(x, y).r
+          g += c.get(x, y).g
+          b += c.get(x, y).b
+          a += c.get(x, y).a
+        end
+        StumpyPNG::RGBA.new(
+          (r / cores).to_u16,
+          (g / cores).to_u16,
+          (b / cores).to_u16,
+          (a / cores).to_u16
+        )
+      end
+
+      StumpyPNG.write(canvas, filename)
+    else
+      StumpyPNG.write(render_to_canvas, filename)
+    end
+
 
     time = Time.now - start
     puts "\nTime: #{(time.total_milliseconds / 1000).round(3)}s"
@@ -120,17 +152,6 @@ abstract class Raytracer
       @recursion_depth = 10
     end
 
-    def print_pixel(color, mode = :truecolor)
-      r, g, b = color.to_rgb8
-      if mode == :truecolor
-        print "\033[48;2;#{r};#{g};#{b}m \033[0m"
-      else
-        chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. ".reverse
-        gray = 0.3 * r + 0.6 * g + 0.1 * b
-        print chars[(gray / 256 * chars.size).to_i]
-      end
-    end
-
     def sample_pixel(sample, x, y, samples_sqrt, inv_samples_sqrt)
       (0...samples_sqrt).each do |i|
         (0...samples_sqrt).each do |j|
@@ -143,10 +164,10 @@ abstract class Raytracer
       end
     end
 
-    def render_to_canvas(filename, adaptive = false)
+    def render_to_canvas
       canvas = StumpyPNG::Canvas.new(@width, @height)
 
-      samples_sqrt = Math.sqrt(samples).ceil
+      samples_sqrt = Math.sqrt(@samples).ceil
       inv_samples_sqrt = 1.0 / samples_sqrt
 
       sample = Sample.new

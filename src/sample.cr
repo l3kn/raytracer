@@ -1,31 +1,25 @@
-struct Sample
-  getter sum_weights : Float64
+class Sample
   getter mean : Color
   getter n_variance : Color
+  getter n : Int32
 
   def initialize
-    @sum_weights = 0.0
     @mean = Color::BLACK
     @n_variance = Color::BLACK
+    @n = 0
   end
 
-  def add(sample : Color, weight = 1.0)
-    @sum_weights += weight
-    new_mean = @mean + (sample - @mean)*(weight / @sum_weights)
-    # new_n_var = @n_variance + (sample - @mean) * (sample - new_mean)
-
-    @mean = new_mean
+  def add(sample : Color)
+    @n += 1
+    new_mean = @mean + (sample - @mean)*(1.0 / @n)
     # TODO: Support variance
+    # new_n_var = @n_variance + (sample - @mean) * (sample - new_mean)
+    @mean = new_mean
     # @n_variance = new_n_var
   end
 
-  def variance
-    @n_variance
-    # @n_variance / @n.to_f
-  end
-
   def reset
-    @sum_weights = 0.0
+    @n = 0
     @mean = Color::BLACK
     @n_variance = Color::BLACK
   end
