@@ -1,6 +1,7 @@
 # Raytracer
 
-* [Documentation](http://docs.l3kn.de/raytracer/doc/)
+[Documentation](https://docs.leonrische.me/raytracer/)
+
 
 ## Scenes
 
