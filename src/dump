@@ -1,0 +1,37 @@
+
+    def render_to_canvas(filename, adaptive = false)
+      canvas = StumpyPNG::Canvas.new(@width, @height)
+      # vis = Visualisation.new(@width, @height)
+      # vis.add_layer(:variance)
+
+      pr_x = @width / 80
+      pr_y = (pr_x / 0.4).to_i
+
+
+      samples_sqrt = Math.sqrt(samples).ceil
+      inv_samples_sqrt = 1.0 / samples_sqrt
+
+      (0...@height).each do |y|
+        (0...@width).each do |x|
+          sample = Sample.new
+
+          # if adaptive
+          #   sample_pixel(sample, x, y, samples / 2)
+          #   var = sample.variance
+          #   sample_pixel(sample, x, y, samples * 2) if var.squared_length >= 0.1
+          # else
+          sample_pixel(sample, x, y, samples_sqrt, inv_samples_sqrt)
+          # end
+
+          # vis.set(:variance, x, y, sample.variance.length)
+          rgba = sample.mean.to_rgba(@gamma_correction)
+          canvas[x, y] = rgba
+
+          # print_pixel(rgba, mode: :grayscale) if (x % pr_x) == 0 && (y % pr_y) == 0
+        end
+        # print "\n" if (y % pr_y) == 0
+      end
+
+      # vis.write(:variance, "variance_" + filename)
+      canvas
+    end

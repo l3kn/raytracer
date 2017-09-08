@@ -35,7 +35,7 @@ def radiants(n)
   n * RADIANTS
 end
 
-def same_hemisphere?(v1, v2)
+def same_hemisphere?(v1 : Vectorlike, v2 : Vectorlike)
   v1.z * v2.z > 0.0
 end
 
@@ -191,6 +191,28 @@ def power_heuristic(nf : Int32, f_pdf : Float64, ng : Int32, g_pdf : Float64)
   f = nf * f_pdf
   g = ng * g_pdf
   (f*f) / (f*f + g*g)
+end
+
+def cos_theta(w : Vector)
+  w.z
+end
+
+def sin_theta_2(w : Vector)
+  max(0.0, 1.0 - cos_theta(w)*cos_theta(w))
+end
+
+def sin_theta(w : Vector)
+  Math.sqrt(sin_theta_2(w))
+end
+
+def cos_phi(w : Vector)
+  st = sin_theta(w)
+  st == 0.0 ? 1.0 : clamp(w.x / st, -1.0, 1.0)
+end
+
+def sin_phi(w : Vector)
+  st = sin_theta(w)
+  st == 0.0 ? 1.0 : clamp(w.y / st, -1.0, 1.0)
 end
 
 struct Range2

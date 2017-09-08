@@ -12,7 +12,22 @@ abstract class Raytracer
   abstract def render_to_canvas(filename : String, adaptive = false)
 
   def render(filename, adaptive = false)
+    start = Time.now
+
+    # workers = [] of Process
+    # 4.times do |i|
+    #   workers << Process.fork do
+    #     StumpyPNG.write(render_to_canvas(filename, adaptive), filename + i.to_s)
+    #   end
+    # end
+
+    # workers.each(&.wait)
     StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
+
+    time = Time.now - start
+    puts "\nTime: #{(time.total_milliseconds / 1000).round(3)}s"
+    puts "Total rays: #{Ray.count}"
+    puts "Rays / sec: #{((Ray.count.to_f / time.total_milliseconds) * 1000).round(3)}"
   end
 
   def uniform_sample_one_light(hit, bsdf, wo)
@@ -99,9 +114,8 @@ abstract class Raytracer
 
   abstract class Base < Raytracer
     property recursion_depth : Int32
-    property filter : Filter
 
-    def initialize(dimensions, camera, samples, scene, @filter = Filter::Box.new(0.5))
+    def initialize(dimensions, camera, samples, scene)
       super(dimensions, camera, samples, scene)
       @recursion_depth = 10
     end
@@ -117,61 +131,33 @@ abstract class Raytracer
       end
     end
 
-    def sample_pixel(sample, x, y, samples)
-      # Box filter, size 1.0
-      size = 4.0
-      samples_sqrt = Math.sqrt(samples).ceil
+    def sample_pixel(sample, x, y, samples_sqrt, inv_samples_sqrt)
       (0...samples_sqrt).each do |i|
         (0...samples_sqrt).each do |j|
-          off_x = (((i + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_x
-          off_y = (((j + rand) / samples_sqrt) - 0.5) * 2 * @filter.width_y
+          off_x = (((i + rand) * inv_samples_sqrt) - 0.5)
+          off_y = (((j + rand) * inv_samples_sqrt) - 0.5)
 
           ray = @camera.generate_ray(x + off_x, y + off_y, EPSILON, Float64::MAX)
-          # sample.add(cast_ray(ray).de_nan, triangle_filter(off_x, off_y))
-          sample.add(cast_ray(ray).de_nan, @filter.evaluate(off_x, off_y))
+          sample.add(cast_ray(ray).de_nan)
         end
       end
     end
 
     def render_to_canvas(filename, adaptive = false)
       canvas = StumpyPNG::Canvas.new(@width, @height)
-      vis = Visualisation.new(@width, @height)
-      vis.add_layer(:variance)
 
-      pr_x = @width / 80
-      pr_y = (pr_x / 0.4).to_i
+      samples_sqrt = Math.sqrt(samples).ceil
+      inv_samples_sqrt = 1.0 / samples_sqrt
 
-      start = Time.now
-
+      sample = Sample.new
       (0...@height).each do |y|
         (0...@width).each do |x|
-          sample = Sample.new
-
-          if adaptive
-            sample_pixel(sample, x, y, samples / 2)
-            var = sample.variance
-            sample_pixel(sample, x, y, samples * 2) if var.squared_length >= 0.1
-          else
-            sample_pixel(sample, x, y, samples)
-          end
-
-          vis.set(:variance, x, y, sample.variance.length)
-          rgba = sample.mean.to_rgba(@gamma_correction)
-          canvas[x, y] = rgba
-
-          print_pixel(rgba, mode: :grayscale) if (x % pr_x) == 0 && (y % pr_y) == 0
+          sample.reset
+          sample_pixel(sample, x, y, samples_sqrt, inv_samples_sqrt)
+          canvas[x, y] = sample.mean.to_rgba(@gamma_correction)
         end
-        print "\n" if (y % pr_y) == 0
-        # print "\rTraced line #{y} / #{@height}"
       end
 
-      time = Time.now - start
-
-      puts "\nTime: #{(time.total_milliseconds / 1000).round(3)}s"
-      puts "Total rays: #{Ray.count}"
-      puts "Rays / sec: #{((Ray.count.to_f / time.total_milliseconds) * 1000).round(3)}"
-
-      vis.write(:variance, "variance_" + filename)
       canvas
     end
 

@@ -44,6 +44,14 @@ struct Vector < LA::AVector3
   def max(other : Float64)
     Vector.new(max(@x, other), max(@y, other), max(@z, other))
   end
+
+  def self.spherical_direction(sin_theta : Float64, cos_theta : Float64, phi : Float64)
+    Vector.new(
+      sin_theta * Math.cos(phi),
+      sin_theta * Math.sin(phi),
+      cos_theta
+    )
+  end
 end
 
 struct Point < LA::AVector3

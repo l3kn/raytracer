@@ -1,4 +1,4 @@
-class Sample
+struct Sample
   getter sum_weights : Float64
   getter mean : Color
   getter n_variance : Color
@@ -22,6 +22,12 @@ class Sample
   def variance
     @n_variance
     # @n_variance / @n.to_f
+  end
+
+  def reset
+    @sum_weights = 0.0
+    @mean = Color::BLACK
+    @n_variance = Color::BLACK
   end
 end
 
