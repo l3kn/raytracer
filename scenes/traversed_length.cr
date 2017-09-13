@@ -1,11 +1,6 @@
 require "../raytracer"
 
 class TraversedLengthRaytracer < Raytracer::Base
-  # This assumes the detector is shaped like a sphere
-  # surrounding the whole scene.
-  #
-  # An alternative solution would be to start the rays
-  # on the detector and trace them back to the focal point
   def cast_ray(ray)
     full_distance = 0.0
     point = ray.origin
