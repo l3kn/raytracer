@@ -3,58 +3,18 @@ abstract class Raytracer
   property camera : Camera
   property scene : Scene
   property gamma_correction : Float64
-  property adaptive : Bool
 
   def initialize(dimensions, @camera, @samples, @scene)
     @width, @height = dimensions
     @gamma_correction = 1.0 / 2.2
-    @adaptive = false
   end
 
   abstract def render_to_canvas(filename : String, adaptive = false)
 
-  def render(filename)
+  def render(filename, adaptive = false)
     start = Time.now
-    cores = 4
 
-    if cores > 1
-      workers = [] of Process
-      cores.times do |i|
-        workers << Process.fork do
-          StumpyPNG.write(render_to_canvas, filename + i.to_s)
-        end
-      end
-
-      workers.each(&.wait)
-      canvasses = (0...cores).map { |i| StumpyPNG.read(filename + i.to_s) }
-      4.times do |i|
-        File.delete(filename + i.to_s)
-      end
-
-      canvas = StumpyPNG::Canvas.new(@width, @height) do |x, y|
-        r = 0u32
-        g = 0u32
-        b = 0u32
-        a = 0u32
-        canvasses.each do |c|
-          r += c.get(x, y).r
-          g += c.get(x, y).g
-          b += c.get(x, y).b
-          a += c.get(x, y).a
-        end
-        StumpyPNG::RGBA.new(
-          (r / cores).to_u16,
-          (g / cores).to_u16,
-          (b / cores).to_u16,
-          (a / cores).to_u16
-        )
-      end
-
-      StumpyPNG.write(canvas, filename)
-    else
-      StumpyPNG.write(render_to_canvas, filename)
-    end
-
+    StumpyPNG.write(render_to_canvas(filename, adaptive), filename)
 
     time = Time.now - start
     puts "\nTime: #{(time.total_milliseconds / 1000).round(3)}s"
@@ -164,10 +124,10 @@ abstract class Raytracer
       end
     end
 
-    def render_to_canvas
+    def render_to_canvas(filename, adaptive = false)
       canvas = StumpyPNG::Canvas.new(@width, @height)
 
-      samples_sqrt = Math.sqrt(@samples).ceil
+      samples_sqrt = Math.sqrt(samples).ceil
       inv_samples_sqrt = 1.0 / samples_sqrt
 
       sample = Sample.new
@@ -177,7 +137,9 @@ abstract class Raytracer
           sample_pixel(sample, x, y, samples_sqrt, inv_samples_sqrt)
           canvas[x, y] = sample.mean.to_rgba(@gamma_correction)
         end
+        print "\rProgress: #{y} / #{@height}"
       end
+      puts "\nDONE!"
 
       canvas
     end
