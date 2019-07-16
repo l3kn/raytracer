@@ -10,7 +10,7 @@ description: |
 dependencies:
   stumpy_png:
     github: stumpycr/stumpy_png
-    version: "-> 2.0.0"
+    version: ~> 4.5
   linalg:
     github: l3kn/linalg
     branch: matrix
